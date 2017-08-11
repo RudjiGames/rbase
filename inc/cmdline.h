@@ -27,12 +27,12 @@ namespace rtm {
 
 		const bool hasArg(char _optionLetter) const
 		{
-			return getArgString(_optionLetter) != nullptr;
+			return getArgString(_optionLetter) != 0;
 		}
 
 		const bool hasArg(const char* _optionName) const
 		{
-			return getArgString(_optionName) != nullptr;
+			return getArgString(_optionName) != 0;
 		}
 
 		const char* getArg(int _argIndex) const
@@ -122,7 +122,7 @@ namespace rtm {
 				const char* argv = m_argv[i];
 				if ((argv[0] == '-') && (argv[1] == _optionLetter))
 				{
-					const char* nextArg = (i == m_argc-1) ? nullptr : m_argv[i+1];
+					const char* nextArg = (i == m_argc-1) ? 0 : m_argv[i+1];
 					if (!nextArg)
 						return "";
 					if (nextArg[0] == '-')
@@ -130,7 +130,7 @@ namespace rtm {
 					return nextArg;
 				}
 			}
-			return nullptr;
+			return 0;
 		}
 
 		const char*	getArgString(const char* _optionName) const
@@ -150,7 +150,7 @@ namespace rtm {
 					if (!match)
 						continue;
 
-					const char* nextArg = (i == m_argc - 1) ? nullptr : m_argv[i + 1];
+					const char* nextArg = (i == m_argc - 1) ? 0 : m_argv[i + 1];
 
 					if (!nextArg)
 						return "";
@@ -159,7 +159,7 @@ namespace rtm {
 					return nextArg;
 				}
 			}
-			return nullptr;
+			return 0;
 		}
 	};
 

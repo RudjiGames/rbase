@@ -126,8 +126,8 @@ namespace rtm {
 			: m_front(0)
 			, m_size(0)
 		{
-			static_assert( ((NUM_ELEMENTS & (NUM_ELEMENTS-1)) == 0) &&
-							(NUM_ELEMENTS != 0), "NUM_ELEMENTS must be a power of two!");
+			RTM_STATIC_ASSERT( ((NUM_ELEMENTS & (NUM_ELEMENTS-1)) == 0) &&
+								(NUM_ELEMENTS != 0), "NUM_ELEMENTS must be a power of two!");
 		}
 
 		void push_back(T _e)
