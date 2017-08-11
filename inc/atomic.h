@@ -89,7 +89,7 @@ namespace rtm {
 	{
 #if RTM_PLATFORM_WINDOWS
 		_mm_mfence();
-#elif RTM_PLATFORM_XBOX360 || RTM_PLATFORM_PS3
+#elif RTM_PLATFORM_PS3
 		__lwsync();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		__sync_synchronize();

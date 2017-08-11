@@ -28,7 +28,7 @@ namespace rtm {
 	{
 		inline static uint64_t clock()
 		{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOX360 || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 			LARGE_INTEGER li;
 			QueryPerformanceCounter(&li);
 			int64_t q = li.QuadPart;
