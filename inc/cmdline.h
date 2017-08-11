@@ -135,7 +135,7 @@ namespace rtm {
 
 		const char*	getArgString(const char* _optionName) const
 		{
-			const size_t optionLen = wcslen(_optionName);
+			const size_t optionLen = strlen(_optionName);
 			for (int i=0; i<m_argc; ++i)
 			{
 				const char* argv = m_argv[i];

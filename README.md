@@ -1,5 +1,9 @@
 rbase
-====== 
+======
+
+[![Build Status](https://travis-ci.org/milostosic/rbase.svg?branch=master)](https://travis-ci.org/milostosic/rbase)
+[![Build status](https://ci.appveyor.com/api/projects/status/u0c3l72vgi86f72l?svg=true)](https://ci.appveyor.com/project/milostosic/rbase)
+[![License](https://img.shields.io/badge/license-BSD--2%20clause-blue.svg)](https://github.com/milostosic/rmem/blob/master/LICENSE)
 
 rbase is a platform abstraction and utility library used as foundation for a number of projects.
 
