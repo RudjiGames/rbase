@@ -50,8 +50,8 @@ namespace rtm {
 
 	public:
 		Thread() :
-			m_entry(nullptr),
-			m_userData(nullptr),
+			m_entry(0),
+			m_userData(0),
 			m_started(false),
 			m_entryDone(false),
 			m_exitCode(0)

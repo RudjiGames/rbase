@@ -45,7 +45,7 @@ namespace rtm {
 		inline void* alloc()
 		{
 			if (m_nextFreeBlock == -1)
-				return nullptr;
+				return 0;
 
 			Block* b = &m_blocks[m_nextFreeBlock];
 			m_nextFreeBlock = b->m_nextFree;
@@ -126,8 +126,8 @@ namespace rtm {
 			: m_front(0)
 			, m_size(0)
 		{
-			RTM_STATIC_ASSERT( ((NUM_ELEMENTS & (NUM_ELEMENTS-1)) == 0) &&
-								(NUM_ELEMENTS != 0), "NUM_ELEMENTS must be a power of two!");
+			RTM_ASSERT(((NUM_ELEMENTS & (NUM_ELEMENTS-1)) == 0) &&
+						(NUM_ELEMENTS != 0), "NUM_ELEMENTS must be a power of two!");
 		}
 
 		void push_back(T _e)

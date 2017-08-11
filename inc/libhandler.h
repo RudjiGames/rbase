@@ -68,23 +68,23 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 
 	void* rtm_alloc(size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT)
 	{
-		void* ptr = nullptr;
+		void* ptr = 0;
 		if (g_allocator)
 			ptr = g_allocator->alloc(_size, _alignment);
 		else
 			ptr = malloc(_size);
-		RTM_ASSERT(ptr!=nullptr, "Failed to allocate memory!");
+		RTM_ASSERT(ptr!=0, "Failed to allocate memory!");
 		return ptr;
 	}
 
 	void* rtm_realloc(void* _ptr, size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT)
 	{
-		void* ptr = nullptr;
+		void* ptr = 0;
 		if (g_allocator)
 			ptr = g_allocator->realloc(_ptr, _size, _alignment);
 		else
 			ptr = realloc(_ptr, _size);
-		RTM_ASSERT(ptr!=nullptr, "Failed to allocate memory!");
+		RTM_ASSERT(ptr!=0, "Failed to allocate memory!");
 		return ptr;
 	}
 
@@ -125,7 +125,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	T* rtm_new()
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
-		RTM_ASSERT(mem != nullptr, "Failed to allocate memory!");
+		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
 		return RTM_PLACEMENT_NEW(mem) T();
 	}
 
@@ -133,7 +133,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	T* rtm_new(Arg1 _arg1)
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
-		RTM_ASSERT(mem != nullptr, "Failed to allocate memory!");
+		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
 		return RTM_PLACEMENT_NEW(mem) T(_arg1);
 	}
 
@@ -141,7 +141,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	T* rtm_new(Arg1 _arg1, Arg2 _arg2)
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
-		RTM_ASSERT(mem != nullptr, "Failed to allocate memory!");
+		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
 		return RTM_PLACEMENT_NEW(mem) T(_arg1, _arg2);
 	}
 
@@ -149,7 +149,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	T* rtm_new(Arg1 _arg1, Arg2 _arg2, Arg3 _arg3)
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
-		RTM_ASSERT(mem != nullptr, "Failed to allocate memory!");
+		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
 		return RTM_PLACEMENT_NEW(mem) T(_arg1, _arg2, _arg3);
 	}
 

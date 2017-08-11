@@ -231,7 +231,7 @@
 
 #ifndef RTM_STATIC_ASSERT
 #define RTM_STATIC_ASSERT(_condition, ...) static_assert(_condition, "" __VA_ARGS__)
-#endif RTM_STATIC_ASSERT
+#endif // RTM_STATIC_ASSERT
 
 #ifndef RTM_WARN
 #define RTM_WARN(_format, ...) for(;;) { break; }

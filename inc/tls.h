@@ -48,7 +48,7 @@ namespace rtm {
 	static inline uint32_t tlsAllocate()
 	{
 		uint32_t handle;
-		pthread_key_create((pthread_key_t*)&handle, nullptr);
+		pthread_key_create((pthread_key_t*)&handle, 0);
 		return handle;
 	}
 

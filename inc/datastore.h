@@ -213,7 +213,7 @@ namespace rtm {
 
 		uint32_t allocate()
 		{
-			return DataBase::allocate();
+			return DataBase<NUM_ELEMENTS, STORE_POLICY>::allocate();
 		}
 
 		uint32_t allocate(T*& _storedData)

@@ -51,7 +51,7 @@ namespace rtm {
 				SetConsoleTextAttribute(console, (WORD)att);	
 			}
 #else
-			(void)_type;
+			RTM_UNUSED(_color);
 			printf("%s\n",buffer);
 #endif
 		}

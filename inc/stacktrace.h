@@ -65,7 +65,7 @@ namespace rtm {
 	{
 		unwindArg& arg = *(unwindArg*)_arg;
 		void* ip = (void*)_Unwind_GetIP(_context);
-		if(nullptr == ip) 
+		if (0 == ip) 
 			return _URC_END_OF_STACK;
 		else
 		{
