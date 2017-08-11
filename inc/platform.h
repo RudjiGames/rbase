@@ -52,6 +52,28 @@
 #define RTM_64BIT				0
 
 //--------------------------------------------------------------------------
+/// Build configuration
+//--------------------------------------------------------------------------
+#define RTM_DEBUG				0
+#define RTM_RELEASE				0
+#define RTM_RETAIL				0
+
+#ifdef RTM_DEBUG_BUILD
+#undef	RTM_DEBUG
+#define	RTM_DEBUG 1
+#endif
+
+#ifdef RTM_RELEASE_BUILD
+#undef	RTM_RELEASE
+#define	RTM_RELEASE 1
+#endif
+
+#ifdef RTM_RETAIL_BUILD
+#undef	RTM_RETAIL
+#define	RTM_RETAIL 1
+#endif
+
+//--------------------------------------------------------------------------
 /// Detect compiler
 //--------------------------------------------------------------------------
 #if defined(__SNC__)

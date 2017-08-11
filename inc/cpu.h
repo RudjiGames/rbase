@@ -48,7 +48,7 @@ namespace rtm {
 
 		inline static uint64_t frequency()
 		{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XENON
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XB1
 			LARGE_INTEGER li;
 			QueryPerformanceFrequency(&li);
 			return li.QuadPart;
