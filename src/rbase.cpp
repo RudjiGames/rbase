@@ -4,6 +4,7 @@
 //--------------------------------------------------------------------------//
 
 #include <rbase_pch.h>
+#include <rbase/inc/platform.h>
 
 #define RTM_LIBHANDLE_NAMESPACE rtm
 
@@ -15,14 +16,13 @@
 #include <rbase/inc/datastore.h>
 #include <rbase/inc/datastoresoa.h>
 #include <rbase/inc/debug.h>
-#include <rbase/inc/endian.h>
+#include <rbase/inc/endianswap.h>
 #include <rbase/inc/handlepool.h>
 #include <rbase/inc/hash.h>
 #include <rbase/inc/libassert.h>
 #include <rbase/inc/liberrorconsole.h>
 #include <rbase/inc/libhandler.h>
 #include <rbase/inc/mutex.h>
-#include <rbase/inc/platform.h>
 #include <rbase/inc/radixsort.h>
 #include <rbase/inc/random.h>
 #include <rbase/inc/semaphore.h>
