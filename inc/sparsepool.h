@@ -99,7 +99,9 @@ namespace rtm {
 			RTM_ASSERT(m_elementSize != 0, "Sparse pool not initialized!");
 
 			const uint32_t chunkIdx		= _idx / m_elementsInChunk;
+#if RTM_DEBUG
 			const uint32_t elementIdx	= _idx & (m_elementsInChunk-1);
+#endif
 
 			RTM_ASSERT(chunkIdx < m_numChunks, "Out of bounds access!");
 
