@@ -4,7 +4,8 @@
 //--------------------------------------------------------------------------// 
 
 #include <rbase_pch.h>
-#include <rbase/inc/strings.h>
+
+namespace rtm {
 
 char toNoop(char _ch)
 {
@@ -21,3 +22,4 @@ char toLower(char _ch)
 	return _ch + (isUpper(_ch) ? 0x20 : 0);
 }
 
+} // namespace rtm

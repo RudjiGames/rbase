@@ -93,7 +93,9 @@ namespace rtm {
 	   return h;
 	}
 
+	void md5_calculate(void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
+	void md5_to_string(uint8_t _digest[16], char _out_hash[33]);
+
 } // namespace rtm
 
 #endif // __RTM_RBASE_HASH_H__
-

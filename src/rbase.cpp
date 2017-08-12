@@ -4,7 +4,6 @@
 //--------------------------------------------------------------------------//
 
 #include <rbase_pch.h>
-#include <rbase/inc/platform.h>
 
 #define RTM_LIBHANDLE_NAMESPACE rtm
 
