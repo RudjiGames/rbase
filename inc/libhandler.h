@@ -10,6 +10,8 @@
 #error "Must define RTM_LIBHANDLE_NAMESPACE!"
 #endif
 
+#include <rbase/inc/platform.h>
+
 #include <stdio.h>	// vsprintf
 #include <string.h>	// memcpy
 #include <stdlib.h>

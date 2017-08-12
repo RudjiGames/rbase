@@ -166,22 +166,22 @@ namespace rtm {
 		{
 			RTM_ASSERT(_c.m_data == 0, "Chunk must be null to be allocated!");
 			RTM_ASSERT(_c.m_size == 0, "Chunk must be null to be allocated!");
-			uint32_t size = RTM_ALIGNTO(m_elementSize * m_elementsInChunk, m_alignment);
+			uint32_t block_size = RTM_ALIGNTO(m_elementSize * m_elementsInChunk, m_alignment);
 			if (m_memoryManager)
-				_c.m_data = (uint8_t*)m_memoryManager->alloc(size, m_alignment);
+				_c.m_data = (uint8_t*)m_memoryManager->alloc(block_size, m_alignment);
 			else
 			{
 #if RTM_COMPILER_MSVC
-				_c.m_data = (uint8_t*)_aligned_malloc(size, m_alignment);
+				_c.m_data = (uint8_t*)_aligned_malloc(block_size, m_alignment);
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-				_c.m_data = (uint8_t*)memalign(m_alignment, size);
+				_c.m_data = (uint8_t*)memalign(m_alignment, block_size);
 #else
 	#error "Unsupported compiler!"
 #endif
 				
 			}
 #if RTM_DEBUG
-			memset(_c.m_data, 0xcd, size);
+			memset(_c.m_data, 0xcd, block_size);
 #endif
 		}
 

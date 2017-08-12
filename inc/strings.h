@@ -13,20 +13,9 @@ namespace rtm {
 
 	typedef char (*CharFn)(char _ch);
 
-	inline static char toNoop(char _ch)
-	{
-		return _ch;
-	}
-
-	inline static bool isUpper(char _ch)
-	{
-		return _ch >= 'A' && _ch <= 'Z';
-	}
-
-	inline static char toLower(char _ch)
-	{
-		return _ch + (isUpper(_ch) ? 0x20 : 0);
-	}
+	char toNoop(char _ch);
+	bool isUpper(char _ch);
+	char toLower(char _ch);
 
 	template<CharFn fn>
 	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
