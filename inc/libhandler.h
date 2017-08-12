@@ -115,18 +115,20 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	
 #endif // RTM_LIBHANDLER_DEFINE
 
+namespace RTM_LIBHANDLE_NAMESPACE {
 	/// Avoid include <new>
 	struct rmemPlacementNew {};
 	inline void* operator new(size_t, rmemPlacementNew, void* ptr) { return ptr; }
 	inline void operator delete(void*, rmemPlacementNew, void*) {}
 	#define RTM_PLACEMENT_NEW(_PTR)  new(ImPlacementNewDummy(), _PTR)
+}
 
 	template <typename T>
 	T* rtm_new()
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return RTM_PLACEMENT_NEW(mem) T();
+		return RTM_LIBHANDLE_NAMESPACE::RTM_PLACEMENT_NEW(mem) T();
 	}
 
 	template <typename T, typename Arg1>
@@ -134,7 +136,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return RTM_PLACEMENT_NEW(mem) T(_arg1);
+		return RTM_LIBHANDLE_NAMESPACE::RTM_PLACEMENT_NEW(mem) T(_arg1);
 	}
 
 	template <typename T, typename Arg1, typename Arg2>
@@ -142,7 +144,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return RTM_PLACEMENT_NEW(mem) T(_arg1, _arg2);
+		return RTM_LIBHANDLE_NAMESPACE::RTM_PLACEMENT_NEW(mem) T(_arg1, _arg2);
 	}
 
 	template <typename T, typename Arg1, typename Arg2, typename Arg3>
@@ -150,7 +152,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return RTM_PLACEMENT_NEW(mem) T(_arg1, _arg2, _arg3);
+		return RTM_LIBHANDLE_NAMESPACE::RTM_PLACEMENT_NEW(mem) T(_arg1, _arg2, _arg3);
 	}
 
 	template <typename T>

@@ -25,12 +25,12 @@ namespace rtm {
 		{
 		}
 
-		const bool hasArg(char _optionLetter) const
+		bool hasArg(char _optionLetter) const
 		{
 			return getArgString(_optionLetter) != 0;
 		}
 
-		const bool hasArg(const char* _optionName) const
+		bool hasArg(const char* _optionName) const
 		{
 			return getArgString(_optionName) != 0;
 		}
@@ -42,7 +42,7 @@ namespace rtm {
 			return m_argv[_argIndex];
 		}
 
-		const bool getArg(char _optionLetter, const char*& _value) const
+		bool getArg(char _optionLetter, const char*& _value) const
 		{
 			const char* arg = getArgString(_optionLetter);
 			if (!arg)
@@ -51,7 +51,7 @@ namespace rtm {
 			return true;
 		}
 
-		const bool getArg(const char* _optionName, const char*& _value) const
+		bool getArg(const char* _optionName, const char*& _value) const
 		{
 			const char* arg = getArgString(_optionName);
 			if (!arg)
@@ -60,7 +60,7 @@ namespace rtm {
 			return true;
 		}
 
-		const bool getArg(char _optionLetter, int& _value) const
+		bool getArg(char _optionLetter, int& _value) const
 		{
 			const char* arg = getArgString(_optionLetter);
 			if (!arg)
@@ -69,7 +69,7 @@ namespace rtm {
 			return true;
 		}
 
-		const bool getArg(const char* _optionName, int& _value) const
+		bool getArg(const char* _optionName, int& _value) const
 		{
 			const char* arg = getArgString(_optionName);
 			if (!arg)
@@ -78,7 +78,7 @@ namespace rtm {
 			return true;
 		}
 
-		const bool getArg(char _optionLetter, float& _value) const
+		bool getArg(char _optionLetter, float& _value) const
 		{
 			const char* arg = getArgString(_optionLetter);
 			if (!arg)
@@ -87,7 +87,7 @@ namespace rtm {
 			return true;
 		}
 
-		const bool getArg(const char* _optionName, float& _value) const
+		bool getArg(const char* _optionName, float& _value) const
 		{
 			const char* arg = getArgString(_optionName);
 			if (!arg)
@@ -96,7 +96,7 @@ namespace rtm {
 			return true;
 		}
 
-		const bool getArg(char _optionLetter, bool& _value) const
+		bool getArg(char _optionLetter, bool& _value) const
 		{
 			const char* arg = getArgString(_optionLetter);
 			if (!arg)
@@ -105,7 +105,7 @@ namespace rtm {
 			return true;
 		}
 
-		const bool getArg(const char* _optionName, bool& _value) const
+		bool getArg(const char* _optionName, bool& _value) const
 		{
 			const char* arg = getArgString(_optionName);
 			if (!arg)
@@ -115,7 +115,7 @@ namespace rtm {
 		}
 
 	private:
-		const char* getArgString(char _optionLetter) const
+		char* getArgString(char _optionLetter) const
 		{
 			for (int i=0; i<m_argc; ++i)
 			{
@@ -133,7 +133,7 @@ namespace rtm {
 			return 0;
 		}
 
-		const char*	getArgString(const char* _optionName) const
+		char*	getArgString(const char* _optionName) const
 		{
 			const size_t optionLen = strlen(_optionName);
 			for (int i=0; i<m_argc; ++i)

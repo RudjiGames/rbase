@@ -13,7 +13,7 @@
 	#include <windows.h>
 #endif // RTM_PLATFORM_WINDOWS
 
-#if RTM_PLATFORM_ANDROID
+#if RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX
 	#include <pthread.h>
 #endif
 
@@ -46,7 +46,7 @@ namespace rtm {
 	typedef pthread_mutex_t rtm_mutex;
 
 	static inline void rtm_mutex_init(rtm_mutex* _mutex) {
-		pthread_mutex_init(_mutex, NULL);
+		pthread_mutex_init(_mutex, 0);
 	}
 
 	static inline void rtm_mutex_destroy(rtm_mutex* _mutex) {
