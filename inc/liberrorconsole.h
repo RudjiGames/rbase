@@ -40,4 +40,3 @@ struct UnitTestLibInterface : public rtm::LibInterface
 UnitTestLibInterface g_libInterface;
 
 #endif // __RTM_RBASE_LIBERRORCONSOLE_H__
-

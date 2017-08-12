@@ -6,8 +6,8 @@
 #ifndef __RTM_RBASE_LIBHANDLER_H__
 #define __RTM_RBASE_LIBHANDLER_H__
 
-#ifndef RTM_LIBHANDLE_NAMESPACE
-#error "Must define RTM_LIBHANDLE_NAMESPACE!"
+#ifndef RBASE_NAMESPACE
+#error "Must define RBASE_NAMESPACE!"
 #endif
 
 #include <rbase/inc/platform.h>
@@ -21,7 +21,7 @@
 
 #ifdef RTM_LIBHANDLER_DEFINE
 
-namespace RTM_LIBHANDLE_NAMESPACE {
+namespace RBASE_NAMESPACE {
 
 	rtm::MemoryManager*		g_allocator 		= 0;
 	rtm::ErrorHandler*		g_errorHandler		= 0;
@@ -100,11 +100,11 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 		free(_ptr);
 	}
 
-} // namespace RTM_LIBHANDLE_NAMESPACE
+} // namespace RBASE_NAMESPACE
 
 #else // RTM_LIBHANDLER_DEFINE
 
-namespace RTM_LIBHANDLE_NAMESPACE {
+namespace RBASE_NAMESPACE {
 
 	extern rtm::MemoryManager*	g_allocator;
 	extern rtm::ErrorHandler*	g_errorHandler;
@@ -113,14 +113,14 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	extern void* rtm_realloc(void* _ptr, size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT);
 	extern void  rtm_free(void* _ptr);
 
-} // namespace RTM_LIBHANDLE_NAMESPACE
+} // namespace RBASE_NAMESPACE
 	
 #endif // RTM_LIBHANDLER_DEFINE
 
 	template <typename T>
 	T* rtm_new()
 	{
-		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
+		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
 		return new(mem) T();
 	}
@@ -128,7 +128,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	template <typename T, typename Arg1>
 	T* rtm_new(Arg1 _arg1)
 	{
-		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
+		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
 		return new(mem) T(_arg1);
 	}
@@ -136,7 +136,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	template <typename T, typename Arg1, typename Arg2>
 	T* rtm_new(Arg1 _arg1, Arg2 _arg2)
 	{
-		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
+		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
 		return new(mem) T(_arg1, _arg2);
 	}
@@ -144,7 +144,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	template <typename T, typename Arg1, typename Arg2, typename Arg3>
 	T* rtm_new(Arg1 _arg1, Arg2 _arg2, Arg3 _arg3)
 	{
-		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
+		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
 		return new(mem) T(_arg1, _arg2, _arg3);
 	}
@@ -153,7 +153,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	void rtm_delete(T* _ptr)
 	{
 		_ptr->~T();
-		RTM_LIBHANDLE_NAMESPACE::rtm_free(_ptr);
+		RBASE_NAMESPACE::rtm_free(_ptr);
 	}
 
 	// STL allocator
@@ -167,8 +167,8 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 		void deallocate(T*, size_t);
 	};
 
-	template <class T> inline T* rtm_allocator<T>::allocate(size_t _numBlocks) { return (T*)RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
-	template <class T> inline void rtm_allocator<T>::deallocate(T* _p, size_t) { RTM_LIBHANDLE_NAMESPACE::rtm_free(_p); }
+	template <class T> inline T* rtm_allocator<T>::allocate(size_t _numBlocks) { return (T*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
+	template <class T> inline void rtm_allocator<T>::deallocate(T* _p, size_t) { RBASE_NAMESPACE::rtm_free(_p); }
 	template <class T, class U>	bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
 	template <class T, class U>	bool operator!=(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
 
@@ -203,8 +203,8 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 			mem.m_type = Memory::Internal;
 	
 			void* ptr = 0;
-			if (RTM_LIBHANDLE_NAMESPACE::g_allocator)
-				ptr = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(_size, 16);
+			if (RBASE_NAMESPACE::g_allocator)
+				ptr = RBASE_NAMESPACE::rtm_alloc(_size, 16);
 			else
 				ptr = new uint8_t[_size];
 			RTM_ASSERT(ptr != 0, "Failed to allocate memory block!");
@@ -217,7 +217,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 			Memory mem;
 			mem.m_size = _size;
 			mem.m_type = Memory::Internal;
-			mem.m_data = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(_size);
+			mem.m_data = RBASE_NAMESPACE::rtm_alloc(_size);
 			memcpy(mem.m_data, _ptr, _size);
 			return mem;
 		}
@@ -242,8 +242,8 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 				return;
 
 			RTM_ASSERT(_memory.m_data != 0, "Invalid pointer!");
-			if (RTM_LIBHANDLE_NAMESPACE::g_allocator)
-				RTM_LIBHANDLE_NAMESPACE::g_allocator->free(_memory.m_data);
+			if (RBASE_NAMESPACE::g_allocator)
+				RBASE_NAMESPACE::g_allocator->free(_memory.m_data);
 			else
 				delete[] (uint8_t*)_memory.m_data;
 		}

@@ -2,13 +2,10 @@
 /// Copyright (c) 2017 by Milos Tosic. All Rights Reserved.                ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
-/// Taken from bx library: https://github.com/bkaradzic/bx                 ///
-//--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_RADIXSORT_H__
-#define __RTM_RBASE_RADIXSORT_H__
+#include <rbase_pch.h>
 
-#include <rbase/inc/platform.h>
+#include <string.h> // memset
 
 namespace rtm {
 
@@ -16,11 +13,7 @@ namespace rtm {
 	#define RTM_RADIXSORT_HISTOGRAM_SIZE	(1 << RTM_RADIXSORT_BITS)
 	#define RTM_RADIXSORT_BIT_MASK			(RTM_RADIXSORT_HISTOGRAM_SIZE - 1)
 
-	void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size);
-	void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, uint32_t _size);
-
-	template <typename Ty>
-	static void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
+	void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size)
 	{
 		uint16_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 		uint16_t shift = 0;
@@ -30,7 +23,7 @@ namespace rtm {
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint32_t key = _keys[i];
-				uint16_t index = (key >> shift) & RTM_RADIXSORT_BIT_MASK;
+				uint16_t index = (key>>shift)&RTM_RADIXSORT_BIT_MASK;
 				++histogram[index];
 			}
 
@@ -45,26 +38,20 @@ namespace rtm {
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint32_t key = _keys[i];
-				uint16_t index = (key>>shift)&RTM_RADIXSORT_BIT_MASK;
+				uint16_t index = (key >> shift) & RTM_RADIXSORT_BIT_MASK;
 				uint16_t dest = histogram[index]++;
 				_tempKeys[dest] = key;
-				_tempValues[dest] = _values[i];
 			}
 
 			uint32_t* swapKeys = _tempKeys;
 			_tempKeys = _keys;
 			_keys = swapKeys;
 
-			Ty* swapValues = _tempValues;
-			_tempValues = _values;
-			_values = swapValues;
-
 			shift += RTM_RADIXSORT_BITS;
 		}
 	}
 
-	template <typename Ty>
-	inline static void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
+	void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, uint32_t _size)
 	{
 		uint16_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 		uint16_t shift = 0;
@@ -92,16 +79,11 @@ namespace rtm {
 				uint16_t index = (key >> shift) & RTM_RADIXSORT_BIT_MASK;
 				uint16_t dest = histogram[index]++;
 				_tempKeys[dest] = key;
-				_tempValues[dest] = _values[i];
 			}
 
 			uint64_t* swapKeys = _tempKeys;
 			_tempKeys = _keys;
 			_keys = swapKeys;
-
-			Ty* swapValues = _tempValues;
-			_tempValues = _values;
-			_values = swapValues;
 
 			shift += RTM_RADIXSORT_BITS;
 		}
@@ -113,4 +95,3 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif // __RTM_RBASE_RADIXSORT_H__

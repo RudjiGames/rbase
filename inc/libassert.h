@@ -6,17 +6,17 @@
 #ifndef __RTM_RBASE_LIBASSERT_H__
 #define __RTM_RBASE_LIBASSERT_H__
 
-#ifndef RTM_LIBHANDLE_NAMESPACE
-#error "Must define RTM_LIBHANDLE_NAMESPACE!"
+#ifndef RBASE_NAMESPACE
+#error "Must define RBASE_NAMESPACE!"
 #endif
 
 #if !RTM_RETAIL
 
-namespace RTM_LIBHANDLE_NAMESPACE {
+namespace RBASE_NAMESPACE {
 	void ErrorHandler_fatal(const char* _file, int _line, const char* _format, ...);
 	void ErrorHandler_warning(const char* _file, int _line, const char* _format, ...);
 	void ErrorHandler_log(const char* _file, int _line, const char* _format, ...);
-} // RTM_LIBHANDLE_NAMESPACE
+} // RBASE_NAMESPACE
 
 #ifdef RTM_ASSERT
 #undef RTM_ASSERT
@@ -27,7 +27,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 					RTM_DISABLE_CONST_EXPR_WARNING																	\
 					if (!(_condition))																				\
 					{																								\
-						RTM_LIBHANDLE_NAMESPACE::ErrorHandler_fatal(__FILE__, __LINE__, _format, ##__VA_ARGS__);	\
+						RBASE_NAMESPACE::ErrorHandler_fatal(__FILE__, __LINE__, _format, ##__VA_ARGS__);	\
 						RTM_BREAK;																					\
 					}																								\
 					break;																							\
@@ -43,7 +43,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 					RTM_DISABLE_CONST_EXPR_WARNING																	\
 					if (!(_condition))																				\
 					{																								\
-						RTM_LIBHANDLE_NAMESPACE::ErrorHandler_warning(__FILE__, __LINE__, _format, ##__VA_ARGS__);	\
+						RBASE_NAMESPACE::ErrorHandler_warning(__FILE__, __LINE__, _format, ##__VA_ARGS__);	\
 					}																								\
 					break;																							\
 					RTM_ENABLE_CONST_EXPR_WARNING																	\
@@ -55,7 +55,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 
 #define RTM_LOG(_format, ...)																						\
 				for(;;) {																							\
-					RTM_LIBHANDLE_NAMESPACE::ErrorHandler_log(__FILE__, __LINE__, _format, ##__VA_ARGS__);			\
+					RBASE_NAMESPACE::ErrorHandler_log(__FILE__, __LINE__, _format, ##__VA_ARGS__);			\
 					break;																							\
 				}
 
