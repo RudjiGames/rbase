@@ -8,6 +8,7 @@
 #ifndef __RTM_RBASE_CMDLINE_H__
 #define __RTM_RBASE_CMDLINE_H__
 
+#include <rbase/inc/platform.h>
 #include <string.h>	// strlen
 #include <stdlib.h>	// atoi
 
