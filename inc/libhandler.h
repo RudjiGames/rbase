@@ -160,11 +160,11 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	template <class T>
 	struct rtm_allocator
 	{
-	  typedef T value_type;
-	  rtm_allocator() {}
-	  template <class U> rtm_allocator(const rtm_allocator<U>& other);
-	  T* allocate(size_t _numBlocks);
-	  void deallocate(T* _p, size_t);
+		typedef T value_type;
+		rtm_allocator() {}
+		template <class U> rtm_allocator(const rtm_allocator<U>&);
+		T* allocate(size_t);
+		void deallocate(T*, size_t);
 	};
 
 	template <class T> inline T* rtm_allocator<T>::allocate(size_t _numBlocks) { return (T*)RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }

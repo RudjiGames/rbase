@@ -7,7 +7,7 @@
 
 #define RTM_LIBHANDLE_NAMESPACE rtm
 
-#include <rbase/inc/atomic.h>
+//#include <rbase/inc/atomic.h>
 #include <rbase/inc/cmdline.h>
 #include <rbase/inc/console.h>
 #include <rbase/inc/containers.h>
@@ -15,7 +15,7 @@
 #include <rbase/inc/datastore.h>
 #include <rbase/inc/datastoresoa.h>
 #include <rbase/inc/debug.h>
-#include <rbase/inc/endian.h>
+//#include <rbase/inc/endian.h>
 #include <rbase/inc/handlepool.h>
 #include <rbase/inc/hash.h>
 #include <rbase/inc/libassert.h>

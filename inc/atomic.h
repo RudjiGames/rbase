@@ -8,24 +8,25 @@
 
 #include <rbase/inc/platform.h>
 
+#if RTM_PLATFORM_NACL || RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX
+#include <sched.h> // sched_yield 
+#endif
+
 #if RTM_PLATFORM_WINDOWS
-extern "C"
-{
-	__declspec(dllimport) long		_InterlockedIncrement(long volatile*);
-	__declspec(dllimport) long		_InterlockedDecrement(long volatile*);
-	__declspec(dllimport) long		_InterlockedCompareExchange(long volatile*, long, long);
-	__declspec(dllimport) long		_InterlockedExchange(long volatile*, long);
-	__declspec(dllimport) long		_InterlockedExchangeAdd(long volatile*, long);
-	__declspec(dllimport) long long	_InterlockedCompareExchange64(long long volatile*, long long, long long);
-	__declspec(dllimport) long long	_InterlockedIncrement64(long long volatile*);
-	__declspec(dllimport) long long	_InterlockedDecrement64(long long volatile*);
-	__declspec(dllimport) long long	_InterlockedExchange64(long long volatile*, long long);
-	__declspec(dllimport) long long	_InterlockedExchangeAdd64(long long volatile*, long long);
-	__declspec(dllimport) void 		_ReadBarrier(void);
-	__declspec(dllimport) void 		_WriteBarrier(void);
-	__declspec(dllimport) void 		_ReadWriteBarrier(void);
-	__declspec(dllimport) void		_mm_mfence(void);
-}
+	extern "C" __declspec(dllimport) long		_InterlockedIncrement(long volatile*);
+	extern "C" __declspec(dllimport) long		_InterlockedDecrement(long volatile*);
+	extern "C" __declspec(dllimport) long		_InterlockedCompareExchange(long volatile*, long, long);
+	extern "C" __declspec(dllimport) long		_InterlockedExchange(long volatile*, long);
+	extern "C" __declspec(dllimport) long		_InterlockedExchangeAdd(long volatile*, long);
+	extern "C" __declspec(dllimport) long long	_InterlockedCompareExchange64(long long volatile*, long long, long long);
+	extern "C" __declspec(dllimport) long long	_InterlockedIncrement64(long long volatile*);
+	extern "C" __declspec(dllimport) long long	_InterlockedDecrement64(long long volatile*);
+	extern "C" __declspec(dllimport) long long	_InterlockedExchange64(long long volatile*, long long);
+	extern "C" __declspec(dllimport) long long	_InterlockedExchangeAdd64(long long volatile*, long long);
+	extern "C" __declspec(dllimport) void 		_ReadBarrier(void);
+	extern "C" __declspec(dllimport) void 		_WriteBarrier(void);
+	extern "C" __declspec(dllimport) void 		_ReadWriteBarrier(void);
+	extern "C" __declspec(dllimport) void		_mm_mfence(void);
 #if RTM_COMPILER_MSVC
 	#pragma intrinsic (_InterlockedIncrement)
 	#pragma intrinsic (_InterlockedDecrement)
@@ -45,10 +46,6 @@ extern "C"
 	#pragma intrinsic (_mm_mfence)
 #endif // RTM_COMPILER_MSVC
 #endif // RTM_PLATFORM_WINDOWS
-
-#if RTM_PLATFORM_NACL || RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX
-#include <sched.h> // sched_yield 
-#endif
 
 namespace rtm {
 
