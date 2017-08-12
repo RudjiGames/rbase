@@ -219,8 +219,8 @@ namespace rtm {
 		uint32_t allocate(T*& _storedData)
 		{
 			_storedData = 0;
-			uint32_t index = m_allocator.allocate();
-			if (isValid(index))
+			uint32_t index = Base::m_allocator.allocate();
+			if (Base::isValid(index))
 			{
 				_storedData = &m_data[index];
 			}
@@ -260,7 +260,7 @@ namespace rtm {
 
 		T* getDataPtrSafe(uint32_t _handle)
 		{
-			if (!isValid(_handle))
+			if (!Base::isValid(_handle))
 				return 0;
 
 			const uint32_t dataIdx = Base::m_allocator.getDataIndex(_handle);

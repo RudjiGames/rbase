@@ -115,7 +115,7 @@ namespace rtm {
 		}
 
 	private:
-		char* getArgString(char _optionLetter) const
+		const char* getArgString(char _optionLetter) const
 		{
 			for (int i=0; i<m_argc; ++i)
 			{
@@ -133,7 +133,7 @@ namespace rtm {
 			return 0;
 		}
 
-		char*	getArgString(const char* _optionName) const
+		const char* getArgString(const char* _optionName) const
 		{
 			const size_t optionLen = strlen(_optionName);
 			for (int i=0; i<m_argc; ++i)

@@ -115,20 +115,12 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	
 #endif // RTM_LIBHANDLER_DEFINE
 
-namespace RTM_LIBHANDLE_NAMESPACE {
-	/// Avoid include <new>
-	struct rmemPlacementNew {};
-	inline void* operator new(size_t, rmemPlacementNew, void* ptr) { return ptr; }
-	inline void operator delete(void*, rmemPlacementNew, void*) {}
-	#define RTM_PLACEMENT_NEW(_PTR)  new(ImPlacementNewDummy(), _PTR)
-}
-
 	template <typename T>
 	T* rtm_new()
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return RTM_LIBHANDLE_NAMESPACE::RTM_PLACEMENT_NEW(mem) T();
+		return new(mem) T();
 	}
 
 	template <typename T, typename Arg1>
@@ -136,7 +128,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return RTM_LIBHANDLE_NAMESPACE::RTM_PLACEMENT_NEW(mem) T(_arg1);
+		return new(mem) T(_arg1);
 	}
 
 	template <typename T, typename Arg1, typename Arg2>
@@ -144,7 +136,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return RTM_LIBHANDLE_NAMESPACE::RTM_PLACEMENT_NEW(mem) T(_arg1, _arg2);
+		return new(mem) T(_arg1, _arg2);
 	}
 
 	template <typename T, typename Arg1, typename Arg2, typename Arg3>
@@ -152,7 +144,7 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	{
 		void* mem = RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return RTM_LIBHANDLE_NAMESPACE::RTM_PLACEMENT_NEW(mem) T(_arg1, _arg2, _arg3);
+		return new(mem) T(_arg1, _arg2, _arg3);
 	}
 
 	template <typename T>
@@ -168,8 +160,8 @@ namespace RTM_LIBHANDLE_NAMESPACE {
 	  typedef T value_type;
 	  rtm_allocator() {}
 	  template <class U> rtm_allocator(const rtm_allocator<U>& other);
-	  T* allocate(std::size_t _n) { return (T*)rtm_malloc(sizeof(T) * _n); }
-	  void deallocate(T* _p, std::size_t /*_n*/) { rtm_free(_p); }
+	  T* allocate(std::size_t _n) { return (T*)RTM_LIBHANDLE_NAMESPACE::rtm_alloc(sizeof(T) * _n); }
+	  void deallocate(T* _p, std::size_t /*_n*/) { RTM_LIBHANDLE_NAMESPACE::rtm_free(_p); }
 	};
 	template <class T, class U>	bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
 	template <class T, class U>	bool operator!=(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }

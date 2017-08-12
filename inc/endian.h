@@ -22,7 +22,7 @@ namespace rtm {
 #if RTM_LITTLE_ENDIAN
 			return _value;
 #else
-			return swap(_value);
+			return Endian::swap(_value);
 #endif
 		}
 
@@ -31,7 +31,7 @@ namespace rtm {
 		inline static T swapBE(T _value)
 		{
 #if RTM_LITTLE_ENDIAN
-			return swap(_value);
+			return Endian::swap(_value);
 #else
 			return _value;
 #endif

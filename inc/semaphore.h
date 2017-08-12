@@ -43,7 +43,7 @@ namespace rtm {
 		return WAIT_OBJECT_0 == WaitForSingleObject(*_sem, ms);
 	}
 
-#elif RTM_PLATFORM_OSX || RTM_PLATFORM_IOS || RTM_PLATFORM_ANDROID
+#elif RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_IOS || RTM_PLATFORM_ANDROID
 
 	struct semaphore_t
 	{

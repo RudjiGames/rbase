@@ -14,7 +14,9 @@
 	#include <immintrin.h>
 #elif RTM_PLATFORM_POSIX
 	#include <pthread.h>
-	#include <sched.h> // sched_yield
+	#include <sched.h>	// sched_yield
+	#include <unistd.h>	// syscall
+	#include <sys/syscall.h>
 #if RTM_PLATFORM_NACL
 	#include <sys/nacl_syscalls.h> // nanosleep
 #else

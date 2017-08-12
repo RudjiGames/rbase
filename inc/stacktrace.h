@@ -102,7 +102,7 @@ namespace rtm {
 		if (_skip >= numTraces)
 			return 0;
 		const uint32_t retTraces = numTraces - _skip;
-		for (uint32_t i=0; i<retTraces; ++i)
+		for (uint32_t i=0; (i<retTraces) && (i<_numFrames); ++i)
 			_traces[i] = trace[i+_skip];
 		return retTraces;
 	}

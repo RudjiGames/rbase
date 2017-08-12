@@ -150,7 +150,7 @@ namespace rtm {
 #if RTM_COMPILER_MSVC
 				ptr = (uint8_t*)_aligned_realloc(_ptr, _newSize, m_alignment);
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-				ptr = memalign(m_alignment, _newSize);
+				ptr = (uint8_t*)memalign(m_alignment, _newSize);
 				memcpy(ptr, _ptr, _oldSize);
 #else
 	#error "Unsupported compiler!"
@@ -174,7 +174,7 @@ namespace rtm {
 #if RTM_COMPILER_MSVC
 				_c.m_data = (uint8_t*)_aligned_malloc(size, m_alignment);
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-				_c.m_data = memalign(m_alignment, size);
+				_c.m_data = (uint8_t*)memalign(m_alignment, size);
 #else
 	#error "Unsupported compiler!"
 #endif
