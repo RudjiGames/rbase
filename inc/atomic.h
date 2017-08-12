@@ -13,37 +13,43 @@
 #endif
 
 #if RTM_PLATFORM_WINDOWS
-	long		_InterlockedIncrement(long volatile*);
-	long		_InterlockedDecrement(long volatile*);
-	long		_InterlockedCompareExchange(long volatile*, long, long);
-	long		_InterlockedExchange(long volatile*, long);
-	long		_InterlockedExchangeAdd(long volatile*, long);
-	long long	_InterlockedCompareExchange64(long long volatile*, long long, long long);
-	long long	_InterlockedIncrement64(long long volatile*);
-	long long	_InterlockedDecrement64(long long volatile*);
-	long long	_InterlockedExchange64(long long volatile*, long long);
-	long long	_InterlockedExchangeAdd64(long long volatile*, long long);
-	void 		_ReadBarrier(void);
-	void 		_WriteBarrier(void);
-	void 		_ReadWriteBarrier(void);
-	void		_mm_mfence(void);
+	#ifdef __cplusplus
+	extern "C" {
+	#endif
+		long		_InterlockedIncrement(long volatile*);
+		long		_InterlockedDecrement(long volatile*);
+		long		_InterlockedCompareExchange(long volatile*, long, long);
+		long		_InterlockedExchange(long volatile*, long);
+		long		_InterlockedExchangeAdd(long volatile*, long);
+		long long	_InterlockedCompareExchange64(long long volatile*, long long, long long);
+		long long	_InterlockedIncrement64(long long volatile*);
+		long long	_InterlockedDecrement64(long long volatile*);
+		long long	_InterlockedExchange64(long long volatile*, long long);
+		long long	_InterlockedExchangeAdd64(long long volatile*, long long);
+		void 		_ReadBarrier(void);
+		void 		_WriteBarrier(void);
+		void 		_ReadWriteBarrier(void);
+		void		_mm_mfence(void);
+	#ifdef __cplusplus
+	} /* extern "C" */
+	#endif
 #if RTM_COMPILER_MSVC
-	#pragma intrinsic (_InterlockedIncrement)
-	#pragma intrinsic (_InterlockedDecrement)
-	#pragma intrinsic (_InterlockedCompareExchange)
-	#pragma intrinsic (_InterlockedExchange)
-	#pragma intrinsic (_InterlockedExchangeAdd)
-	#pragma intrinsic (_InterlockedCompareExchange64)
+		#pragma intrinsic (_InterlockedIncrement)
+		#pragma intrinsic (_InterlockedDecrement)
+		#pragma intrinsic (_InterlockedCompareExchange)
+		#pragma intrinsic (_InterlockedExchange)
+		#pragma intrinsic (_InterlockedExchangeAdd)
+		#pragma intrinsic (_InterlockedCompareExchange64)
 #if RTM_64BIT
-	#pragma intrinsic (_InterlockedIncrement64)
-	#pragma intrinsic (_InterlockedDecrement64)
-	#pragma intrinsic (_InterlockedExchange64)
-	#pragma intrinsic (_InterlockedExchangeAdd64)
+		#pragma intrinsic (_InterlockedIncrement64)
+		#pragma intrinsic (_InterlockedDecrement64)
+		#pragma intrinsic (_InterlockedExchange64)
+		#pragma intrinsic (_InterlockedExchangeAdd64)
 #endif // RTM_64BIT
-	#pragma intrinsic (_ReadBarrier)
-	#pragma intrinsic (_WriteBarrier)
-	#pragma intrinsic (_ReadWriteBarrier)
-	#pragma intrinsic (_mm_mfence)
+		#pragma intrinsic (_ReadBarrier)
+		#pragma intrinsic (_WriteBarrier)
+		#pragma intrinsic (_ReadWriteBarrier)
+		#pragma intrinsic (_mm_mfence)
 #endif // RTM_COMPILER_MSVC
 #endif // RTM_PLATFORM_WINDOWS
 
