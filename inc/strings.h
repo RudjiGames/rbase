@@ -16,6 +16,17 @@ namespace rtm {
 	char toNoop(char _ch);
 	bool isUpper(char _ch);
 	char toLower(char _ch);
+	char toUpper(char _ch);
+
+	inline static void strToUpper(char* _str)
+	{
+		while (*_str) { *_str = toUpper(*_str); ++_str; }
+	}
+
+	inline static void strToLower(char* _str)
+	{
+		while (*_str) { *_str = toLower(*_str); ++_str; }
+	}
 
 	template<CharFn fn>
 	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)

@@ -22,4 +22,9 @@ char toLower(char _ch)
 	return _ch + (isUpper(_ch) ? 0x20 : 0);
 }
 
+char toUpper(char _ch)
+{
+	return toLower(_ch) - 0x20;
+}
+
 } // namespace rtm
