@@ -4,7 +4,7 @@
 //--------------------------------------------------------------------------// 
 
 #include <rbase_pch.h>
-#include <rbase/inc/winpath.h>
+#include <rbase/inc/winchar.h>
 
 #if RTM_PLATFORM_WINDOWS
 
@@ -32,34 +32,6 @@ static inline void replaceSlashes(CHRT* _path, CHRT _slash)
 			*_path = _slash;
 		++_path;
 	}
-}
-
-WinPath::WinPath(const char* _path)
-{
-	m_ptr = &m_string[0];
-	*m_ptr = 0;
-
-	if (!_path)
-		return;
-
-	size_t strLen = strlen(_path) + S_LONG_PATH_LEN + 2; // 2: last slash and null term
-	char* tmpBuff = new char[strLen];
-	char* pathToConvert = makeLongPath(_path, 0, tmpBuff, strLen);
-
-	int size_needed = MultiByteToWideChar(CP_UTF8, 0, pathToConvert, -1, NULL, 0);
-	if (size_needed > S_ON_STACK_SIZE)
-		m_ptr = new  wchar_t[size_needed + 1];
-	else
-		m_ptr = &m_string[0];
-
-	MultiByteToWideChar(CP_UTF8, 0, pathToConvert, -1, m_ptr, size_needed);
-	delete[] tmpBuff;
-}
-
-WinPath::~WinPath()
-{
-	if (m_ptr != &m_string[0])
-		delete[] m_ptr;
 }
 
 static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, size_t _outBuffSize)
@@ -93,6 +65,65 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 		replaceSlashes(_outBuff, '\\');
 		return _outBuff + 4;
 	}
+}
+
+MultiToWide::MultiToWide(const char* _string, bool _path)
+{
+	m_ptr = &m_string[0];
+	*m_ptr = 0;
+
+	if (!_string)
+		return;
+
+	size_t strLen = strlen(_string) + S_LONG_PATH_LEN + 2; // 2: last slash and null term
+	char* tmpBuff = 0;
+
+	const char* pathToConvert = _string;
+	if (_path)
+	{
+		tmpBuff = new char[strLen];
+		pathToConvert = makeLongPath(_string, 0, tmpBuff, strLen);
+	}
+
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, pathToConvert, -1, NULL, 0);
+	if (size_needed > S_ON_STACK_SIZE)
+		m_ptr = new  wchar_t[size_needed + 1];
+	else
+		m_ptr = &m_string[0];
+
+	MultiByteToWideChar(CP_UTF8, 0, pathToConvert, -1, m_ptr, size_needed);
+
+	if (_path)
+		delete[] tmpBuff;
+}
+
+MultiToWide::~MultiToWide()
+{
+	if (m_ptr != &m_string[0])
+		delete[] m_ptr;
+}
+
+WideToMulti::WideToMulti(const wchar_t* _string)
+{
+	m_ptr = &m_string[0];
+	*m_ptr = 0;
+
+	if (!_string)
+		return;
+
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, _string, -1, NULL, 0, NULL, NULL);
+	if (size_needed > S_ON_STACK_SIZE)
+		m_ptr = new char[size_needed + 1];
+	else
+		m_ptr = &m_string[0];
+
+	WideCharToMultiByte(CP_UTF8, 0, _string, -1, m_ptr, size_needed, NULL, NULL);
+}
+
+WideToMulti::~WideToMulti()
+{
+	if (m_ptr != &m_string[0])
+		delete[] m_ptr;
 }
 
 } // namespace rtm
