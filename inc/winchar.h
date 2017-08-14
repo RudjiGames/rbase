@@ -21,6 +21,7 @@ namespace rtm {
 
 		MultiToWide(const char* _string, bool _path = true);
 		~MultiToWide();
+		operator wchar_t* () { return m_ptr; }
 	};
 
 	class WideToMulti
@@ -33,6 +34,7 @@ namespace rtm {
 
 		WideToMulti(const wchar_t* _string);
 		~WideToMulti();
+		operator char* () { return m_ptr; }
 	};
 #endif // RTM_PLATFORM_WINDOWS
 
