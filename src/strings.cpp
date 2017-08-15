@@ -17,6 +17,11 @@ bool isUpper(char _ch)
 	return _ch >= 'A' && _ch <= 'Z';
 }
 
+bool isLower(char _ch)
+{
+	return _ch >= 'a' && _ch <= 'z';
+}
+
 char toLower(char _ch)
 {
 	return _ch + (isUpper(_ch) ? 0x20 : 0);
@@ -24,7 +29,7 @@ char toLower(char _ch)
 
 char toUpper(char _ch)
 {
-	return toLower(_ch) - 0x20;
+	return _ch - (isLower(_ch) ? 0x20 : 0);
 }
 
 } // namespace rtm

@@ -15,6 +15,7 @@ namespace rtm {
 
 	char toNoop(char _ch);
 	bool isUpper(char _ch);
+	bool isLower(char _ch);
 	char toLower(char _ch);
 	char toUpper(char _ch);
 
