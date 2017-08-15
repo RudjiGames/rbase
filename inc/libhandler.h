@@ -68,7 +68,7 @@ namespace RBASE_NAMESPACE {
 		}
 	}
 
-	void* rtm_alloc(size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT)
+	void* rtm_alloc(size_t _size, size_t _alignment)
 	{
 		void* ptr = 0;
 		if (g_allocator)
@@ -79,7 +79,7 @@ namespace RBASE_NAMESPACE {
 		return ptr;
 	}
 
-	void* rtm_realloc(void* _ptr, size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT)
+	void* rtm_realloc(void* _ptr, size_t _size, size_t _alignment)
 	{
 		void* ptr = 0;
 		if (g_allocator)
@@ -116,6 +116,9 @@ namespace RBASE_NAMESPACE {
 } // namespace RBASE_NAMESPACE
 	
 #endif // RTM_LIBHANDLER_DEFINE
+
+#ifndef __RTM_RBASE_LIBHANDLER_MEMORY_H__
+#define __RTM_RBASE_LIBHANDLER_MEMORY_H__
 
 	template <typename T>
 	T* rtm_new()
@@ -248,5 +251,10 @@ namespace RBASE_NAMESPACE {
 				delete[] (uint8_t*)_memory.m_data;
 		}
 	};
+#endif // __RTM_RBASE_LIBHANDLER_MEMORY_H__
 
 #endif // __RTM_RBASE_LIBHANDLER_H__
+
+#ifndef	RTM_LIBHANDLER_DEFINE
+	#undef __RTM_RBASE_LIBHANDLER_H__	// handle PCH
+#endif // RTM_LIBHANDLER_DEFINE
