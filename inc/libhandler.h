@@ -175,6 +175,10 @@ namespace RBASE_NAMESPACE {
 	template <class T, class U>	bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
 	template <class T, class U>	bool operator!=(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
 
+#ifdef RTM_DEFINE_STL_STRING
+	typedef std::basic_string<char, std::char_traits<char>, rtm_allocator<char> >			string_rtm;
+	typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, rtm_allocator<wchar_t> >	wstring_rtm;
+#endif // RTM_DEFINE_STL_STRING
 
 	struct Memory
 	{
