@@ -272,18 +272,18 @@ namespace rtm {
 		virtual void debug(const char* _file, int _line, const char* _message) = 0;
 	};
 
-	struct LibInterface
-	{
-		MemoryManager*	m_memory;
-		ErrorHandler*	m_error;
-
-		LibInterface()
-			: m_memory(0)
-			, m_error(0)
-		{}
-	};
-
 } // namespace rtm
+
+struct rtmLibInterface
+{
+	rtm::MemoryManager*	m_memory;
+	rtm::ErrorHandler*	m_error;
+
+	rtmLibInterface()
+		: m_memory(0)
+		, m_error(0)
+	{}
+};
 
 //--------------------------------------------------------------------------
 /// Utility
