@@ -218,7 +218,7 @@ namespace RBASE_NAMESPACE {
 	
 			void* ptr = 0;
 			if (RBASE_NAMESPACE::g_allocator)
-				ptr = RBASE_NAMESPACE::rtm_alloc(_size, 16);
+				ptr = RBASE_NAMESPACE::rtm_alloc(_size, RTM_DEFAULT_ALIGNMENT);
 			else
 				ptr = new uint8_t[_size];
 			RTM_ASSERT(ptr != 0, "Failed to allocate memory block!");
@@ -231,7 +231,7 @@ namespace RBASE_NAMESPACE {
 			Memory mem;
 			mem.m_size = _size;
 			mem.m_type = Memory::Internal;
-			mem.m_data = RBASE_NAMESPACE::rtm_alloc(_size);
+			mem.m_data = RBASE_NAMESPACE::rtm_alloc(_size, RTM_DEFAULT_ALIGNMENT);
 			memcpy(mem.m_data, _ptr, _size);
 			return mem;
 		}
