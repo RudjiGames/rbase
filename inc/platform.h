@@ -237,6 +237,10 @@
 #define RTM_WARN(_format, ...) for(;;) { break; }
 #endif // RTM_WARN
 
+#ifndef RTM_ERROR
+#define RTM_ERROR(_format, ...) RTM_ASSERT(false, _format, __VA_ARGS__)
+#endif // RTM_ERROR
+
 #ifndef RTM_LOG
 #define RTM_LOG(_format, ...)  for(;;) { break; }
 #endif // RTM_LOG
