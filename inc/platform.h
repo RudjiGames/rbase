@@ -315,4 +315,3 @@ template<typename T, size_t N> char (&RTM_NUM_ELEMENTS_REQUIRES_ARRAY_ARGUMENT(c
 #endif
 
 #endif // __RTM_RBASE_PLATFORM_H__
-

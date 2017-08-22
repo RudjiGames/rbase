@@ -103,6 +103,8 @@ namespace RBASE_NAMESPACE {
 } // namespace RBASE_NAMESPACE
 
 #else // RTM_LIBHANDLER_DEFINE
+	#ifndef RTM_LIBHANDLER_DECLARE
+	#define RTM_LIBHANDLER_DECLARE
 
 namespace RBASE_NAMESPACE {
 
@@ -115,6 +117,7 @@ namespace RBASE_NAMESPACE {
 
 } // namespace RBASE_NAMESPACE
 	
+	#endif // RTM_LIBHANDLER_DECLARE
 #endif // RTM_LIBHANDLER_DEFINE
 
 #ifndef __RTM_RBASE_LIBHANDLER_MEMORY_H__
@@ -153,9 +156,77 @@ namespace RBASE_NAMESPACE {
 	}
 
 	template <typename T>
+	T* rtm_new_array(size_t _numItems)
+	{
+		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numItems);
+		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
+		T* p = (T*)mem;
+		while (_numItems--)
+		{
+			new(p) T();
+			++p;
+		}
+		return (T*)mem;
+	}
+
+	template <typename T, typename Arg1>
+	T* rtm_new_array(size_t _numItems, Arg1 _arg1)
+	{
+		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numItems);
+		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
+		T* p = (T*)mem;
+		while (_numItems--)
+		{
+			new(p) T(_arg1);
+			++p;
+		}
+		return (T*)mem;
+	}
+
+	template <typename T, typename Arg1, typename Arg2>
+	T* rtm_new_array(size_t _numItems, Arg1 _arg1, Arg2 _arg2)
+	{
+		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numItems);
+		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
+		T* p = (T*)mem;
+		while (_numItems--)
+		{
+			new(p) T(_arg1, _arg2);
+			++p;
+		}
+		return (T*)mem;
+	}
+
+	template <typename T, typename Arg1, typename Arg2, typename Arg3>
+	T* rtm_new_array(size_t _numItems, Arg1 _arg1, Arg2 _arg2, Arg3 _arg3)
+	{
+		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numItems);
+		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
+		T* p = (T*)mem;
+		while (_numItems--)
+		{
+			new(p) T(_arg1, _arg2, _arg3);
+			++p;
+		}
+		return (T*)mem;
+	}
+
+	template <typename T>
 	void rtm_delete(T* _ptr)
 	{
 		_ptr->~T();
+		RBASE_NAMESPACE::rtm_free(_ptr);
+	}
+
+	template <typename T>
+	void rtm_delete_array(size_t _numItems, T* _ptr)
+	{
+		T* it = _ptr;
+		while (_numItems--)
+		{
+			it->~T();
+			++it;
+		}
 		RBASE_NAMESPACE::rtm_free(_ptr);
 	}
 
@@ -171,9 +242,23 @@ namespace RBASE_NAMESPACE {
 	};
 
 	template <class T> inline T* rtm_allocator<T>::allocate(size_t _numBlocks) { return (T*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
-	template <class T> inline void rtm_allocator<T>::deallocate(T* _p, size_t) { RBASE_NAMESPACE::rtm_free(_p); }
+	template <class T> inline void rtm_allocator<T>::deallocate(T* p, size_t) { RBASE_NAMESPACE::rtm_free(p); }
 	template <class T, class U>	bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
 	template <class T, class U>	bool operator!=(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
+
+#ifdef RTM_DEFINE_STL_TYPES
+	#ifndef RTM_DEFINE_STL_STRING
+	#define RTM_DEFINE_STL_STRING
+	#endif
+
+	#ifndef RTM_DEFINE_STL_VECTOR
+	#define RTM_DEFINE_STL_VECTOR
+	#endif
+
+	#ifndef RTM_DEFINE_STL_UNORDERED_MAP
+	#define RTM_DEFINE_STL_UNORDERED_MAP
+	#endif
+#endif // RTM_DEFINE_STL_TYPES
 
 #ifdef RTM_DEFINE_STL_STRING
 	#include <string>
@@ -185,6 +270,12 @@ namespace RBASE_NAMESPACE {
 #ifdef RTM_DEFINE_STL_VECTOR
 	#include <vector>
 	template <typename T>	using rtm_vector = std::vector<T, rtm_allocator<T> >;
+#endif // RTM_DEFINE_STL_STRING
+
+#ifdef RTM_DEFINE_STL_UNORDERED_MAP
+	#include <unordered_map>
+	template <class K, class T,	class H = hash<_Kty>, class Keq = equal_to<_Kty> >
+	using rtm_unordered_map = std::unordered_map<K, T, H, Keq, rtm_allocator<T> >;
 #endif // RTM_DEFINE_STL_STRING
 
 	struct Memory
