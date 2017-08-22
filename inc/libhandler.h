@@ -360,3 +360,5 @@ namespace RBASE_NAMESPACE {
 #ifndef	RTM_LIBHANDLER_DEFINE
 	#undef __RTM_RBASE_LIBHANDLER_H__	// handle PCH
 #endif // RTM_LIBHANDLER_DEFINE
+
+#include <rbase/inc/libassert.h>
