@@ -235,16 +235,14 @@ namespace RBASE_NAMESPACE {
 	struct rtm_allocator
 	{
 		typedef T value_type;
-		rtm_allocator() {}
-		template <class U> rtm_allocator(const rtm_allocator<U>&);
-		T* allocate(size_t);
-		void deallocate(T*, size_t);
+		rtm_allocator() = default;
+		template <class U> constexpr rtm_allocator(const rtm_allocator<U>&) {}
+		T* allocate(std::size_t _numBlocks) { return (T*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
+		void deallocate(T* _p, std::size_t) { RBASE_NAMESPACE::rtm_free(_p); }
 	};
-
-	template <class T> inline T* rtm_allocator<T>::allocate(size_t _numBlocks) { return (T*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
-	template <class T> inline void rtm_allocator<T>::deallocate(T* p, size_t) { RBASE_NAMESPACE::rtm_free(p); }
-	template <class T, class U>	bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
+	template <class T, class U>	bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return true; }
 	template <class T, class U>	bool operator!=(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
+	
 
 #ifdef RTM_DEFINE_STL_TYPES
 	#ifndef RTM_DEFINE_STL_STRING
@@ -274,7 +272,7 @@ namespace RBASE_NAMESPACE {
 
 #ifdef RTM_DEFINE_STL_UNORDERED_MAP
 	#include <unordered_map>
-	template <class K, class T,	class H = hash<_Kty>, class Keq = equal_to<_Kty> >
+	template <class K, class T,	class H = std::hash<K>, class Keq = std::equal_to<K> >
 	using rtm_unordered_map = std::unordered_map<K, T, H, Keq, rtm_allocator<T> >;
 #endif // RTM_DEFINE_STL_STRING
 
