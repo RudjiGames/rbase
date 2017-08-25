@@ -73,6 +73,7 @@ namespace rtm {
 		scePthreadMutexattrInit(&mutexAttr);
 		scePthreadMutexattrSettype(&mutexAttr, SCE_PTHREAD_MUTEX_RECURSIVE);
 		scePthreadMutexInit(_mutex, &mutexAttr, 0);
+		scePthreadMutexattrDestroy(mutexAttr);
 	}
 
 	static inline void rtm_mutex_destroy(rtm_mutex* _mutex) {
