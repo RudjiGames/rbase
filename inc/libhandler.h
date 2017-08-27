@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_LIBHANDLER_H__
-#define __RTM_RBASE_LIBHANDLER_H__
+#ifndef RTM_RBASE_LIBHANDLER_H
+#define RTM_RBASE_LIBHANDLER_H
 
 #ifndef RBASE_NAMESPACE
 #error "Must define RBASE_NAMESPACE!"
@@ -353,10 +353,10 @@ namespace RBASE_NAMESPACE {
 	};
 #endif // __RTM_RBASE_LIBHANDLER_MEMORY_H__
 
-#endif // __RTM_RBASE_LIBHANDLER_H__
+#endif // RTM_RBASE_LIBHANDLER_H
 
 #ifndef	RTM_LIBHANDLER_DEFINE
-	#undef __RTM_RBASE_LIBHANDLER_H__	// handle PCH
+	#undef RTM_RBASE_LIBHANDLER_H	// handle PCH
 #endif // RTM_LIBHANDLER_DEFINE
 
 #include <rbase/inc/libassert.h>

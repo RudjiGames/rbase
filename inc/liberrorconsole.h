@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_LIBERRORCONSOLE_H__
-#define __RTM_RBASE_LIBERRORCONSOLE_H__
+#ifndef RTM_RBASE_LIBERRORCONSOLE_H
+#define RTM_RBASE_LIBERRORCONSOLE_H
 
 #include <rbase/inc/console.h>
 
@@ -39,4 +39,4 @@ struct UnitTestLibInterface : public rtm::LibInterface
 
 UnitTestLibInterface g_libInterface;
 
-#endif // __RTM_RBASE_LIBERRORCONSOLE_H__
+#endif // RTM_RBASE_LIBERRORCONSOLE_H

@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_CHUNKALLOCATOR_H__
-#define __RTM_RBASE_CHUNKALLOCATOR_H__
+#ifndef RTM_RBASE_CHUNKALLOCATOR_H
+#define RTM_RBASE_CHUNKALLOCATOR_H
 
 #include <rbase/inc/platform.h>
 #include <rbase/inc/libhandler.h>
@@ -173,4 +173,4 @@ class StackAllocator
 
 } // namespace rtm
 
-#endif // __RTM_RBASE_CHUNKALLOCATOR_H__
+#endif // RTM_RBASE_CHUNKALLOCATOR_H

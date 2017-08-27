@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_PATH_H__
-#define __RTM_RBASE_PATH_H__
+#ifndef RTM_RBASE_PATH_H
+#define RTM_RBASE_PATH_H
 
 #include <rbase/inc/platform.h>
 
@@ -14,5 +14,5 @@ void pathRemoveRelative(char* _path);
 
 } // namespace rtm
 
-#endif // __RTM_RBASE_PATH_H__
+#endif // RTM_RBASE_PATH_H
 

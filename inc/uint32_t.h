@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE
 
-#ifndef __RTM_RBASE_UINT32_H__
-#define __RTM_RBASE_UINT32_H__
+#ifndef RTM_RBASE_UINT32_H
+#define RTM_RBASE_UINT32_H
 
 #include <rbase/inc/platform.h>
 
@@ -443,4 +443,4 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif // __RTM_RBASE_UINT32_H__
+#endif // RTM_RBASE_UINT32_H

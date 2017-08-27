@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_PLATFORM_H__
-#define __RTM_RBASE_PLATFORM_H__
+#ifndef RTM_RBASE_PLATFORM_H
+#define RTM_RBASE_PLATFORM_H
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -314,4 +314,4 @@ template<typename T, size_t N> char (&RTM_NUM_ELEMENTS_REQUIRES_ARRAY_ARGUMENT(c
 #error "Unsupported compiler!"
 #endif
 
-#endif // __RTM_RBASE_PLATFORM_H__
+#endif // RTM_RBASE_PLATFORM_H

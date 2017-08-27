@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_SPARSEPOOL_H__
-#define __RTM_RBASE_SPARSEPOOL_H__
+#ifndef RTM_RBASE_SPARSEPOOL_H
+#define RTM_RBASE_SPARSEPOOL_H
 
 #include <rbase/inc/platform.h>
 #include <malloc.h> // memalign
@@ -208,4 +208,4 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif // __RTM_RBASE_SPARSEPOOL_H__
+#endif // RTM_RBASE_SPARSEPOOL_H

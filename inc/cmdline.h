@@ -5,8 +5,8 @@
 /// Taken from bx library: https://github.com/bkaradzic/bx                 ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_CMDLINE_H__
-#define __RTM_RBASE_CMDLINE_H__
+#ifndef RTM_RBASE_CMDLINE_H
+#define RTM_RBASE_CMDLINE_H
 
 #include <rbase/inc/platform.h>
 #include <string.h>	// strlen
@@ -166,4 +166,4 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif //  __RTM_RBASE_CMDLINE_H__
+#endif //  RTM_RBASE_CMDLINE_H

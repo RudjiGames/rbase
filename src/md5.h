@@ -10,8 +10,8 @@
 /// MD5 Message-Digest Algorithm.<br>                                      ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_MD5_H__
-#define __RTM_RBASE_MD5_H__
+#ifndef RTM_RBASE_MD5_H
+#define RTM_RBASE_MD5_H
 
 namespace rtm {
 
@@ -108,4 +108,4 @@ inline void MD5::II(uint32_t& _a, uint32_t _b, uint32_t _c, uint32_t _d, uint32_
 
 } // namespace rtm
 
-#endif  //  __RTM_RBASE_MD5_H__
+#endif  //  RTM_RBASE_MD5_H

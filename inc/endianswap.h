@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_ENDIAN_H__
-#define __RTM_RBASE_ENDIAN_H__
+#ifndef RTM_RBASE_ENDIAN_H
+#define RTM_RBASE_ENDIAN_H
 
 #include <rbase/inc/platform.h>
 
@@ -83,5 +83,5 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif  // __RTM_RBASE_ENDIAN_H__
+#endif  // RTM_RBASE_ENDIAN_H
 

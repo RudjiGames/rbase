@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_DATA_STORE_H__
-#define __RTM_RBASE_DATA_STORE_H__
+#ifndef RTM_RBASE_DATA_STORE_H
+#define RTM_RBASE_DATA_STORE_H
 
 #include <rbase/inc/platform.h>
 #include <rbase/inc/handlepool.h>
@@ -284,4 +284,4 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif // __RTM_RBASE_DATA_STORE_H__
+#endif // RTM_RBASE_DATA_STORE_H

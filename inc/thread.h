@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef __RTM_RBASE_THREAD_H__
-#define __RTM_RBASE_THREAD_H__
+#ifndef RTM_RBASE_THREAD_H
+#define RTM_RBASE_THREAD_H
 
 #include <rbase/inc/platform.h>
 #include <rbase/inc/semaphore.h>
@@ -201,5 +201,5 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif // __RTM_RBASE_THREAD_H__
+#endif // RTM_RBASE_THREAD_H
 
