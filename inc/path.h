@@ -10,9 +10,12 @@
 
 namespace rtm {
 
-void pathRemoveRelative(char* _path);
+	void pathRemoveRelative(char* _path);
+
+	const char* pathGetFileName(const char* _path);
+
+	const char* pathGetExt(const char* _path);
 
 } // namespace rtm
 
 #endif // RTM_RBASE_PATH_H
-

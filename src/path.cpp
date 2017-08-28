@@ -27,4 +27,25 @@ void pathRemoveRelative(char* _path)
 			_path[i] = '\\';
 }
 
+const char* pathGetFileName(const char* _path)
+{
+	size_t len = strlen(_path);
+	while ((_path[len] != '/') && (_path[len] != '\\') && (len>0)) --len;
+	return &_path[len + 1];
+}
+
+const char* pathGetExt(const char* _path)
+{
+	size_t len = strlen(_path);
+
+	while (--len)
+		if (_path[len] == '.')
+			break;
+
+	if (_path[len++] == '.')
+		return &_path[len];
+
+	return 0;
+}
+
 } // namespace rtm
