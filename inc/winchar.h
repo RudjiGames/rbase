@@ -10,6 +10,13 @@
 
 namespace rtm {
 
+	char *stringDup(const char *const str)
+	{
+		char *ret = new char [strlen(str) + 1]();
+		strcpy(ret, str);
+		return ret;
+	}
+
 #if RTM_PLATFORM_WINDOWS
 	class MultiToWide
 	{
