@@ -111,7 +111,7 @@ namespace rtm {
 		return int32_t(ptr - _str);
 	}
 
-	inline static int32_t strlncpy(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num)
+	inline static int32_t strlncpy(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num = -1)
 	{
 		RTM_ASSERT(NULL != _dst, "_dst can't be NULL!");
 		RTM_ASSERT(NULL != _src, "_src can't be NULL!");
@@ -124,6 +124,14 @@ namespace rtm {
 		_dst[num] = '\0';
 
 		return num;
+	}
+
+	inline static int32_t strlncat(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num = -1)
+	{
+		int32_t len = strnlen(_dst, _num);
+		_dstSize -= len;
+		_dst += len;
+		return strlncpy(_dst, _dstSize, _src, _num);
 	}
 
 	inline static const char* strnstr(const char* _str, const char* _find, uint32_t _max = -1)

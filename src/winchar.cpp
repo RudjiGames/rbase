@@ -4,6 +4,7 @@
 //--------------------------------------------------------------------------// 
 
 #include <rbase_pch.h>
+#include <rbase/inc/strings.h>
 #include <rbase/inc/winchar.h>
 
 #if RTM_PLATFORM_WINDOWS
@@ -36,23 +37,25 @@ static inline void replaceSlashes(CHRT* _path, CHRT _slash)
 
 static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, size_t _outBuffSize)
 {
+	const int32_t outBuffSize = (int32_t)_outBuffSize;
+
 	const char* longPathPrefix = "\\\\?\\";
-	strcpy_s(_outBuff, _outBuffSize, longPathPrefix);
+	strlncpy(_outBuff, outBuffSize, longPathPrefix);
 
 	if (_path)
 	{
 		if ((_path[0] == L'\\') && (_path[1] == L'\\'))
 		{
 			// UNC path - 
-			strcat_s(_outBuff, _outBuffSize, "UNC\\");
-			strcat_s(_outBuff, _outBuffSize, _path + 1);
+			strlncat(_outBuff, outBuffSize, "UNC\\");
+			strlncat(_outBuff, outBuffSize, _path + 1);
 		}
 		else
-			strcat_s(_outBuff, _outBuffSize, _path);
+			strlncat(_outBuff, outBuffSize, _path);
 	}
 
 	if (_name)
-		strcat_s(_outBuff, _outBuffSize, _name);
+		strlncat(_outBuff, outBuffSize, _name);
 
 	size_t pathLength = strlen(_outBuff);
 	if (pathLength - 4 > MAX_PATH)
