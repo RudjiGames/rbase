@@ -235,8 +235,8 @@ namespace RBASE_NAMESPACE {
 	struct rtm_allocator
 	{
 		using value_type = T;
-		rtm_allocator() noexcept {}
-		template <class U> rtm_allocator(const rtm_allocator<U>&) noexcept {}
+		rtm_allocator() {}
+		template <class U> rtm_allocator(const rtm_allocator<U>&) {}
 		template <typename U> struct rebind { typedef rtm_allocator<U> other; };
 		value_type* allocate(size_t _numBlocks) { return (value_type*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
 		void deallocate(value_type* _p, size_t) { RBASE_NAMESPACE::rtm_free(_p); }
