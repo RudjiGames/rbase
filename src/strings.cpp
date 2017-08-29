@@ -32,4 +32,13 @@ char toUpper(char _ch)
 	return _ch - (isLower(_ch) ? 0x20 : 0);
 }
 
+char *strdup(const char* _str)
+{
+	size_t len = strlen(_str);
+	char* ret = new char[len + 1];
+	strcpy(ret, _str);
+	return ret;
+}
+
 } // namespace rtm
+

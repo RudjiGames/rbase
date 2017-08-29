@@ -144,6 +144,8 @@ namespace rtm {
 		return strStr<toLower>(_str, _max, _find, INT32_MAX);
 	}
 
+	char *strdup(const char* _str);
+
 } // namespace rtm
 
 #endif // RTM_RBASE_STRING_H
