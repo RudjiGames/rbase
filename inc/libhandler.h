@@ -235,11 +235,15 @@ namespace RBASE_NAMESPACE {
 	struct rtm_allocator
 	{
 		typedef T value_type;
+		typedef T& reference;
+		typedef const T& const_reference;
+		typedef T* pointer;
+		typedef const T* const_pointer;
 		rtm_allocator() = default;
 		template <class U> constexpr rtm_allocator(const rtm_allocator<U>&) {}
 		T* allocate(size_t _numBlocks) { return (T*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
 		void deallocate(T* _p, size_t) { RBASE_NAMESPACE::rtm_free(_p); }
-		template <typename U> using rebind = rtm_allocator<U>; 
+		template <class U> struct rebind { typedef rtm_allocator<U> other; };
 	};
 	template <class T, class U>	bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return true; }
 	template <class T, class U>	bool operator!=(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
