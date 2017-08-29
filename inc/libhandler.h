@@ -236,7 +236,7 @@ namespace RBASE_NAMESPACE {
 	{
 		using reference			= T&;
 		using const_reference	= const T&;
-		using difference_type	= uintptr_t;
+		using difference_type	= intptr_t;
 	};
 
 	template<> struct rtm_pointer_traits<void>	{};
