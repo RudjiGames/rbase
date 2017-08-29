@@ -238,7 +238,7 @@
 #endif // RTM_WARN
 
 #ifndef RTM_ERROR
-#define RTM_ERROR(_format, ...) RTM_ASSERT(false, _format, __VA_ARGS__)
+#define RTM_ERROR(_format, ...) RTM_ASSERT(false, _format, ##__VA_ARGS__)
 #endif // RTM_ERROR
 
 #ifndef RTM_LOG
