@@ -41,4 +41,3 @@ char *strdup(const char* _str)
 }
 
 } // namespace rtm
-
