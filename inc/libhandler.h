@@ -231,18 +231,36 @@ namespace RBASE_NAMESPACE {
 	}
 
 	// STL allocator
-	template <class T>
-	struct rtm_allocator
+	template<typename T>
+	struct rtm_pointer_traits
 	{
-		using value_type = T;
-		rtm_allocator() {}
-		template <class U> rtm_allocator(const rtm_allocator<U>&) {}
-		template <typename U> struct rebind { typedef rtm_allocator<U> other; };
-		value_type* allocate(size_t _numBlocks) { return (value_type*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
-		void deallocate(value_type* _p, size_t) { RBASE_NAMESPACE::rtm_free(_p); }
+		using reference			= T&;
+		using const_reference	= const T&;
+		using difference_type	= uintptr_t;
 	};
-	template <class T, class U>	bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return true; }
-	template <class T, class U>	bool operator!=(const rtm_allocator<T>& _a1, const rtm_allocator<U>& _a2) { return !(_a1 == _a2); }
+
+	template<> struct rtm_pointer_traits<void>	{};
+
+	template<typename T = void>
+	struct rtm_allocator : public rtm_pointer_traits<T>
+	{
+		using value_type		= T;
+		using size_type			= size_t;
+		using pointer			= T*;
+		using const_pointer		= const T*;
+		using difference_type	= typename rtm_pointer_traits<pointer>::difference_type;
+
+		rtm_allocator() = default;
+		~rtm_allocator() = default;
+		template<typename U> rtm_allocator(const rtm_allocator<U> &) {}
+		template<typename U> struct rebind { typedef rtm_allocator<U> other; };
+
+		T * allocate(size_t _numBlocks, const void* = 0) { return (value_type*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
+		void deallocate(T* _ptr, size_t) { RBASE_NAMESPACE::rtm_free(_ptr); }
+	};
+
+	template <class T, class U>	constexpr bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return true; }
+	template <class T, class U>	constexpr bool operator!=(const rtm_allocator<T>& _a1, const rtm_allocator<U>& _a2) { return !(_a1 == _a2); }
 
 #ifdef RTM_DEFINE_STL_TYPES
 	#ifndef RTM_DEFINE_STL_STRING
