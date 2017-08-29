@@ -234,20 +234,15 @@ namespace RBASE_NAMESPACE {
 	template <class T>
 	struct rtm_allocator
 	{
-		typedef T value_type;
-		typedef T& reference;
-		typedef const T& const_reference;
-		typedef T* pointer;
-		typedef const T* const_pointer;
-		rtm_allocator() = default;
-		template <class U> constexpr rtm_allocator(const rtm_allocator<U>&) {}
-		T* allocate(size_t _numBlocks) { return (T*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
-		void deallocate(T* _p, size_t) { RBASE_NAMESPACE::rtm_free(_p); }
-		template <class U> struct rebind { typedef rtm_allocator<U> other; };
+		using value_type = T;
+		rtm_allocator() noexcept {}
+		template <class U> rtm_allocator(const rtm_allocator<U>&) noexcept {}
+		template <typename U> struct rebind { typedef rtm_allocator<U> other; };
+		value_type* allocate(size_t _numBlocks) { return (value_type*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
+		void deallocate(value_type* _p, size_t) { RBASE_NAMESPACE::rtm_free(_p); }
 	};
 	template <class T, class U>	bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return true; }
-	template <class T, class U>	bool operator!=(const rtm_allocator<T>&, const rtm_allocator<U>&) { return false; }
-	
+	template <class T, class U>	bool operator!=(const rtm_allocator<T>& _a1, const rtm_allocator<U>& _a2) { return !(_a1 == _a2); }
 
 #ifdef RTM_DEFINE_STL_TYPES
 	#ifndef RTM_DEFINE_STL_STRING
