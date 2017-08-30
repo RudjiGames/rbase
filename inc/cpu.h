@@ -8,12 +8,16 @@
 
 #include <rbase/inc/platform.h>
 
-#if RTM_PLATFORM_WINDOWS && defined(_MSC_VER)  && (_MSC_VER >= 1400)
+#if RTM_PLATFORM_WINDOWS
 	#define WIN32_LEAN_AND_MEAN
+	#ifndef NOMINMAX
 	#define NOMINMAX
+	#endif // NOMINMAX
 	#include <windows.h>
 	unsigned __int64 __rdtsc(void);
-	#pragma intrinsic(__rdtsc)
+	#if RTM_COMPILER_MSVC
+		#pragma intrinsic(__rdtsc)
+	#endif // RTM_COMPILER_MSVC
 #elif RTM_PLATFORM_PS3
 	#include <sys/sys_time.h>
 #elif RTM_PLATFORM_ANDROID
