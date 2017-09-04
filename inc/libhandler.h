@@ -231,6 +231,8 @@ namespace RBASE_NAMESPACE {
 	}
 
 	// STL allocator
+	#include <utility> // std::forward
+
 	template<typename T>
 	struct rtm_pointer_traits
 	{
@@ -259,7 +261,7 @@ namespace RBASE_NAMESPACE {
 		T * allocate(size_t _numBlocks, const void* = 0) { return (value_type*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
 		void deallocate(T* _ptr, size_t) { RBASE_NAMESPACE::rtm_free(_ptr); }
 
-		template <class T, class... Args>
+		template <class... Args>
 		void construct(T* _ptr, Args&&... args) { ::new((void*)_ptr) T(std::forward<Args>(args)...); }
 		void destroy(T* _ptr)                    { _ptr->~T(); }
 	};
