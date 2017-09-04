@@ -231,7 +231,9 @@ namespace RBASE_NAMESPACE {
 	}
 
 	// STL allocator
+#if !RTM_COMPILER_MSVC
 	#include <utility> // std::forward
+#endif // !RTM_COMPILER_MSVC
 
 	template<typename T>
 	struct rtm_pointer_traits
@@ -260,10 +262,11 @@ namespace RBASE_NAMESPACE {
 		size_type max_size() const { return (size_type)INT32_MAX; }
 		T * allocate(size_t _numBlocks, const void* = 0) { return (value_type*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
 		void deallocate(T* _ptr, size_t) { RBASE_NAMESPACE::rtm_free(_ptr); }
-
+#if !RTM_COMPILER_MSVC
 		template <class... Args>
 		void construct(T* _ptr, Args&&... args) { ::new((void*)_ptr) T(std::forward<Args>(args)...); }
 		void destroy(T* _ptr)                    { _ptr->~T(); }
+#endif // !RTM_COMPILER_MSVC
 	};
 
 	template <class T, class U>	constexpr bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return true; }
