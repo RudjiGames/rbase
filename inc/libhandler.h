@@ -255,6 +255,7 @@ namespace RBASE_NAMESPACE {
 		template<typename U> rtm_allocator(const rtm_allocator<U> &) {}
 		template<typename U> struct rebind { typedef rtm_allocator<U> other; };
 
+		size_type max_size() const { return (size_type)INT32_MAX; }
 		T * allocate(size_t _numBlocks, const void* = 0) { return (value_type*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
 		void deallocate(T* _ptr, size_t) { RBASE_NAMESPACE::rtm_free(_ptr); }
 	};
