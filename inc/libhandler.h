@@ -258,7 +258,9 @@ namespace RBASE_NAMESPACE {
 		size_type max_size() const { return (size_type)INT32_MAX; }
 		T * allocate(size_t _numBlocks, const void* = 0) { return (value_type*)RBASE_NAMESPACE::rtm_alloc(sizeof(T) * _numBlocks); }
 		void deallocate(T* _ptr, size_t) { RBASE_NAMESPACE::rtm_free(_ptr); }
-		void construct(T* _ptr, const T& _val)    { new(_ptr) T(_val); }
+
+		template <class T, class... Args>
+		void construct(T* _ptr, Args&&... args) { ::new((void*)_ptr) T(std::forward<Args>(args)...); }
 		void destroy(T* _ptr)                    { _ptr->~T(); }
 	};
 
