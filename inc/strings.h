@@ -30,7 +30,7 @@ namespace rtm {
 	}
 
 	template<CharFn fn>
-	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
+	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1)
 	{
 		for (
 			; 0 < _max && fn(*_lhs) == fn(*_rhs)
@@ -48,7 +48,7 @@ namespace rtm {
 	}
 
 	template<CharFn fn>
-	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax)
+	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax = -1)
 	{
 		const char* ptr = _str;
 
@@ -89,17 +89,17 @@ namespace rtm {
 	}
 
 
-	inline static int32_t strncmp(const char* _lhs, const char* _rhs, uint32_t _max)
+	inline static int32_t strncmp(const char* _lhs, const char* _rhs, uint32_t _max = -1)
 	{
 		return strCmp<toNoop>(_lhs, _rhs, _max);
 	}
 
-	inline static int32_t strincmp(const char* _lhs, const char* _rhs, uint32_t _max)
+	inline static int32_t strincmp(const char* _lhs, const char* _rhs, uint32_t _max = -1)
 	{
 		return strCmp<toLower>(_lhs, _rhs, _max);
 	}
 
-	inline static int32_t strnlen(const char* _str, uint32_t _max)
+	inline static int32_t strnlen(const char* _str, uint32_t _max = -1)
 	{
 		if (NULL == _str)
 		{

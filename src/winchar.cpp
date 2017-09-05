@@ -109,7 +109,7 @@ MultiToWide::~MultiToWide()
 WideToMulti::WideToMulti(const wchar_t* _string)
 {
 	m_ptr = &m_string[0];
-	*m_ptr = 0;
+	m_string[0] = 0;
 
 	if (!_string)
 		return;
