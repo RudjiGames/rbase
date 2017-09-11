@@ -19,6 +19,22 @@
 
 #define RTM_DEFAULT_ALIGNMENT 8
 
+#ifndef RTM_LIBHANDLER_DECLARE
+#define RTM_LIBHANDLER_DECLARE
+
+namespace RBASE_NAMESPACE {
+
+	extern rtm::MemoryManager*	g_allocator;
+	extern rtm::ErrorHandler*	g_errorHandler;
+
+	extern void* rtm_alloc(size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT);
+	extern void* rtm_realloc(void* _ptr, size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT);
+	extern void  rtm_free(void* _ptr);
+
+} // namespace RBASE_NAMESPACE
+
+#endif // RTM_LIBHANDLER_DECLARE
+
 #ifdef RTM_LIBHANDLER_DEFINE
 
 namespace RBASE_NAMESPACE {
@@ -102,26 +118,12 @@ namespace RBASE_NAMESPACE {
 
 } // namespace RBASE_NAMESPACE
 
-#else // RTM_LIBHANDLER_DEFINE
-	#ifndef RTM_LIBHANDLER_DECLARE
-	#define RTM_LIBHANDLER_DECLARE
-
-namespace RBASE_NAMESPACE {
-
-	extern rtm::MemoryManager*	g_allocator;
-	extern rtm::ErrorHandler*	g_errorHandler;
-
-	extern void* rtm_alloc(size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT);
-	extern void* rtm_realloc(void* _ptr, size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT);
-	extern void  rtm_free(void* _ptr);
-
-} // namespace RBASE_NAMESPACE
-	
-	#endif // RTM_LIBHANDLER_DECLARE
 #endif // RTM_LIBHANDLER_DEFINE
 
 #ifndef __RTM_RBASE_LIBHANDLER_MEMORY_H__
 #define __RTM_RBASE_LIBHANDLER_MEMORY_H__
+
+	#include <new> // placement new
 
 	template <typename T>
 	T* rtm_new()

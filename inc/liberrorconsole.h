@@ -26,7 +26,7 @@ struct ConsoleErrorHandler : public rtm::ErrorHandler
 	}
 };
 
-struct UnitTestLibInterface : public rtm::LibInterface
+struct UnitTestLibInterface : public rtmLibInterface
 {
 	ConsoleErrorHandler m_eh;
 
