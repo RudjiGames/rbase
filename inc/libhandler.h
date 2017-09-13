@@ -120,8 +120,8 @@ namespace RBASE_NAMESPACE {
 
 #endif // RTM_LIBHANDLER_DEFINE
 
-#ifndef __RTM_RBASE_LIBHANDLER_MEMORY_H__
-#define __RTM_RBASE_LIBHANDLER_MEMORY_H__
+#ifndef RTM_RBASE_LIBHANDLER_MEMORY_H
+#define RTM_RBASE_LIBHANDLER_MEMORY_H
 
 	#include <new> // placement new
 
@@ -381,7 +381,7 @@ namespace RBASE_NAMESPACE {
 				delete[] (uint8_t*)_memory.m_data;
 		}
 	};
-#endif // __RTM_RBASE_LIBHANDLER_MEMORY_H__
+#endif // RTM_RBASE_LIBHANDLER_MEMORY_H
 
 #endif // RTM_RBASE_LIBHANDLER_H
 
