@@ -314,4 +314,10 @@ template<typename T, size_t N> char (&RTM_NUM_ELEMENTS_REQUIRES_ARRAY_ARGUMENT(c
 #error "Unsupported compiler!"
 #endif
 
+#if RTM_COMPILER_MSVC
+#define RTM_NO_VTABLE __declspec(novtable)
+#else
+#define RTM_NO_VTABLE
+#endif
+
 #endif // RTM_RBASE_PLATFORM_H
