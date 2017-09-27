@@ -13,16 +13,14 @@
 /// Platforms
 //--------------------------------------------------------------------------
 #define RTM_PLATFORM_WINDOWS	0
-#define RTM_PLATFORM_WINPHONE	0
-#define RTM_PLATFORM_WINSTORE	0
 #define RTM_PLATFORM_LINUX		0
 #define RTM_PLATFORM_IOS		0
 #define RTM_PLATFORM_OSX		0
 #define RTM_PLATFORM_PS3		0
 #define RTM_PLATFORM_PS4		0
-#define RTM_PLATFORM_XB1		0
 #define RTM_PLATFORM_ANDROID	0
-#define RTM_PLATFORM_NACL		0
+#define RTM_PLATFORM_XBOX360	0
+#define RTM_PLATFORM_XBOXONE	0
 
 //--------------------------------------------------------------------------
 /// Compilers
@@ -101,7 +99,13 @@
 //--------------------------------------------------------------------------
 /// Detect platform
 //--------------------------------------------------------------------------
-#if defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
+#if defined(_XBOX_VER)
+#undef  RTM_PLATFORM_XBOX360
+#define RTM_PLATFORM_XBOX360	1
+#elif defined(_DURANGO) || defined(_XBOX_ONE)
+#undef  RTM_PLATFORM_XBOXONE
+#define RTM_PLATFORM_XBOXONE	1
+#elif defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
 #undef RTM_PLATFORM_WINDOWS
 #define RTM_PLATFORM_WINDOWS	1
 #elif defined(__ANDROID__)

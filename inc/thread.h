@@ -9,7 +9,7 @@
 #include <rbase/inc/platform.h>
 #include <rbase/inc/semaphore.h>
 
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 	// <windows.h> included in <semaphore.h>
 	#include <immintrin.h>
 #elif RTM_PLATFORM_POSIX
@@ -42,7 +42,7 @@ namespace rtm {
 		bool		m_entryDone;
 		int32_t		m_exitCode;
 		Semaphore	m_semaphore;
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 		HANDLE		m_handle;
 #elif RTM_PLATFORM_POSIX
 		pthread_t	m_handle;
@@ -71,7 +71,7 @@ namespace rtm {
 			m_entry		= _entry;
 			m_userData	= _userData;
 
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 			m_handle = CreateThread(NULL, _stackSize, threadEntry, this, 0, NULL);
 #elif RTM_PLATFORM_POSIX
 			int result;
@@ -99,7 +99,7 @@ namespace rtm {
 		void stop()
 		{
 			RTM_ASSERT(m_started, "Thread was not started!");
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 			WaitForSingleObject(m_handle, INFINITE);
 			GetExitCodeThread(m_handle, (DWORD*)&m_exitCode);
 			CloseHandle(m_handle);
@@ -138,7 +138,7 @@ namespace rtm {
 			return ret;
 		}
 
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 		static DWORD WINAPI threadEntry(LPVOID _this)
 		{
 			Thread* thread = (Thread*)_this;
@@ -159,7 +159,7 @@ namespace rtm {
 
 		static inline uint64_t getThreadID()
 		{
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 			return (uint64_t)GetCurrentThreadId();
 #elif RTM_PLATFORM_LINUX
 			return (uint64_t)syscall(SYS_gettid);
@@ -178,7 +178,7 @@ namespace rtm {
 
 		static inline void sleep(uint32_t _ms)
 		{
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 			Sleep(_ms);
 #else
 			timespec req = {(time_t)_ms/1000, (long)((_ms%1000)*1000000)};
@@ -189,7 +189,7 @@ namespace rtm {
 
 		static inline void yield()
 		{
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 			::SwitchToThread();
 #elif RTM_PLATFORM_NACL || RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX
 			::sched_yield();

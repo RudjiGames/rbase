@@ -8,8 +8,7 @@
 
 #include <rbase/inc/platform.h>
 
-#if RTM_PLATFORM_WINDOWS
-	#define WIN32_LEAN_AND_MEAN
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 	#include <windows.h>
 #endif // RTM_PLATFORM_WINDOWS
 
@@ -19,7 +18,7 @@
 
 namespace rtm {
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XB1
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 	typedef CRITICAL_SECTION rtm_mutex;
 
 	static inline void rtm_mutex_init(rtm_mutex* _mutex) {

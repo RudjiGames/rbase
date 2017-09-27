@@ -8,9 +8,9 @@
 
 #include <rbase/inc/platform.h>
 
-#if RTM_PLATFORM_WINDOWS
-	#define WIN32_LEAN_AND_MEAN
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 	#include <windows.h>
+	#include <winbase.h>
 #elif RTM_PLATFORM_POSIX
 	#include <errno.h>
 	#include <semaphore.h>
@@ -22,11 +22,11 @@
 
 namespace rtm {
 
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 	typedef HANDLE semaphore_t;
 
 	static inline bool semaphore_init(semaphore_t* _sem) {
-		*_sem = CreateSemaphore(NULL, 0, 0x7fffffff, NULL);
+		*_sem = CreateSemaphoreExW(NULL, 0, 0x7fffffff, NULL, 0, SEMAPHORE_MODIFY_STATE);
 		return *_sem != 0;
 	}
 
