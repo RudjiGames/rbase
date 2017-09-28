@@ -79,7 +79,90 @@ namespace rtm {
 		}
 	};
 
+	struct Timer
+	{
+		uint64_t	m_timeStarted;
+		uint64_t	m_timePaused;
+		bool		m_started;
+		bool		m_paused;
+
+		Timer(bool _start = false)
+		{
+			m_timeStarted	= 0;
+			m_timePaused	= 0;
+			m_paused		= false;
+			m_started		= false;
+
+			if (_start)
+				start();
+		}
+
+		bool isStarted() const { return m_started; }
+		bool isStopped() const { return !m_started; }
+		bool isPaused()  const { return m_paused; }
+		bool isActive()  const { return !m_paused & m_started; }
+
+		void pause()
+		{
+			RTM_ASSERT(!m_paused, "");
+			RTM_ASSERT(m_started, "");
+
+			if (m_paused || !m_started)
+				return;
+
+			m_paused		= true;
+			m_timePaused	= CPU::clock();
+		}
+
+		void resume()
+		{
+			RTM_ASSERT(m_paused, "");
+			RTM_ASSERT(m_started, "");
+
+			if (!m_paused)
+				return;
+
+			m_paused		= false;
+			m_timeStarted	= m_timeStarted + CPU::clock() - m_timePaused;
+		}
+
+		void stop()
+		{
+			RTM_ASSERT(m_started, "");
+			m_started		= false;
+		}
+
+		void start()
+		{
+			RTM_ASSERT(!m_started, "");
+			if (m_started)
+				return;
+
+			m_timeStarted	= CPU::clock();
+			m_started		= true;
+			m_paused		= false;
+		}
+
+		void reset()
+		{
+			RTM_ASSERT(m_started, "");
+			m_timeStarted	= CPU::clock();
+			m_timePaused	= 0;
+			m_paused		= false;
+		}
+
+		float elapsed()
+		{
+			if (!m_started)
+				return 0;
+
+			if (m_paused)
+				return CPU::time(m_timePaused - m_timeStarted, rtm::CPU::frequency());
+
+			return CPU::time(m_timeStarted);
+		}
+	};
+
 } // namespace rtm
 
 #endif // RTM_RBASE_CPU_H
-
