@@ -26,7 +26,11 @@ namespace rtm {
 	typedef HANDLE semaphore_t;
 
 	static inline bool semaphore_init(semaphore_t* _sem) {
-		*_sem = CreateSemaphoreExW(NULL, 0, 0x7fffffff, NULL, 0, SEMAPHORE_MODIFY_STATE);
+#if RTM_PLATFORM_XBOXONE
+		*_sem = CreateSemaphoreExW(NULL, 0, 0x7fffffff, NULL, 0, SEMAPHORE_ALL_ACCESS);
+#else
+		*_sem = CreateSemaphore(NULL, 0, 0x7fffffff, NULL);
+#endif
 		return *_sem != 0;
 	}
 
