@@ -5,4 +5,6 @@
 
 #include <rbase_pch.h>
 
-int g_warning_kill_rbase_pch;
+#define RBASE_NAMESPACE rtm
+#define RTM_LIBHANDLER_DEFINE
+#include <rbase/inc/libhandler.h>

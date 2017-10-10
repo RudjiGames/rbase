@@ -64,9 +64,7 @@ int32_t CommandBuffer::consumerThread(void* _userData)
 	while (cc->m_runThread)
 	{
 		cc->m_semProduce.wait();
-
 		cc->m_consumerFunc(cc);
-
 		cc->m_semConsume.post();
 	}
 	return 0;
