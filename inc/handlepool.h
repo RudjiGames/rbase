@@ -42,6 +42,12 @@ namespace rtm {
 		{
 			return (m_gen << IDX_BITS) | m_idx;
 		}
+
+		static uint32_t getIndex(uint32_t _handle)
+		{
+			Handle h(_handle);
+			return h.index();
+		}
 	};
 
 	template <uint32_t MAX_ELEMENTS>

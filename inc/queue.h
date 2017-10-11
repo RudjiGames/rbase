@@ -40,8 +40,7 @@ private:
 	cacheline_pad_t         m_pad3;
 	size_t					m_bufferSize;
 
-	MpMcQueue(MpMcQueue const&);
-	void operator = (MpMcQueue const&);
+	RTM_CLASS_NO_COPY(MpMcQueue);
 
 public:
 	MpMcQueue(size_t _bufferSize)
