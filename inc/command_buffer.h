@@ -8,6 +8,7 @@
 
 #include <rbase/inc/thread.h>
 #include <rbase/inc/semaphore.h>
+#include <string.h> // memcpy
 
 namespace rtm {
 
