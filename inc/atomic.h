@@ -8,11 +8,15 @@
 
 #include <rbase/inc/platform.h>
 
-#if RTM_PLATFORM_NACL || RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX
+#if RTM_PLATFORM_XBOXONE
+#include <intrin.h>
+#endif
+
+#if RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX
 #include <sched.h> // sched_yield 
 #endif
 
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 	#ifdef __cplusplus
 	extern "C" {
 	#endif
@@ -90,7 +94,7 @@ namespace rtm {
 
 	static inline void memoryBarrier()
 	{
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 		_mm_mfence();
 #elif RTM_PLATFORM_PS3
 		__lwsync();

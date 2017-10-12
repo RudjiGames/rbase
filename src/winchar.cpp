@@ -4,7 +4,7 @@
 //--------------------------------------------------------------------------// 
 
 #include <rbase_pch.h>
-#include <rbase/inc/strings.h>
+#include <rbase/inc/stringfn.h>
 #include <rbase/inc/winchar.h>
 
 #if RTM_PLATFORM_WINDOWS

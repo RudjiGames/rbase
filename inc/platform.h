@@ -127,10 +127,11 @@
 #error "Platform not supported!"
 #endif
 
-#define RTM_PLATFORM_POSIX (RTM_PLATFORM_LINUX		||	\
-							RTM_PLATFORM_OSX		||	\
-							RTM_PLATFORM_ANDROID	||	\
-							RTM_PLATFORM_IOS		||	\
+#define RTM_PLATFORM_POSIX (RTM_PLATFORM_LINUX		|| \
+							RTM_PLATFORM_OSX		|| \
+							RTM_PLATFORM_ANDROID	|| \
+							RTM_PLATFORM_IOS		|| \
+							RTM_PLATFORM_PS4		|| \
 							0)
 
 //--------------------------------------------------------------------------
@@ -223,7 +224,7 @@
 #define RTM_BREAK	__debugbreak()
 #elif RTM_CPU_ARM
 #define RTM_BREAK	asm("bkpt 0")
-#elif !RTM_PLATFORM_NACL && RTM_CPU_X86 && (RTM_COMPILER_GCC || RTM_COMPILER_CLANG)
+#elif RTM_CPU_X86 && (RTM_COMPILER_GCC || RTM_COMPILER_CLANG)
 #define RTM_BREAK	__asm__ ("int $3")
 #else
 #define RTM_BREAK	{ int* int3 = (int*)3L; *int3 = 3; }

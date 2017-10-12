@@ -16,6 +16,7 @@
 	#include <semaphore.h>
 	#include <time.h>
 	#include <pthread.h>
+//sceKernelXxxSema
 #else
 	#error "Unsupported platform/compiler!"
 #endif
@@ -47,7 +48,7 @@ namespace rtm {
 		return WAIT_OBJECT_0 == WaitForSingleObject(*_sem, ms);
 	}
 
-#elif RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_IOS || RTM_PLATFORM_ANDROID
+#elif RTM_PLATFORM_POSIX
 
 	struct semaphore_t
 	{
@@ -138,10 +139,6 @@ namespace rtm {
 	
 	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms = -1) {
 	{
-	#if RTM_PLATFORM_NACL
-		//RTM_ASSERT(-1 == _msecs, "NaCl doesn't support semaphore_timedwait at this moment.");
-		return 0 == sem_wait(_sem);
-	#else
 		if (0 > _ms)
 			return (0 == sem_wait(_sem));
 	
@@ -150,7 +147,6 @@ namespace rtm {
 		ts.tv_sec += _ms/1000;
 		ts.tv_nsec += (_ms % 1000)*1000;
 		return 0 == semaphore_timedwait(_sem, &ts);
-	#endif
 	}
 
 #endif

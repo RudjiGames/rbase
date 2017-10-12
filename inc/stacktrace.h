@@ -18,7 +18,7 @@
 
 namespace rtm {
 
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 
 #if RTM_COMPILER_MSVC
 	static inline uint32_t getStackTrace(void* _traces[], uint32_t _numFrames, uint32_t _skip)
@@ -47,7 +47,7 @@ namespace rtm {
 		}
 		while (ptr && num < _numFrames)
 		{
-			_traces[num++] = (uintptr_t)(*(ptr + 1));
+			_traces[num++] = (*(ptr + 1));
 			ptr = (void**)(*ptr);
 		}
 		return num;

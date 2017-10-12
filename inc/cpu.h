@@ -8,8 +8,10 @@
 
 #include <rbase/inc/platform.h>
 
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+	#ifndef WIN32_LEAN_AND_MEAN
 	#define WIN32_LEAN_AND_MEAN
+	#endif // WIN32_LEAN_AND_MEAN
 	#ifndef NOMINMAX
 	#define NOMINMAX
 	#endif // NOMINMAX
@@ -58,6 +60,8 @@ namespace rtm {
 			return li.QuadPart;
 #elif RTM_PLATFORM_ANDROID
 			return CLOCKS_PER_SEC;
+#elif RTM_PLATFORM_PS4
+			return sceKernelGetTscFrequency();
 #else
 			return 1000000;
 #endif

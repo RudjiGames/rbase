@@ -10,10 +10,7 @@
 
 namespace rtm {
 
-//--------------------------------------------------------------------------
-/// Windows
-//--------------------------------------------------------------------------
-#if RTM_PLATFORM_WINDOWS
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 
 	#define WINDOWS_LEAN_AND_MEAN
 	#include <windows.h>
@@ -38,9 +35,30 @@ namespace rtm {
 		TlsFree(_handle);
 	}
 
-//--------------------------------------------------------------------------
-/// POSIX
-//--------------------------------------------------------------------------
+#elif RTM_PLATFORM_PS4
+
+	static inline uint32_t tlsAllocate()
+	{
+		ScePthreadKey handle;
+		scePthreadKeyCreate(&handle, 0);
+		return handle;
+	}
+
+	static inline void tlsSetValue(uint32_t _handle, void* _value)
+	{
+		scePthreadSetspecific(_handle, _value);
+	}
+
+	static inline void* tlsGetValue(uint32_t _handle)
+	{
+		return scePthreadGetspecific(_handle);
+	}
+
+	static inline void tlsFree(uint32_t _handle)
+	{
+		scePthreadKeyDelete(_handle);
+	}
+
 #elif RTM_PLATFORM_POSIX
 
 	#include <pthread.h>

@@ -16,14 +16,11 @@
 	#include <pthread.h>
 	#include <sched.h>	// sched_yield
 	#include <unistd.h>	// syscall
+	#ifndef RTM_PLATFORM_PS4
 	#include <sys/syscall.h>
-#if RTM_PLATFORM_NACL
-	#include <sys/nacl_syscalls.h> // nanosleep
-#else
+	#endif
 	#include <time.h> // nanosleep
-#endif // RTM_PLATFORM_NACL
-
-#else
+#else // RTM_PLATFORM_POSIX
 	#error "Unsupported platform/compiler!"
 #endif
 
@@ -165,6 +162,8 @@ namespace rtm {
 			return (uint64_t)syscall(SYS_gettid);
 #elif RTM_PLATFORM_IOS || RTM_PLATFORM_OSX
 			return (mach_port_t)::pthread_mach_thread_np(pthread_self() );
+#elif RTM_PLATFORM_PS4
+			return scePthreadGetthreadid();
 #elif RTM_PLATFORM_PS3
 			sys_ppu_thread_t tid;
 			sys_ppu_thread_get_id(&tid);
@@ -191,8 +190,10 @@ namespace rtm {
 		{
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 			::SwitchToThread();
-#elif RTM_PLATFORM_NACL || RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX
+#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX
 			::sched_yield();
+#elif RTM_PLATFORM_PS4
+			scePthreadYield();
 #else
 			#error "Unsupported platform/compiler!"
 #endif
@@ -202,4 +203,3 @@ namespace rtm {
 } // namespace rtm
 
 #endif // RTM_RBASE_THREAD_H
-

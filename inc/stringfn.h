@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef RTM_RBASE_STRING_H
-#define RTM_RBASE_STRING_H
+#ifndef RTM_RBASE_STRINGFN_H
+#define RTM_RBASE_STRINGFN_H
 
 #include <rbase/inc/platform.h>
 #include <string.h>
@@ -18,6 +18,18 @@ namespace rtm {
 	bool isLower(char _ch);
 	char toLower(char _ch);
 	char toUpper(char _ch);
+
+	inline static int32_t strnlen(const char* _str, uint32_t _max = -1)
+	{
+		if (NULL == _str)
+		{
+			return 0;
+		}
+
+		const char* ptr = _str;
+		for (; 0 < _max && *ptr != '\0'; ++ptr, --_max) {};
+		return int32_t(ptr - _str);
+	}
 
 	inline static void strToUpper(char* _str)
 	{
@@ -99,18 +111,6 @@ namespace rtm {
 		return strCmp<toLower>(_lhs, _rhs, _max);
 	}
 
-	inline static int32_t strnlen(const char* _str, uint32_t _max = -1)
-	{
-		if (NULL == _str)
-		{
-			return 0;
-		}
-
-		const char* ptr = _str;
-		for (; 0 < _max && *ptr != '\0'; ++ptr, --_max) {};
-		return int32_t(ptr - _str);
-	}
-
 	inline static int32_t strlncpy(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num = -1)
 	{
 		RTM_ASSERT(NULL != _dst, "_dst can't be NULL!");
@@ -148,5 +148,5 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif // RTM_RBASE_STRING_H
+#endif // RTM_RBASE_STRINGFN_H
 
