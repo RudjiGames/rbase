@@ -3,14 +3,97 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef RTM_RBASE_CMD_BUFF_H
-#define RTM_RBASE_CMD_BUFF_H
+#ifndef RTM_RBASE_ITC_H
+#define RTM_RBASE_ITC_H
 
 #include <rbase/inc/thread.h>
 #include <rbase/inc/semaphore.h>
 #include <string.h> // memcpy
+#include <math.h>
+#include <atomic>
 
 namespace rtm {
+
+	template <class T = uintptr_t>
+	class SPSCBuffer
+	{
+		T*					m_buffer;
+		std::atomic<int>	m_read;
+		std::atomic<int>	m_write;
+		int					m_capacity;
+		int					m_size;
+		int					m_size_mask;
+
+	public:
+		SPSCBuffer(int _capacity)
+			: m_read(0)
+			, m_write(0)
+			, m_capacity(_capacity)
+		{
+			int power = floor(log(_capacity)/log(2)) + 1;
+			m_size		= 1 << power;
+			m_size_mask	= m_size - 1;
+			m_buffer	= new T[m_size];
+		}
+
+		~SPSCBuffer()
+		{
+			delete[] m_buffer;
+		}
+
+		bool write(const T& _item);
+		bool read(T* _item);
+
+		template <typename U>
+		bool write(U const& data)
+		{
+			RTM_ASSERT(sizeof(U) <= sizeof(T), "");
+			union { T val; U arg; } u;
+			u.val = 0;
+			u.arg = data;
+			return write(u.val);
+		}
+
+		template <typename U>
+		bool read(U* data)
+		{
+			RTM_ASSERT(sizeof(U) <= sizeof(T), "");
+			union { T val; U arg; } u;
+			if (read(&u.val))
+			{
+				*data = u.arg;
+				return true;
+			}
+			return false;
+		}
+	};
+
+	template <class T>
+	bool SPSCBuffer<T>::write(const T& _item)
+	{
+		const int w = m_write.load(std::memory_order_relaxed);
+		const int r = m_read.load(std::memory_order_acquire);
+		const int nitems = w - r;
+		if (nitems == m_capacity || nitems + m_size == m_capacity)
+			return false;
+
+		m_buffer[w] = _item;
+		m_write.store((w+1) & m_size_mask, std::memory_order_release);
+		return true;
+	}
+
+	template <class T>
+	bool SPSCBuffer<T>::read(T* _item)
+	{
+		const int r = m_read.load(std::memory_order_relaxed);
+		const int w = m_write.load(std::memory_order_acquire);
+		if (r == w)
+			return false;
+
+		*_item = m_buffer[r];
+		m_read.store((r+1) & m_size_mask, std::memory_order_release);
+		return true;
+	}
 
 	class RWBuffer
 	{
@@ -152,4 +235,4 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif // RTM_RBASE_CMD_BUFF_H
+#endif // RTM_RBASE_ITC_H
