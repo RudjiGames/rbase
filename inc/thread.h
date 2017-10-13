@@ -16,7 +16,7 @@
 	#include <pthread.h>
 	#include <sched.h>	// sched_yield
 	#include <unistd.h>	// syscall
-	#ifndef RTM_PLATFORM_PS4
+	#if ! RTM_PLATFORM_PS4
 	#include <sys/syscall.h>
 	#endif
 	#include <time.h> // nanosleep
