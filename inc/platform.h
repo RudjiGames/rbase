@@ -13,6 +13,7 @@
 /// Platforms
 //--------------------------------------------------------------------------
 #define RTM_PLATFORM_WINDOWS	0
+#define RTM_PLATFORM_WINRT		0
 #define RTM_PLATFORM_LINUX		0
 #define RTM_PLATFORM_IOS		0
 #define RTM_PLATFORM_OSX		0
@@ -106,8 +107,13 @@
 #undef  RTM_PLATFORM_XBOXONE
 #define RTM_PLATFORM_XBOXONE	1
 #elif defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
-#undef RTM_PLATFORM_WINDOWS
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+#undef  RTM_PLATFORM_WINDOWS
 #define RTM_PLATFORM_WINDOWS	1
+#else
+#undef  RTM_PLATFORM_WINRT
+#define RTM_PLATFORM_WINRT		1
+#endif
 #elif defined(__ANDROID__)
 #undef RTM_PLATFORM_ANDROID
 #define RTM_PLATFORM_ANDROID	1

@@ -8,7 +8,7 @@
 
 #include <rbase/inc/platform.h>
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	#ifndef WIN32_LEAN_AND_MEAN
 	#define WIN32_LEAN_AND_MEAN
 	#endif // WIN32_LEAN_AND_MEAN
@@ -34,7 +34,7 @@ namespace rtm {
 	{
 		inline static uint64_t clock()
 		{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 			LARGE_INTEGER li;
 			QueryPerformanceCounter(&li);
 			int64_t q = li.QuadPart;
@@ -54,7 +54,7 @@ namespace rtm {
 
 		inline static uint64_t frequency()
 		{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 			LARGE_INTEGER li;
 			QueryPerformanceFrequency(&li);
 			return li.QuadPart;

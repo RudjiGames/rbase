@@ -8,7 +8,7 @@
 
 #include <rbase/inc/platform.h>
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	#include <windows.h>
 	#include <winbase.h>
 #elif RTM_PLATFORM_POSIX
@@ -23,7 +23,7 @@
 
 namespace rtm {
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	typedef HANDLE semaphore_t;
 
 	static inline bool semaphore_init(semaphore_t* _sem) {

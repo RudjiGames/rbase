@@ -16,7 +16,7 @@
 #include <sched.h> // sched_yield 
 #endif
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	#ifdef __cplusplus
 	extern "C" {
 	#endif
@@ -94,7 +94,7 @@ namespace rtm {
 
 	static inline void memoryBarrier()
 	{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 		_mm_mfence();
 #elif RTM_PLATFORM_PS3
 		__lwsync();
