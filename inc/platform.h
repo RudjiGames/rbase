@@ -143,20 +143,20 @@
 //--------------------------------------------------------------------------
 /// Detect CPU
 //--------------------------------------------------------------------------
-#if defined(__arm__)
-#undef RTM_CPU_ARM
+#if defined(__arm__) ||  defined(__aarch64__) || defined(_M_ARM) 
+#undef  RTM_CPU_ARM
 #define RTM_CPU_ARM				1
 #define RTM_CACHE_LINE_SIZE		64
 #elif defined(__MIPSEL__) || defined(__mips_isa_rev)
-#undef RTM_CPU_MIPS
+#undef  RTM_CPU_MIPS
 #define RTM_CPU_MIPS			1
 #define RTM_CACHE_LINE_SIZE		64
 #elif defined(_M_PPC) || defined(__powerpc__) || defined(__powerpc64__) || defined(__PPU__)
-#undef RTM_CPU_PPC
+#undef  RTM_CPU_PPC
 #define RTM_CPU_PPC				1
 #define RTM_CACHE_LINE_SIZE		128
 #elif defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)
-#undef RTM_CPU_X86
+#undef  RTM_CPU_X86
 #define RTM_CPU_X86				1
 #define RTM_CACHE_LINE_SIZE		64
 #else
@@ -249,7 +249,7 @@
 #endif // RTM_WARN
 
 #ifndef RTM_ERROR
-#define RTM_ERROR(_format, ...) RTM_ASSERT(false, _format, ##__VA_ARGS__)
+#define RTM_ERROR(_format, ...) RTM_ASSERT(false, _format, ##__VA_ARGS__); RTM_BREAK
 #endif // RTM_ERROR
 
 #ifndef RTM_LOG

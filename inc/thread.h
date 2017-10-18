@@ -9,8 +9,10 @@
 #include <rbase/inc/platform.h>
 #include <rbase/inc/semaphore.h>
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 	#include <immintrin.h>
+#elif RTM_PLATFORM_WINRT
+	#include <processthreadsapi.h>
 #elif RTM_PLATFORM_POSIX
 	#include <pthread.h>
 	#include <sched.h>	// sched_yield
@@ -96,7 +98,7 @@ namespace rtm {
 		{
 			RTM_ASSERT(m_started, "Thread was not started!");
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
-			WaitForSingleObject(m_handle, INFINITE);
+			WaitForSingleObjectEx(m_handle, INFINITE, 0);
 			GetExitCodeThread(m_handle, (DWORD*)&m_exitCode);
 			CloseHandle(m_handle);
 			m_handle = INVALID_HANDLE_VALUE;
@@ -187,8 +189,10 @@ namespace rtm {
 
 		static inline void yield()
 		{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 			::SwitchToThread();
+#elif RTM_PLATFORM_WINRT
+			RTM_ERROR("yield not implemented!");
 #elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX
 			::sched_yield();
 #elif RTM_PLATFORM_PS4

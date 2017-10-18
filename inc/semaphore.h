@@ -27,7 +27,7 @@ namespace rtm {
 	typedef HANDLE semaphore_t;
 
 	static inline bool semaphore_init(semaphore_t* _sem) {
-#if RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 		*_sem = CreateSemaphoreExW(NULL, 0, 0x7fffffff, NULL, 0, SEMAPHORE_ALL_ACCESS);
 #else
 		*_sem = CreateSemaphore(NULL, 0, 0x7fffffff, NULL);
@@ -45,7 +45,7 @@ namespace rtm {
 	
 	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms = -1) {
 		unsigned long ms = (0 > _ms) ? INFINITE : _ms;
-		return WAIT_OBJECT_0 == WaitForSingleObject(*_sem, ms);
+		return WAIT_OBJECT_0 == WaitForSingleObjectEx(*_sem, ms, 0);
 	}
 
 #elif RTM_PLATFORM_POSIX

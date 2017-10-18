@@ -17,9 +17,9 @@
 	#endif // NOMINMAX
 	#include <windows.h>
 	unsigned __int64 __rdtsc(void);
-	#if RTM_COMPILER_MSVC
+	#if RTM_COMPILER_MSVC && !RTM_PLATFORM_WINRT
 		#pragma intrinsic(__rdtsc)
-	#endif // RTM_COMPILER_MSVC
+	#endif // RTM_COMPILER_MSVC && !RTM_PLATFORM_WINRT
 #elif RTM_PLATFORM_PS3
 	#include <sys/sys_time.h>
 #elif RTM_PLATFORM_ANDROID

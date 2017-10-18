@@ -22,7 +22,11 @@ namespace rtm {
 	typedef CRITICAL_SECTION rtm_mutex;
 
 	static inline void rtm_mutex_init(rtm_mutex* _mutex) {
+#if RTM_PLATFORM_WINRT
+		InitializeCriticalSectionEx(_mutex, 4000, 0);
+#else 
 		InitializeCriticalSection(_mutex);
+#endif
 	}
 
 	static inline void rtm_mutex_destroy(rtm_mutex* _mutex) {

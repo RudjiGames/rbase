@@ -271,8 +271,8 @@ namespace RBASE_NAMESPACE {
 #endif // !RTM_COMPILER_MSVC
 	};
 
-	template <class T, class U>	constexpr bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return true; }
-	template <class T, class U>	constexpr bool operator!=(const rtm_allocator<T>& _a1, const rtm_allocator<U>& _a2) { return !(_a1 == _a2); }
+	template <class T, class U>	/*constexpr*/ bool operator==(const rtm_allocator<T>&, const rtm_allocator<U>&) { return true; }
+	template <class T, class U>	/*constexpr*/ bool operator!=(const rtm_allocator<T>& _a1, const rtm_allocator<U>& _a2) { return !(_a1 == _a2); }
 
 #ifdef RTM_DEFINE_STL_TYPES
 	#ifndef RTM_DEFINE_STL_STRING
