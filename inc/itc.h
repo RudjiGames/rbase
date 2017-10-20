@@ -30,7 +30,7 @@ namespace rtm {
 			, m_write(0)
 			, m_capacity(_capacity)
 		{
-			int power = floor(log(_capacity)/log(2)) + 1;
+			int power = (int)floor(log(_capacity)/log(2)) + 1;
 			m_size		= 1 << power;
 			m_size_mask	= m_size - 1;
 			m_buffer	= new T[m_size];
