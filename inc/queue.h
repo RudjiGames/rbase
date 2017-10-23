@@ -144,6 +144,8 @@ namespace rtm {
 		int					m_size;
 		int					m_size_mask;
 
+		RTM_CLASS_NO_COPY(SpScQueue);
+
 	public:
 		SpScQueue(int _capacity)
 			: m_read(0)
@@ -235,7 +237,6 @@ namespace rtm {
 		m_read	= 0;
 		m_write	= 0;
 	}
-
 
 } // namespace rtm
 
