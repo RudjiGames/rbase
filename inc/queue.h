@@ -163,6 +163,7 @@ namespace rtm {
 
 		bool write(const T& _item);
 		bool read(T* _item);
+		bool peek(T* _item);
 		void reset();
 
 		template <typename U>
@@ -213,6 +214,18 @@ namespace rtm {
 
 		*_item = m_buffer[r];
 		m_read.store((r+1) & m_size_mask, std::memory_order_release);
+		return true;
+	}
+
+	template <class T>
+	bool SpScQueue<T>::peek(T* _item)
+	{
+		const int r = m_read.load(std::memory_order_relaxed);
+		const int w = m_write.load(std::memory_order_acquire);
+		if (r == w)
+			return false;
+
+		*_item = m_buffer[r];
 		return true;
 	}
 
