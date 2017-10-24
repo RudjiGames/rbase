@@ -311,11 +311,16 @@ template<typename T, size_t N> char (&RTM_NUM_ELEMENTS_REQUIRES_ARRAY_ARGUMENT(c
 	private:_class(const _class&);					\
 			_class& operator = (const _class&);
 
-
 #define RTM_CLASS_NO_DEFAULT_CONSTRUCTOR(_class)	\
 	private: _class();
 
-#define RTM_UNUSED(_x) ((void)_x)
+#define RTM_UNUSED(_a1)  ((void)_a1)
+#define RTM_UNUSED_1(_a1)  RTM_UNUSED(_a1)
+#define RTM_UNUSED_2(_a1, _a2) RTM_UNUSED_1(_a1); RTM_UNUSED_1(_a2)
+#define RTM_UNUSED_3(_a1, _a2, _a3) RTM_UNUSED_1(_a1); RTM_UNUSED_2(_a2, _a3)
+#define RTM_UNUSED_4(_a1, _a2, _a3, _a4) RTM_UNUSED_1(_a1); RTM_UNUSED_3(_a2, _a3, _a4)
+#define RTM_UNUSED_5(_a1, _a2, _a3, _a4, _a5) RTM_UNUSED_1(_a1); RTM_UNUSED_4(_a2, _a3, _a4, _a5)
+#define RTM_UNUSED_6(_a1, _a2, _a3, _a4, _a5, _a6) RTM_UNUSED_1(_a1); RTM_UNUSED_5(_a2, _a3, _a4, _a5, _a6)
 
 #if RTM_COMPILER_MSVC
 #define RTM_ALIGN_TYPE(_align, _type) __declspec(align(_align)) _type
