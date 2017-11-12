@@ -5,4 +5,3 @@
 
 #include <rbase_pch.h>
 
-static int s_rbaseWarningKill;
