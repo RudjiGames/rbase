@@ -303,7 +303,7 @@ namespace RBASE_NAMESPACE {
 #ifdef RTM_DEFINE_STL_UNORDERED_MAP
 	#include <unordered_map>
 	template <class K, class T,	class H = std::hash<K>, class Keq = std::equal_to<K> >
-	using rtm_unordered_map = std::unordered_map<K, T, H, Keq, rtm_allocator<T> >;
+	using rtm_unordered_map = std::unordered_map<K, T, H, Keq, rtm_allocator<std::pair<const K, T> > >;
 #endif // RTM_DEFINE_STL_STRING
 
 	struct Memory
