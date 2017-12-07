@@ -33,7 +33,7 @@ namespace rtm {
 	{
 		RTM_CLASS_NO_COPY(Thread)
 
-	private:
+	protected:
 		ThreadEntry	m_entry;
 		void*		m_userData;
 		bool		m_started;
@@ -96,6 +96,9 @@ namespace rtm {
 
 		void stop()
 		{
+			if (!m_started)
+				return;
+
 			RTM_ASSERT(m_started, "Thread was not started!");
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 			WaitForSingleObjectEx(m_handle, INFINITE, 0);
