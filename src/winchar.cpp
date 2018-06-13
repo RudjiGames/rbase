@@ -15,6 +15,7 @@
 namespace rtm {
 
 static const int S_LONG_PATH_LEN = 4; // wcslen(L"\\\\?\\");
+static const int S_LONG_PATH_UNC_LEN = S_LONG_PATH_LEN + 3; // wcslen(L"\\\\?\\UNC");
 
 static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, size_t _outBuffSize);
 
@@ -42,13 +43,15 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 	const char* longPathPrefix = "\\\\?\\";
 	strlncpy(_outBuff, outBuffSize, longPathPrefix);
 
+	int additionChars = S_LONG_PATH_LEN;
 	if (_path)
 	{
 		if ((_path[0] == L'\\') && (_path[1] == L'\\'))
 		{
-			// UNC path - 
-			strlncat(_outBuff, outBuffSize, "UNC\\");
-			strlncat(_outBuff, outBuffSize, _path + 1);
+			// UNC path -
+			additionChars = S_LONG_PATH_UNC_LEN;
+			strlncat(_outBuff, outBuffSize, "UNC");
+			strlncat(_outBuff, outBuffSize, _path);
 		}
 		else
 			strlncat(_outBuff, outBuffSize, _path);
@@ -58,7 +61,7 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 		strlncat(_outBuff, outBuffSize, _name);
 
 	size_t pathLength = strlen(_outBuff);
-	if (pathLength - 4 > MAX_PATH)
+	if (pathLength - additionChars > MAX_PATH)
 	{
 		replaceSlashes(_outBuff, '/');
 		return _outBuff;
@@ -66,7 +69,7 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 	else
 	{
 		replaceSlashes(_outBuff, '\\');
-		return _outBuff + 4;
+		return _outBuff + additionChars;
 	}
 }
 
@@ -78,7 +81,7 @@ MultiToWide::MultiToWide(const char* _string, bool _path)
 	if (!_string)
 		return;
 
-	size_t strLen = strlen(_string) + S_LONG_PATH_LEN + 2; // 2: last slash and null term
+	size_t strLen = strlen(_string) + S_LONG_PATH_UNC_LEN + 2; // 2: last slash and null term
 	char* tmpBuff = 0;
 
 	const char* pathToConvert = _string;
