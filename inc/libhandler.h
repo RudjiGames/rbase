@@ -123,14 +123,15 @@ namespace RBASE_NAMESPACE {
 #ifndef RTM_RBASE_LIBHANDLER_MEMORY_H
 #define RTM_RBASE_LIBHANDLER_MEMORY_H
 
-	#include <new> // placement new
-
+	struct rtmAllocTag { enum Enum { Tag }; };
+	inline void* operator new (size_t, void* _mem, rtmAllocTag::Enum) { return _mem; }
+	
 	template <typename T>
 	T* rtm_new()
 	{
 		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return new(mem) T();
+		return new(mem, rtmAllocTag::Tag) T();
 	}
 
 	template <typename T, typename Arg1>
@@ -138,7 +139,7 @@ namespace RBASE_NAMESPACE {
 	{
 		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return new(mem) T(_arg1);
+		return new(mem, rtmAllocTag::Tag) T(_arg1);
 	}
 
 	template <typename T, typename Arg1, typename Arg2>
@@ -146,7 +147,7 @@ namespace RBASE_NAMESPACE {
 	{
 		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return new(mem) T(_arg1, _arg2);
+		return new(mem, rtmAllocTag::Tag) T(_arg1, _arg2);
 	}
 
 	template <typename T, typename Arg1, typename Arg2, typename Arg3>
@@ -154,7 +155,7 @@ namespace RBASE_NAMESPACE {
 	{
 		void* mem = RBASE_NAMESPACE::rtm_alloc(sizeof(T));
 		RTM_ASSERT(mem != 0, "Failed to allocate memory!");
-		return new(mem) T(_arg1, _arg2, _arg3);
+		return new(mem, rtmAllocTag::Tag) T(_arg1, _arg2, _arg3);
 	}
 
 	template <typename T>
@@ -165,7 +166,7 @@ namespace RBASE_NAMESPACE {
 		T* p = (T*)mem;
 		while (_numItems--)
 		{
-			new(p) T();
+			new(p, rtmAllocTag::Tag) T();
 			++p;
 		}
 		return (T*)mem;
@@ -179,7 +180,7 @@ namespace RBASE_NAMESPACE {
 		T* p = (T*)mem;
 		while (_numItems--)
 		{
-			new(p) T(_arg1);
+			new(p, rtmAllocTag::Tag) T(_arg1);
 			++p;
 		}
 		return (T*)mem;
@@ -193,7 +194,7 @@ namespace RBASE_NAMESPACE {
 		T* p = (T*)mem;
 		while (_numItems--)
 		{
-			new(p) T(_arg1, _arg2);
+			new(p, rtmAllocTag::Tag) T(_arg1, _arg2);
 			++p;
 		}
 		return (T*)mem;
@@ -207,7 +208,7 @@ namespace RBASE_NAMESPACE {
 		T* p = (T*)mem;
 		while (_numItems--)
 		{
-			new(p) T(_arg1, _arg2, _arg3);
+			new(p, rtmAllocTag::Tag) T(_arg1, _arg2, _arg3);
 			++p;
 		}
 		return (T*)mem;
