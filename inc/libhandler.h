@@ -285,7 +285,6 @@ namespace RBASE_NAMESPACE {
 	#include <string>
 	typedef std::basic_string<char, std::char_traits<char>, rtm_allocator<char> >			rtm_string;
 	typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, rtm_allocator<wchar_t> >	rtm_wstring;
-
 #endif // RTM_DEFINE_STL_STRING
 
 #ifdef RTM_DEFINE_STL_VECTOR
