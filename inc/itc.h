@@ -10,7 +10,6 @@
 #include <rbase/inc/semaphore.h>
 #include <string.h> // memcpy
 #include <math.h>
-#include <atomic>
 
 namespace rtm {
 
