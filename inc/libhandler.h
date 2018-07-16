@@ -123,7 +123,9 @@ namespace RBASE_NAMESPACE {
 #ifndef RTM_RBASE_LIBHANDLER_MEMORY_H
 #define RTM_RBASE_LIBHANDLER_MEMORY_H
 
+	#if !(RTM_PLATFORM_IOS || RTM_PLATFORM_OSX)
 	#include <new> // placement new
+	#endif
 
 	template <typename T>
 	T* rtm_new()
