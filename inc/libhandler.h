@@ -125,6 +125,7 @@ namespace RBASE_NAMESPACE {
 
 	struct rtmAllocTag { enum Enum { Tag }; };
 	inline void* operator new (size_t, void* _mem, rtmAllocTag::Enum) { return _mem; }
+	inline void operator delete (void*, void*, rtmAllocTag::Enum) { }
 	
 	template <typename T>
 	T* rtm_new()
