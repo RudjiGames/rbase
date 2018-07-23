@@ -64,9 +64,9 @@ vs2017:
 ../.build/osx/gcc/rbase/projects:
 	$(GENIE) --file=genie/genie.lua --gcc=osx gmake
 osx-debug64: ../.build/osx/gcc/rbase/projects
-	make -C ../.build/osx/gcc/rbase/projects config=debug64
+	make -R -C ../.build/osx/gcc/rbase/projects config=debug64
 osx-release64: ../.build/osx/gcc/rbase/projects
-	make -C ../.build/osx/gcc/rbase/projects config=release64
+	make -R -C ../.build/osx/gcc/rbase/projects config=release64
 osx: osx-debug64 osx-release64
 
 clean:
