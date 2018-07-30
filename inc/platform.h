@@ -80,14 +80,14 @@
 #undef RTM_COMPILER_SNC
 #define RTM_COMPILER_SNC		1
 
-#elif defined(__GNUC__)
-#undef RTM_COMPILER_GCC
-#define RTM_COMPILER_GCC		1
-
 // check for clang before GCC as clang defines GNU macros as well
 #elif defined(__clang__)
 #undef RTM_COMPILER_CLANG
 #define RTM_COMPILER_CLANG		1
+
+#elif defined(__GNUC__)
+#undef RTM_COMPILER_GCC
+#define RTM_COMPILER_GCC		1
 
 #elif defined(_MSC_VER)
 #undef RTM_COMPILER_MSVC
