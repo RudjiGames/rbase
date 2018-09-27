@@ -41,7 +41,7 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 	const int32_t outBuffSize = (int32_t)_outBuffSize;
 
 	const char* longPathPrefix = "\\\\?\\";
-	strlncpy(_outBuff, outBuffSize, longPathPrefix);
+	strlCpy(_outBuff, outBuffSize, longPathPrefix);
 
 	int additionChars = S_LONG_PATH_LEN;
 	if (_path)
@@ -50,15 +50,15 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 		{
 			// UNC path -
 			additionChars = S_LONG_PATH_UNC_LEN;
-			strlncat(_outBuff, outBuffSize, "UNC");
-			strlncat(_outBuff, outBuffSize, _path);
+			strlCat(_outBuff, outBuffSize, "UNC");
+			strlCat(_outBuff, outBuffSize, _path);
 		}
 		else
-			strlncat(_outBuff, outBuffSize, _path);
+			strlCat(_outBuff, outBuffSize, _path);
 	}
 
 	if (_name)
-		strlncat(_outBuff, outBuffSize, _name);
+		strlCat(_outBuff, outBuffSize, _name);
 
 	size_t pathLength = strlen(_outBuff);
 	if (pathLength - additionChars > MAX_PATH)
