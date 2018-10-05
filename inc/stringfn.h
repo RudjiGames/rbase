@@ -23,36 +23,34 @@ namespace rtm {
 
 	char toUpper(char _ch);
 
-	inline static int32_t strLen(const char* _str, int32_t _max = -1);
+	inline static int32_t strLen(const char* _str, uint32_t _max = -1);
 
 	inline static void strToUpper(char* _str);
 
 	inline static void strToLower(char* _str);
 
 	template<CharFn fn>
-	inline static int32_t strCmp(const char* _lhs, const char* _rhs, int32_t _max = -1);
+	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
 
 	template<CharFn fn>
-	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, int32_t _findMax = -1);
+	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax = -1);
 
-	inline static int32_t strCmp(const char* _lhs, const char* _rhs, int32_t _max = -1);
+	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
 
-	inline static int32_t striCmp(const char* _lhs, const char* _rhs, int32_t _max = -1);
+	inline static int32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
 
-	inline static int32_t strlCpy(char* _dst, int32_t _dstSize, const char* _src, int32_t _num = -1);
+	inline static int32_t strlCpy(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num = -1);
 
-	inline static int32_t strlCat(char* _dst, int32_t _dstSize, const char* _src, int32_t _num = -1);
+	inline static int32_t strlCat(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num = -1);
 
-	inline static const char* strStr(const char* _str, const char* _find, int32_t _max = -1);
+	inline static const char* strStr(const char* _str, const char* _find, uint32_t _max = -1);
 
-	inline static const char* striStr(const char* _str, const char* _find, int32_t _max = -1);
+	inline static const char* striStr(const char* _str, const char* _find, uint32_t _max = -1);
 
-	inline static int32_t strLen(const char* _str, int32_t _max )
+	inline static int32_t strLen(const char* _str, uint32_t _max)
 	{
 		if (0 == _str)
-		{
 			return 0;
-		}
 
 		const char* ptr = _str;
 		for (; 0 < _max && *ptr != '\0'; ++ptr, --_max) {};
@@ -70,7 +68,7 @@ namespace rtm {
 	}
 
 	template<CharFn fn>
-	inline static int32_t strCmp(const char* _lhs, const char* _rhs, int32_t _max)
+	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		for (
 			; 0 < _max && fn(*_lhs) == fn(*_rhs)
@@ -88,7 +86,7 @@ namespace rtm {
 	}
 
 	template<CharFn fn>
-	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, int32_t _findMax)
+	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax)
 	{
 		const char* ptr = _str;
 
@@ -128,17 +126,17 @@ namespace rtm {
 		return 0;
 	}
 
-	inline static int32_t strCmp(const char* _lhs, const char* _rhs, int32_t _max)
+	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		return strCmp<toNoop>(_lhs, _rhs, _max);
 	}
 
-	inline static int32_t striCmp(const char* _lhs, const char* _rhs, int32_t _max)
+	inline static int32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		return strCmp<toLower>(_lhs, _rhs, _max);
 	}
 
-	inline static int32_t strlCpy(char* _dst, int32_t _dstSize, const char* _src, int32_t _num)
+	inline static int32_t strlCpy(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num)
 	{
 		RTM_ASSERT(0 != _dst, "_dst can't be 0!");
 		RTM_ASSERT(0 != _src, "_src can't be 0!");
@@ -153,7 +151,7 @@ namespace rtm {
 		return num;
 	}
 
-	inline static int32_t strlCat(char* _dst, int32_t _dstSize, const char* _src, int32_t _num)
+	inline static int32_t strlCat(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num)
 	{
 		int32_t len = strLen(_dst, _num);
 		_dstSize -= len;
@@ -161,12 +159,12 @@ namespace rtm {
 		return strlCpy(_dst, _dstSize, _src, _num);
 	}
 
-	inline static const char* strStr(const char* _str, const char* _find, int32_t _max)
+	inline static const char* strStr(const char* _str, const char* _find, uint32_t _max)
 	{
 		return strStr<toNoop>(_str, _max, _find, INT32_MAX);
 	}
 
-	inline static const char* striStr(const char* _str, const char* _find, int32_t _max)
+	inline static const char* striStr(const char* _str, const char* _find, uint32_t _max)
 	{
 		return strStr<toLower>(_str, _max, _find, INT32_MAX);
 	}
