@@ -611,7 +611,7 @@ bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _string
 	{
 		size_t de = (dirOffsets[i] >> 16) & 0xffffffff;
 		size_t ds =  dirOffsets[i] & 0xffff;
-        _stringViews[i].set(&_path[ds], de-ds);
+        _stringViews[i].set(&_path[ds], (uint32_t)(de-ds));
 	}
 
     return true;

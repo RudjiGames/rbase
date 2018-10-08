@@ -156,28 +156,28 @@ namespace rtm {
 
 	//--------------------------------------------------------------------------
 
-	String::String()
+	inline String::String()
 		: m_str(0)
 		, m_len(0)
 	{
 	}
 
-	String::String(StringView& _view)
+	inline String::String(StringView& _view)
 	{
 		set(_view.data(), _view.length());
 	}
 
-	String::String(const char* _str, uint32_t _len)
+	inline String::String(const char* _str, uint32_t _len)
 	{
 		set(_str, _len);
 	}
 
-	String::String(const char* _start, const char* _end)
+	inline String::String(const char* _start, const char* _end)
 	{
 		set(_start, _end);
 	}
 
-	String::~String()
+	inline String::~String()
 	{
 		if (m_str)
 		{
@@ -185,7 +185,7 @@ namespace rtm {
 		}
 	}
 
-	String& String::operator = (const char* _str)
+	inline String& String::operator = (const char* _str)
 	{
 		if (!_str)
 		{
@@ -197,21 +197,21 @@ namespace rtm {
 		return *this;
 	}
 
-	String& String::operator = (const String& _other)
+	inline String& String::operator = (const String& _other)
 
 	{
 		set(_other.data(), _other.length());
 		return *this;
 	}
 
-	String& String::operator = (const StringView& _other)
+	inline String& String::operator = (const StringView& _other)
 
 	{
 		set(_other.data(), _other.length());
 		return *this;
 	}
 
-	void String::clear()
+	inline void String::clear()
 	{
 		if (m_len != 0)
 		{
@@ -221,7 +221,7 @@ namespace rtm {
 		m_len = 0;
 	}
 
-	void String::set(const char* _str, uint32_t _len)
+	inline void String::set(const char* _str, uint32_t _len)
 	{
 		clear();
 		if (_str == 0)
@@ -233,23 +233,23 @@ namespace rtm {
 		m_str = str;
 	}
 
-	void String::set(const char* _start, const char* _end)
+	inline void String::set(const char* _start, const char* _end)
 	{
 		RTM_ASSERT(_end > _start, "");
-		set(_start, _end - _start);
+		set(_start, (uint32_t)(_end - _start));
 	}
 
-	void String::set(String& _string)
+	inline void String::set(String& _string)
 	{
 		set(_string.data(), _string.length());
 	}
 
-	void String::set(StringView& _view)
+	inline void String::set(StringView& _view)
 	{
 		set(_view.data(), _view.length());
 	}
 
-	void String::append(const char* _str, uint32_t _len)
+	inline void String::append(const char* _str, uint32_t _len)
 	{
 		uint32_t aLen = _len == -1 ? strLen(_str) : _len;
 		m_str = (const char*)RTM_STRING_REALLOC((void*)m_str, sizeof(char) * (m_len + aLen));
@@ -257,42 +257,42 @@ namespace rtm {
 		m_len += aLen;
 	}
 
-	void String::append(const char* _start, const char* _end)
+	inline void String::append(const char* _start, const char* _end)
 	{
-		append(_start, _end - _start);
+		append(_start, (uint32_t)(_end - _start));
 	}
 
-	void String::append(String& _string)
+	inline void String::append(String& _string)
 	{
 		append(_string.data(), _string.length());
 	}
 
-	void String::append(StringView& _view)
+	inline void String::append(StringView& _view)
 	{
 		append(_view.data(), _view.length());
 	}
 
-	bool String::isNull() const
+	inline bool String::isNull() const
 	{
 		return m_len == 0;
 	}
 
-	const char*	String::data() const
+	inline const char*	String::data() const
 	{
 		return m_str;
 	}
 
-	uint32_t String::length() const
+	inline uint32_t String::length() const
 	{
 		return m_len;
 	}
 
-	String::operator const char* ()
+	inline String::operator const char* ()
 	{
 		return data();
 	}
 
-	char String::operator[](uint32_t _index)
+	inline char String::operator[](uint32_t _index)
 	{
 		RTM_ASSERT(_index < m_len, "");
 		return m_str[_index];
