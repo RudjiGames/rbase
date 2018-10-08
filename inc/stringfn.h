@@ -11,7 +11,19 @@
 
 namespace rtm {
 
-	typedef char (*CharFn)(char _ch);
+	typedef char (*fnChar)(char _ch);
+
+	bool isInRange(char _ch, int _from, int _to);
+
+	bool isSpace(char _ch);
+
+	bool isAlpha(char _ch);
+
+	bool isNumeric(char _ch);
+
+	bool isAlphaNum(char _ch);
+
+	bool isHexNum(char _ch);
 
 	char toNoop(char _ch);
 
@@ -29,10 +41,10 @@ namespace rtm {
 
 	inline static void strToLower(char* _str);
 
-	template<CharFn fn>
+	template<fnChar fn>
 	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
 
-	template<CharFn fn>
+	template<fnChar fn>
 	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax = -1);
 
 	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
@@ -46,6 +58,68 @@ namespace rtm {
 	inline static const char* strStr(const char* _str, const char* _find, uint32_t _max = -1);
 
 	inline static const char* striStr(const char* _str, const char* _find, uint32_t _max = -1);
+
+	//--------------------------------------------------------------------------
+
+	inline bool isInRange(char _ch, int _from, int _to)
+	{
+		return unsigned(_ch - _from) <= unsigned(_to-_from);
+	}
+
+	inline bool isSpace(char _ch)
+	{
+		return	' '  == _ch ||
+				'\t' == _ch ||
+				'\n' == _ch ||
+				'\v' == _ch ||
+				'\f' == _ch ||
+				'\r' == _ch;
+	}
+
+	inline bool isAlpha(char _ch)
+	{
+		return isLower(_ch) || isUpper(_ch);
+	}
+
+	inline bool isNumeric(char _ch)
+	{
+		return isInRange(_ch, '0', '9');
+	}
+
+	inline bool isAlphaNum(char _ch)
+	{
+		return isAlpha(_ch) || isNumeric(_ch);
+	}
+
+	inline bool isHexNum(char _ch)
+	{
+		return isInRange(toLower(_ch), 'a', 'f') || isNumeric(_ch);
+	}
+
+	inline char toNoop(char _ch)
+	{
+		return _ch;
+	}
+
+	inline bool isUpper(char _ch)
+	{
+		return isInRange(_ch, 'A', 'Z');
+	}
+
+	inline bool isLower(char _ch)
+	{
+		return isInRange(_ch, 'a', 'z');
+	}
+
+	inline char toLower(char _ch)
+	{
+		return _ch + (isUpper(_ch) ? 0x20 : 0);
+	}
+
+	inline char toUpper(char _ch)
+	{
+		return _ch - (isLower(_ch) ? 0x20 : 0);
+	}
 
 	inline static int32_t strLen(const char* _str, uint32_t _max)
 	{
@@ -67,7 +141,7 @@ namespace rtm {
 		while (*_str) { *_str = toLower(*_str); ++_str; }
 	}
 
-	template<CharFn fn>
+	template<fnChar fn>
 	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		for (
@@ -85,7 +159,7 @@ namespace rtm {
 		return 0 == _max ? 0 : fn(*_lhs) - fn(*_rhs);
 	}
 
-	template<CharFn fn>
+	template<fnChar fn>
 	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax)
 	{
 		const char* ptr = _str;

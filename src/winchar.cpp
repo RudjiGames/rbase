@@ -60,7 +60,7 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 	if (_name)
 		strlCat(_outBuff, outBuffSize, _name);
 
-	size_t pathLength = strlen(_outBuff);
+	size_t pathLength = strLen(_outBuff);
 	if (pathLength - additionChars > MAX_PATH)
 	{
 		replaceSlashes(_outBuff, '/');
@@ -81,14 +81,14 @@ MultiToWide::MultiToWide(const char* _string, bool _path)
 	if (!_string)
 		return;
 
-	size_t strLen = strlen(_string) + S_LONG_PATH_UNC_LEN + 2; // 2: last slash and null term
+	size_t sLen = strLen(_string) + S_LONG_PATH_UNC_LEN + 2; // 2: last slash and null term
 	char* tmpBuff = 0;
 
 	const char* pathToConvert = _string;
 	if (_path)
 	{
-		tmpBuff = new char[strLen];
-		pathToConvert = makeLongPath(_string, 0, tmpBuff, strLen);
+		tmpBuff = new char[sLen];
+		pathToConvert = makeLongPath(_string, 0, tmpBuff, sLen);
 	}
 
 	int size_needed = MultiByteToWideChar(CP_UTF8, 0, pathToConvert, -1, NULL, 0);
