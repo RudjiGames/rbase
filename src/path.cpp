@@ -11,6 +11,10 @@
 #if RTM_PLATFORM_WINDOWS
 #include <Shlwapi.h>
 #pragma comment(lib, "Shlwapi.lib")
+
+#elif RTM_PLATFORM_POSIX
+#include <unistd.h>
+#include <limits.h>
 #endif
 
 namespace rtm {
@@ -32,49 +36,15 @@ static inline void replaceSlashes(CHRT* _path, CHRT _slash)
 	}
 }
 
-template <typename CHRT= char>
+template <typename CHRT = char>
 static inline void toUnixSlashes(CHRT* _path)
 {
 	replaceSlashes(_path, CHRT('/'));
 }
 
-static inline void fixPath(char* _path)
-{
-	if (_path[0] == char('.')) _path++;
-
-	char* pos = NULL;
-	while ((pos = strstr(_path, "..")) != NULL)
-	{
-		char* prevSlash = pos - 2;
-		while (!isSlash(*prevSlash)) prevSlash--;
-		char* nextDir = pos + 3;
-		size_t len = strlen(nextDir) + 1;
-		memmove(prevSlash+1, nextDir, len*sizeof(char));
-	}
-
-	toUnixSlashes(_path);
-}
-
-static inline void fixPath(wchar_t* _path)
-{
-	if (_path[0] == wchar_t('.')) _path++;
-
-	wchar_t* pos = NULL;
-	while ((pos = wcsstr(_path, L"..")) != NULL)
-	{
-		wchar_t* prevSlash = pos - 2;
-		while (!isSlash(*prevSlash)) prevSlash--;
-		wchar_t* nextDir = pos + 3;
-		size_t len = wcslen(nextDir) + 1;
-		memmove(prevSlash+1, nextDir, len*sizeof(wchar_t));
-	}
-
-	toUnixSlashes(_path);
-}
-
 const char* pathGetFileName(const char* _path)
 {
-	size_t len = strlen(_path);
+	size_t len = strLen(_path);
 	while ((_path[len] != '/') && (_path[len] != '\\') && (len>0)) --len;
 	return &_path[len + 1];
 }
@@ -85,7 +55,7 @@ bool pathGetFilename(const char* _path, char* _buffer, size_t _bufferSize)
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = strlen(_path);
+	size_t len = strLen(_path);
 	size_t saveLen = len;
 
 	while (--len)
@@ -115,7 +85,7 @@ bool pathGetFilenameNoExt(const char* _path, char* _buffer, size_t _bufferSize)
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = strlen(_path);
+	size_t len = strLen(_path);
 	size_t saveLen = len;
 
 	while (--len)
@@ -148,7 +118,10 @@ bool pathGetFilenameNoExt(const char* _path, char* _buffer, size_t _bufferSize)
 
 const char* pathGetExt(const char* _path)
 {
-	size_t len = strlen(_path);
+	RTM_ASSERT(_path != 0, "");
+
+	const size_t length = strLen(_path);
+	size_t len = length;
 
 	while (--len)
 		if (_path[len] == '.')
@@ -157,7 +130,7 @@ const char* pathGetExt(const char* _path)
 	if (_path[len++] == '.')
 		return &_path[len];
 
-	return 0;
+	return &_path[length];
 } 
 
 bool pathGetExt(const char* _path, char* _buffer, size_t _bufferSize)
@@ -166,7 +139,7 @@ bool pathGetExt(const char* _path, char* _buffer, size_t _bufferSize)
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = strlen(_path);
+	size_t len = strLen(_path);
 
 	while (--len)
 		if ((isSlash(_path[len])) ||
@@ -186,7 +159,7 @@ bool pathGetExt(const char* _path, char* _buffer, size_t _bufferSize)
 	if (len + 1 > _bufferSize)
 		return false;
 
-	strcpy(_buffer, &_path[len] );
+	strlCpy(_buffer, _bufferSize, &_path[len] );
 
 	return true;
 }
@@ -207,6 +180,7 @@ bool pathGetCurrentDirectory(char* _buffer, size_t _bufferSize)
 	wchar_t wBuffer[4096];
 
 	DWORD len = GetCurrentDirectoryW(size, wBuffer);
+	wcscat(wBuffer, L"\\");
 	if (len == 0)
 		return false;
 
@@ -214,7 +188,7 @@ bool pathGetCurrentDirectory(char* _buffer, size_t _bufferSize)
 	return rtm::strLen(wb) == rtm::strlCpy(_buffer, (int32_t)_bufferSize, wb);
 
 #elif RTM_PLATFORM_POSIX
-	getcwd
+	return _buffer == getcwd(_buffer, _bufferSize);
 #else
 #endif
 }
@@ -224,24 +198,21 @@ bool pathGetDataDirectory(char* _buffer, size_t _bufferSize)
 #if RTM_PLATFORM_WINDOWS
 
 	wchar_t executablePath[512];
-	if (GetModuleFileNameW(GetModuleHandle(0), executablePath, 512))
-	{
-		fixPath(executablePath);
-		wchar_t* ptr = executablePath + wcslen(executablePath);
-		while (*(--ptr) != L'/');
-		*ptr = 0;
-	}
-	else
+	if (!GetModuleFileNameW(GetModuleHandle(0), executablePath, 512))
 		return false;
+
+	WideToMulti mb(executablePath);
+	pathCanonicalize(mb);
 
 #if RTM_DEBUG || RTM_RELEASE
 
-	// remove 7 dirs at end    \rtm\.build\windows\vs2015\x64\release\bajka\bin
+	// remove 8 slashes at end    \rtm\.build\windows\vs2017\x64\project\x64\bin\project.exe
 
-	wchar_t* ptr = executablePath + wcslen(executablePath);
+	uint32_t len = strLen(mb);
+	char* ptr = mb + len;
 
 	int numSlashes = 0;
-	while (numSlashes < 7)
+	while (numSlashes < 8)
 	{
 		while (*(--ptr) != L'/');
 		--ptr;
@@ -249,18 +220,20 @@ bool pathGetDataDirectory(char* _buffer, size_t _bufferSize)
 	}
 	*(++ptr) = 0;
 	
-	wcscat(executablePath, L"/.data/windows");
+	strlCat(ptr, uint32_t(mb - ptr), "/.data/windows/");
+	return strlCpy(_buffer, _bufferSize, mb) == strLen(mb);
 #endif
 
 #if RTM_RETAIL
-	wcscat(executablePath, L"/data/");
+	char dataPath[512];
+	strlCpy(dataPath, 512, mb);
+	const char* exeName = pathGetFileName(dataPath);
+	strlCpy((char*)exeName, strLen(exeName), "data/");
+	return strlCpy(_buffer, _bufferSize, dataPath) == strLen(dataPath);
 #endif
 
-	replaceSlashes(executablePath, L'\\');
-	rtm::WideToMulti ep(executablePath);
-	return rtm::strLen(ep) == rtm::strlCpy(_buffer, (int32_t)_bufferSize, ep);
-
-#else
+#elif RTM_PLATFORM_POSIX
+    return -1 != readlink("/proc/self/exe", _buffer, _bufferSize);
 #endif
 }
 
@@ -273,31 +246,34 @@ bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, size_
 	if (pathIsAbsolute(_appendPath))
 		return false;
 
-	size_t lenAppend = strlen(_appendPath);
+	if (!pathIsDirectory(_path))
+		return false;
+
+	size_t lenAppend = strLen(_appendPath);
 
 	if (!_path)
 	{
 		if (lenAppend > _bufferSize - 1)
 			return false;
 
-		strcpy(_buffer, _appendPath);
+		strlCpy(_buffer, _bufferSize, _appendPath);
 		return true;
 	}
 
-	if (strlen(_path) > _bufferSize)
+	if (strLen(_path) > _bufferSize)
 		return false;
 
-	size_t lenPath = strlen(_path);
+	size_t lenPath = strLen(_path);
 
 	size_t addLen = 0;
 	if (!isSlash(_path[lenPath-1]) && !isSlash(_appendPath[0]))
 		addLen = 1;
 
-	size_t totalLen = lenPath + strlen(_appendPath) + 1 + addLen;
+	size_t totalLen = lenPath + strLen(_appendPath) + 1 + addLen;
 	if (totalLen > _bufferSize -1)
 		return false;
 
-	strcpy(_buffer, _path);
+	strlCpy(_buffer, _bufferSize,_path);
 	if (addLen)
 		strcat(_buffer, "/");
 	strcat(_buffer, _appendPath);
@@ -311,17 +287,19 @@ bool pathUp(const char* _path, char* _buffer, size_t _bufferSize)
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = strlen(_path);
+	size_t len = strLen(_path);
 
-	while (--len)
-		if (isSlash(_path[len])) break;
+	uint32_t slashes = pathIsDirectory(_path) ? 2 : 1;
+
+	while (--len && slashes)
+		if (isSlash(_path[len])) --slashes;
 	
 	if (len++)
 	{
 		if (len < _bufferSize)
 		{
-			strncpy(_buffer, _path, len);
-			_buffer[len] = 0;
+			strlCpy(_buffer, _bufferSize, _path, len+1);
+			_buffer[len+1] = 0;
 			return true;
 		}
 	}
@@ -339,34 +317,34 @@ bool pathCanonicalize(const char* _path, char* _buffer, size_t _bufferSize)
 #if RTM_PLATFORM_WINDOWS
 	if (_buffer)
 	{
-		RTM_ASSERT(strlen(_path) < _bufferSize, "");
-		strcpy(_buffer, _path);
-		fixPath(_buffer);
+		RTM_ASSERT(strLen(_path) < _bufferSize, "");
+		strlCpy(_buffer, _bufferSize, _path);
+		pathCanonicalize(_buffer);
 		return true;
 	}
 	return false;
+
 #elif RTM_PLATFORM_POSIX
-	realpath()
+    RTM_ASSERT(PATH_MAX >= _bufferSize, "");
+	return _buffer == realpath(_path, _buffer);
 #else
 
 #endif
 }
 
-void pathMakeAbsolute(char* _path)
+void pathCanonicalize(char* _path)
 {
-	char* pos = NULL;
-	while ((pos = strstr(_path, "..")) != NULL)
+	const char* pos = 0;
+	while ((pos = strStr(_path, "..")) != 0)
 	{
-		char* prevSlash = pos - 2;
+		const char* prevSlash = pos - 2;
 		while ((*prevSlash != '\\') && (*prevSlash != '/')) prevSlash--;
-		char* nextDir = pos + 3;
-		size_t len = strlen(nextDir) + 1;
-		memmove(prevSlash+1, nextDir, len*2);
+		const char* nextDir = pos + 3;
+		size_t len = strLen(nextDir) + 1;
+		memmove((void*)(prevSlash+1), nextDir, len*2);
 	}
-	size_t len = strlen(_path);
-	for (size_t i=0; i<len; i++)
-		if (_path[i] == '/')
-			_path[i] = '\\';
+
+	toUnixSlashes(_path);
 }
 
 bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, size_t _bufferSize)
@@ -389,7 +367,7 @@ bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, s
 		if (pathGetCurrentDirectory(cwd, 512))
 		{
 			pathMakeAbsolute(tmpBuffer, cwd, _buffer, _bufferSize);
-			fixPath(_buffer);
+			pathCanonicalize(_buffer);
 		}
 		else
 			return false;
@@ -435,11 +413,9 @@ bool pathIsAbsolute(const char* _path)
 		return true;
                 
 	return false;
-#elif RTM_PLATFORM_POSIX
 
-	//if (path.length() >= 1 && path[0] == '~')
-	//	return (path.length() == 1 || pathIsSeparator(path[1]));
-	//return pathIsSeparator(path[0]);
+#elif RTM_PLATFORM_POSIX
+    return _path[0] == '/';
 
 #else
 #endif
@@ -469,21 +445,8 @@ bool pathIsDirectory(const char* _path)
 	if (!_path)
 		return false;
 
-#if RTM_PLATFORM_WINDOWS
-	rtm::MultiToWide wpath(_path);
-	if (!wpath.m_ptr)
-		return false;
-
-	DWORD dwAttr = ::GetFileAttributesW(wpath.m_ptr);
-	bool ret = false;
-
-	if (dwAttr != INVALID_FILE_ATTRIBUTES)
-		ret = (dwAttr & FILE_ATTRIBUTE_DIRECTORY) != 0;
-
-	return ret;
-
-#elif RTM_PLATFORM_POSIX
-#endif
+	uint32_t len = strLen(_path);
+	return isSlash(_path[len - 1]);
 }
 
 bool pathCreateDir(const char* _path, const char* _name, bool _recurse)
@@ -499,7 +462,7 @@ bool pathCreateDir(const char* _path, const char* _name, bool _recurse)
 		return false;
 
 #if RTM_PLATFORM_WINDOWS
-	fixPath(buffer);
+	pathCanonicalize(buffer);
 	replaceSlashes(buffer, '\\');
 
 	bool ret = true;
@@ -550,7 +513,7 @@ bool pathRemoveDir(const char* _path, const char* _name)
 		return false;
 
 #if RTM_PLATFORM_WINDOWS
-	fixPath(buffer);
+	pathCanonicalize(buffer);
 	replaceSlashes(buffer, '\\');
 
 	rtm::MultiToWide ws(buffer);
@@ -586,7 +549,7 @@ bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _string
 		pe = findSlash(ps + 1);
 
 	uint64_t dirOffsets[512];
-	uint64_t numDirs = 0;
+	uint32_t numDirs = 0;
 
 	while (pe)
 	{
@@ -605,7 +568,9 @@ bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _string
 	*_numDirectories = static_cast<uint32_t>(numDirs);
 
     if (numDirs > _maxViews)
+    {
         return false;
+    }
 
 	for (uint64_t i=0; i<numDirs; ++i)
 	{

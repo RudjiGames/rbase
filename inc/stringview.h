@@ -118,7 +118,7 @@ namespace rtm {
 	inline void StringView::set(const char* _str, uint32_t _len)
 	{
 		m_str = _str;
-		m_len = _len == -1 ? strLen(_str) : _len;
+		m_len = _len == UINT32_MAX ? strLen(_str) : _len;
 	}
 
 	inline void StringView::set(const char* _start, const char* _end)
@@ -227,7 +227,7 @@ namespace rtm {
 		if (_str == 0)
 			return;
 
-		m_len = _len == -1 ? strLen(_str) : _len;
+		m_len = _len == UINT32_MAX ? strLen(_str) : _len;
 		char* str = (char*)RTM_STRING_ALLOC(sizeof(char) * m_len);
 		strlCpy(str, m_len, _str);
 		m_str = str;
@@ -251,7 +251,7 @@ namespace rtm {
 
 	inline void String::append(const char* _str, uint32_t _len)
 	{
-		uint32_t aLen = _len == -1 ? strLen(_str) : _len;
+		uint32_t aLen = _len == UINT32_MAX ? strLen(_str) : _len;
 		m_str = (const char*)RTM_STRING_REALLOC((void*)m_str, sizeof(char) * (m_len + aLen));
 		strlCpy((char*)&m_str[m_len], aLen, _str, aLen);
 		m_len += aLen;

@@ -1,0 +1,128 @@
+//--------------------------------------------------------------------------//
+/// Copyright (c) 2018 Milos Tosic. All Rights Reserved.                   ///
+/// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
+//--------------------------------------------------------------------------//
+
+#include <rbase_test_pch.h>
+
+using namespace rtm;
+
+SUITE(rbase)
+{
+	TEST(path)
+	{
+		const char* pathFile	= "/some/dir/file.txt";
+		const char* pathDir		= "/some/dir/";
+
+		// const char* pathGetFileName(const char* _path);
+
+		CHECK(0 == strCmp(pathGetFileName(pathFile), "file.txt"));
+		CHECK(0 == strCmp(pathGetFileName(pathDir),	""));
+
+		char buffer[1024];
+
+		// bool pathGetFilename(const char* _path, char* _buffer, size_t _bufferSize);
+
+		CHECK(true == pathGetFilename(pathFile, buffer, 1024));
+		CHECK(0 == strCmp(buffer, "file.txt"));
+
+		CHECK(true == pathGetFilename(pathDir, buffer, 1024));
+		CHECK(0 == strCmp(buffer, ""));
+
+		// bool pathGetFilenameNoExt(const char* _path, char* _buffer, size_t _bufferSize);
+
+		CHECK(true == pathGetFilenameNoExt(pathFile, buffer, 1024));
+		CHECK(0 == strCmp(buffer, "file"));
+
+		CHECK(true == pathGetFilenameNoExt(pathDir, buffer, 1024));
+		CHECK(0 == strCmp(buffer, ""));
+
+		// const char* pathGetExt(const char* _path);
+
+		CHECK(0 == strCmp(pathGetExt(pathFile), "txt"));
+		CHECK(0 == strCmp(pathGetExt(pathDir), ""));
+		
+		// bool pathGetExt(const char* _path, char* _buffer, size_t _bufferSize);
+
+		CHECK(true == pathGetExt(pathFile, buffer, 1024));
+		CHECK(0 == strCmp(buffer, "txt"));
+
+		CHECK(true == pathGetExt(pathDir, buffer, 1024));
+		CHECK(0 == strCmp(buffer, ""));
+
+		// bool pathGetCurrentDirectory(char* _buffer, size_t _bufferSize);
+
+		pathGetCurrentDirectory(buffer, 1024);
+		Console::debug("Current working dir : ");
+		Console::info("%s\n", buffer);
+
+		// bool pathGetDataDirectory(char* _buffer, size_t _bufferSize);
+
+		pathGetDataDirectory(buffer, 1024);
+		Console::debug("Current data dir    : ");
+		Console::info("%s\n", buffer);
+
+		// bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, size_t _bufferSize);
+
+		CHECK(true == pathAppend(pathDir, "file.txt", buffer, 1024));
+		CHECK(0 == strCmp(buffer, pathFile));
+
+		CHECK(false == pathAppend(pathFile, "file.txt", buffer, 1024));
+
+		// bool pathUp(const char* _path, char* _buffer, size_t _bufferSize);
+
+		CHECK(true == pathUp(pathDir, buffer, 1024));
+		CHECK(0 == strCmp(buffer, "/some/"));
+
+		CHECK(true == pathUp(pathFile, buffer, 1024));
+		CHECK(0 == strCmp(buffer, "/some/dir/"));
+
+		// bool pathCanonicalize(const char* _path, char* _buffer, size_t _bufferSize);
+
+		CHECK(true == pathCanonicalize("/some/dir/../and/up/test.txt", buffer, 1024));
+		CHECK(0 == strCmp(buffer, "/some/and/up/test.txt"));
+
+		// void pathCanonicalize(char* _path);
+
+		strlCpy(buffer, 1024, "/some/dir/../and/up/test.txt");
+		pathCanonicalize(buffer);
+		CHECK(0 == strCmp(buffer, "/some/and/up/test.txt"));
+
+		// bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, size_t _bufferSize);
+
+		///// Makes _path relative
+		//bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, size_t _bufferSize);
+
+		///// Checks if path is absolute
+		//bool pathIsAbsolute(const char* _path);
+
+		// bool pathExists(const char* _path);
+
+		pathGetCurrentDirectory(buffer, 1024);
+		CHECK(true  == pathExists(buffer));
+		CHECK(false == pathExists("/some/dummy/path"));
+
+		// bool pathIsDirectory(const char* _path);
+
+		CHECK(true  == pathIsDirectory(pathDir));
+		CHECK(false == pathIsDirectory(pathFile));
+
+		//bool pathCreateDir(const char* _path, const char* _name, bool _recurse = false);
+
+		char newDir[1024];
+		pathGetCurrentDirectory(buffer, 1024);
+		pathAppend(buffer, "testdir/", newDir, 1024);
+		CHECK(true == pathCreateDir(buffer, "testDir", true));
+		CHECK(true == pathExists(newDir));
+
+		// bool pathRemoveDir(const char* _path, const char* _name);
+		CHECK(true  == pathRemoveDir(buffer, "testDir"));
+		CHECK(false == pathExists(newDir));
+
+		// bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _stringViews, uint32_t _maxViews);
+		uint32_t numDirs;
+		StringView strs[16];
+		CHECK(true == pathSplit("/some/and/up/test.txt", &numDirs, strs, 16));
+
+	}
+}

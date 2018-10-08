@@ -38,11 +38,11 @@ namespace rtm {
 	/// Goes 'up' one level 
 	bool pathUp(const char* _path, char* _buffer, size_t _bufferSize);
 
-	/// Removes 
+	/// Removes relative portions of the path
 	bool pathCanonicalize(const char* _path, char* _buffer, size_t _bufferSize);
 
-    /// Makes absolute path In place 
-    void pathMakeAbsolute(char* _path);
+    /// Removes relative portions of the path In place 
+    void pathCanonicalize(char* _path);
 
 	/// Makes _relative path absolute by appending it to _base
 	/// and repeats using current directory if path is still relative

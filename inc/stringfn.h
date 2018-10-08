@@ -35,25 +35,25 @@ namespace rtm {
 
 	char toUpper(char _ch);
 
-	inline static int32_t strLen(const char* _str, uint32_t _max = -1);
+	inline static uint32_t strLen(const char* _str, uint32_t _max = -1);
 
 	inline static void strToUpper(char* _str);
 
 	inline static void strToLower(char* _str);
 
 	template<fnChar fn>
-	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
+	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
 
 	template<fnChar fn>
 	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax = -1);
 
-	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
+	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
 
-	inline static int32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
+	inline static uint32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
 
-	inline static int32_t strlCpy(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num = -1);
+	inline static uint32_t strlCpy(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num = -1);
 
-	inline static int32_t strlCat(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num = -1);
+	inline static uint32_t strlCat(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num = -1);
 
 	inline static const char* strStr(const char* _str, const char* _find, uint32_t _max = -1);
 
@@ -121,14 +121,14 @@ namespace rtm {
 		return _ch - (isLower(_ch) ? 0x20 : 0);
 	}
 
-	inline static int32_t strLen(const char* _str, uint32_t _max)
+	inline static uint32_t strLen(const char* _str, uint32_t _max)
 	{
 		if (0 == _str)
 			return 0;
 
 		const char* ptr = _str;
 		for (; 0 < _max && *ptr != '\0'; ++ptr, --_max) {};
-		return int32_t(ptr - _str);
+		return uint32_t(ptr - _str);
 	}
 
 	inline static void strToUpper(char* _str)
@@ -142,7 +142,7 @@ namespace rtm {
 	}
 
 	template<fnChar fn>
-	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
+	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		for (
 			; 0 < _max && fn(*_lhs) == fn(*_rhs)
@@ -164,8 +164,8 @@ namespace rtm {
 	{
 		const char* ptr = _str;
 
-		int32_t       stringLen = strLen(_str,  _strMax);
-		const int32_t findLen   = strLen(_find, _findMax);
+		uint32_t       stringLen = strLen(_str,  _strMax);
+		const uint32_t findLen   = strLen(_find, _findMax);
 
 		for (; stringLen >= findLen; ++ptr, --stringLen)
 		{
@@ -200,34 +200,34 @@ namespace rtm {
 		return 0;
 	}
 
-	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
+	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		return strCmp<toNoop>(_lhs, _rhs, _max);
 	}
 
-	inline static int32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max)
+	inline static uint32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		return strCmp<toLower>(_lhs, _rhs, _max);
 	}
 
-	inline static int32_t strlCpy(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num)
+	inline static uint32_t strlCpy(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num)
 	{
 		RTM_ASSERT(0 != _dst, "_dst can't be 0!");
 		RTM_ASSERT(0 != _src, "_src can't be 0!");
 		RTM_ASSERT(0 < _dstSize, "_dstSize can't be 0!");
 
-		const int32_t len = strLen(_src, _num);
-		const int32_t max = _dstSize-1;
-		const int32_t num = (len < max ? len : max);
+		const uint32_t len = strLen(_src, _num);
+		const uint32_t max = _dstSize-1;
+		const uint32_t num = (len < max ? len : max);
 		memcpy(_dst, _src, num);
 		_dst[num] = '\0';
 
 		return num;
 	}
 
-	inline static int32_t strlCat(char* _dst, int32_t _dstSize, const char* _src, uint32_t _num)
+	inline static uint32_t strlCat(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num)
 	{
-		int32_t len = strLen(_dst, _num);
+		uint32_t len = strLen(_dst, _num);
 		_dstSize -= len;
 		_dst += len;
 		return strlCpy(_dst, _dstSize, _src, _num);
