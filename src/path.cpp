@@ -49,7 +49,7 @@ const char* pathGetFileName(const char* _path)
 	return &_path[len + 1];
 }
 
-bool pathGetFilename(const char* _path, char* _buffer, size_t _bufferSize)
+bool pathGetFilename(const char* _path, char* _buffer, uint32_t _bufferSize)
 {
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_path, "");
@@ -79,7 +79,7 @@ bool pathGetFilename(const char* _path, char* _buffer, size_t _bufferSize)
 	return true;
 }
 
-bool pathGetFilenameNoExt(const char* _path, char* _buffer, size_t _bufferSize)
+bool pathGetFilenameNoExt(const char* _path, char* _buffer, uint32_t _bufferSize)
 {
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_path, "");
@@ -133,7 +133,7 @@ const char* pathGetExt(const char* _path)
 	return &_path[length];
 } 
 
-bool pathGetExt(const char* _path, char* _buffer, size_t _bufferSize)
+bool pathGetExt(const char* _path, char* _buffer, uint32_t _bufferSize)
 {
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_path, "");
@@ -164,7 +164,7 @@ bool pathGetExt(const char* _path, char* _buffer, size_t _bufferSize)
 	return true;
 }
 
-bool pathGetCurrentDirectory(char* _buffer, size_t _bufferSize)
+bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 {
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_bufferSize > 0, "");
@@ -193,7 +193,7 @@ bool pathGetCurrentDirectory(char* _buffer, size_t _bufferSize)
 #endif
 }
 
-bool pathGetDataDirectory(char* _buffer, size_t _bufferSize)
+bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 {
 #if RTM_PLATFORM_WINDOWS
 
@@ -237,7 +237,7 @@ bool pathGetDataDirectory(char* _buffer, size_t _bufferSize)
 #endif
 }
 
-bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, size_t _bufferSize)
+bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, uint32_t _bufferSize)
 {
 	RTM_ASSERT(_appendPath, "");
 	RTM_ASSERT(_buffer, "");
@@ -281,13 +281,13 @@ bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, size_
 	return true;
 }
 
-bool pathUp(const char* _path, char* _buffer, size_t _bufferSize)
+bool pathUp(const char* _path, char* _buffer, uint32_t _bufferSize)
 {
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = strLen(_path);
+	uint32_t len = strLen(_path);
 
 	uint32_t slashes = pathIsDirectory(_path) ? 2 : 1;
 
@@ -307,7 +307,7 @@ bool pathUp(const char* _path, char* _buffer, size_t _bufferSize)
 	return false;
 }
 
-bool pathCanonicalize(const char* _path, char* _buffer, size_t _bufferSize)
+bool pathCanonicalize(const char* _path, char* _buffer, uint32_t _bufferSize)
 {
 	RTM_UNUSED(_bufferSize);
 
@@ -347,7 +347,7 @@ void pathCanonicalize(char* _path)
 	toUnixSlashes(_path);
 }
 
-bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, size_t _bufferSize)
+bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, uint32_t _bufferSize)
 {
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_bufferSize > 0, "");
@@ -376,7 +376,7 @@ bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, s
 	return true;
 }
 
-bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, size_t _bufferSize)
+bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, uint32_t _bufferSize)
 {
 #if RTM_PLATFORM_WINDOWS
 	wchar_t result[1024];

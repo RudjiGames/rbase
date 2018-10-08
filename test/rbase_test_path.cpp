@@ -120,9 +120,9 @@ SUITE(rbase)
 		CHECK(false == pathExists(newDir));
 
 		// bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _stringViews, uint32_t _maxViews);
+
 		uint32_t numDirs;
 		StringView strs[16];
 		CHECK(true == pathSplit("/some/and/up/test.txt", &numDirs, strs, 16));
-
 	}
 }
