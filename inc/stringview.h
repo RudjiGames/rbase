@@ -7,6 +7,7 @@
 #define RTM_RBASE_STRINGVIEW_H
 
 #include <rbase/inc/platform.h>
+#include <rbase/inc/stringfn.h>
 #include <string.h> // memcpy
 
 #ifndef RBASE_NAMESPACE
@@ -28,14 +29,14 @@ namespace rtm {
 
 	public:
 		StringView();
-		StringView(const char* _str, uint32_t _len = -1);
+		StringView(const char* _str, uint32_t _len = UINT32_MAX);
 		StringView(const char* _start, const char* _end);
 
 		StringView& operator = (const char* _str);
 		StringView& operator = (const StringView& _other);
 
 		void		clear();
-		void		set(const char* _str, uint32_t _len = -1);
+		void		set(const char* _str, uint32_t _len = UINT32_MAX);
 		void		set(const char* _start, const char* _end);
 		bool		isNull() const;
 		const char*	data() const;
@@ -53,17 +54,20 @@ namespace rtm {
 	public:
 		String();
 		String(StringView& _view);
-		String(const char* _str, uint32_t _len = -1);
+		String(const char* _str, uint32_t _len = UINT32_MAX);
 		String(const char* _start, const char* _end);
 		~String();
 
-		String& operator = (const char* _str);		String& operator = (const String& _other);		String& operator = (const StringView& _other);
+		String& operator = (const char* _str);
+		String& operator = (const String& _other);
+		String& operator = (const StringView& _other);
+
 		void		clear();
-		void		set(const char* _str, uint32_t _len = -1);
+		void		set(const char* _str, uint32_t _len = UINT32_MAX);
 		void		set(const char* _start, const char* _end);
 		void		set(String& _string);
 		void		set(StringView& _view);
-		void		append(const char* _str, uint32_t _len = -1);
+		void		append(const char* _str, uint32_t _len = UINT32_MAX);
 		void		append(const char* _start, const char* _end);
 		void		append(String& _string);
 		void		append(StringView& _view);
@@ -194,12 +198,14 @@ namespace rtm {
 	}
 
 	String& String::operator = (const String& _other)
+
 	{
 		set(_other.data(), _other.length());
 		return *this;
 	}
 
 	String& String::operator = (const StringView& _other)
+
 	{
 		set(_other.data(), _other.length());
 		return *this;

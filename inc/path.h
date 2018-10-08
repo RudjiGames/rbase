@@ -7,14 +7,67 @@
 #define RTM_RBASE_PATH_H
 
 #include <rbase/inc/platform.h>
+#include <rbase/inc/stringview.h>
 
 namespace rtm {
 
-	void pathRemoveRelative(char* _path);
-
+    /// Retrieves file name with extension if it is a file path
 	const char* pathGetFileName(const char* _path);
 
+    /// Retrieves file name with extension if it is a file path
+	bool pathGetFilename(const char* _path, char* _buffer, size_t _bufferSize);
+
+	/// Retrieves file name without extension if it is a file path
+	bool pathGetFilenameNoExt(const char* _path, char* _buffer, size_t _bufferSize);
+
+	/// Retrieves file extension if it is a file path
 	const char* pathGetExt(const char* _path);
+
+	/// Retrieves file extension if it is a file path
+	bool pathGetExt(const char* _path, char* _buffer, size_t _bufferSize);
+
+	/// Retrieves current working directory
+	bool pathGetCurrentDirectory(char* _buffer, size_t _bufferSize);
+
+	/// Retrieves path to data root directory
+	bool pathGetDataDirectory(char* _buffer, size_t _bufferSize);
+
+	/// Appends two paths and stores result to path referred by _path handle
+	bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, size_t _bufferSize);
+
+	/// Goes 'up' one level 
+	bool pathUp(const char* _path, char* _buffer, size_t _bufferSize);
+
+	/// Removes 
+	bool pathCanonicalize(const char* _path, char* _buffer, size_t _bufferSize);
+
+    /// Makes absolute path In place 
+    void pathMakeAbsolute(char* _path);
+
+	/// Makes _relative path absolute by appending it to _base
+	/// and repeats using current directory if path is still relative
+	bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, size_t _bufferSize);
+
+	/// Makes _path relative
+	bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, size_t _bufferSize);
+	
+	/// Checks if path is absolute
+	bool pathIsAbsolute(const char* _path);
+
+	/// Checks if file or directory at given path exists
+	bool pathExists(const char* _path);
+
+	/// Checks if given path refers to a directory
+	bool pathIsDirectory(const char* _path);
+
+	/// Creates a directory.
+	bool pathCreateDir(const char* _path, const char* _name, bool _recurse = false);
+
+	/// Deletes an existing empty directory.
+	bool pathRemoveDir(const char* _path, const char* _name);
+
+	/// Splits path and stores list of directories to _directories.
+	bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _stringViews, uint32_t _maxViews);
 
 } // namespace rtm
 
