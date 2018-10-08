@@ -17,6 +17,8 @@ addons:
 
 before_script:
     - git clone --depth 1 https://github.com/milostosic/build ../build
+    - git clone --depth 1 https://github.com/milostosic/rapp  ../rapp
+    - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git      
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then chmod 764  ../build/tools/bin/linux/genie; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ];   then chmod 764  ../build/tools/bin/darwin/genie; fi
 
