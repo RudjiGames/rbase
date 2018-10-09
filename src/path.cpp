@@ -15,6 +15,10 @@
 #elif RTM_PLATFORM_POSIX
 #include <unistd.h>
 #include <limits.h>
+#include <sys/stat.h>
+#include <sys/stat.h>
+
+
 #endif
 
 namespace rtm {
@@ -436,11 +440,14 @@ bool pathExists(const char* _path)
 		return false;
 
 	DWORD dwAttr = ::GetFileAttributesW(wpath.m_ptr);
-	bool ret = dwAttr != INVALID_FILE_ATTRIBUTES;
-	return ret;
+	return dwAttr != INVALID_FILE_ATTRIBUTES;
 
 #elif RTM_PLATFORM_POSIX
-#else
+	struct stat info;
+	if (stat(_path, &info) != 0)
+		return false; // cannot access
+
+	return (info.st_mode & (S_IFDIR | S_IFREG /*| S_IFLNK*/)) != 0;
 #endif
 }
 
@@ -461,11 +468,11 @@ bool pathCreateDir(const char* _path, const char* _name, bool _recurse)
 	if (!pathIsAbsolute(_path))
 		return false;
 
-	char buffer[2048];
-	if (!pathAppend(_path, _name, buffer, 2048))
+#if RTM_PLATFORM_WINDOWS
+	char buffer[8192];
+	if (!pathAppend(_path, _name, buffer, 8192))
 		return false;
 
-#if RTM_PLATFORM_WINDOWS
 	pathCanonicalize(buffer);
 	replaceSlashes(buffer, '\\');
 
@@ -474,15 +481,14 @@ bool pathCreateDir(const char* _path, const char* _name, bool _recurse)
 	if (_recurse)
 	{
 		char* nextSlash = strstr(buffer, "\\");
-		do 
+		do
 		{
 			*nextSlash = 0;
 			rtm::MultiToWide ws(buffer);
 			CreateDirectoryW(ws.m_ptr, 0);
 			*nextSlash = '\\';
-			nextSlash = strstr(nextSlash+1, "\\");
-		}
-		while (nextSlash);
+			nextSlash = strstr(nextSlash + 1, "\\");
+		} while (nextSlash);
 
 		rtm::MultiToWide ws(buffer);
 		CreateDirectoryW(ws.m_ptr, 0);
@@ -499,8 +505,24 @@ bool pathCreateDir(const char* _path, const char* _name, bool _recurse)
 	}
 
 	return ret;
+
 #elif RTM_PLATFORM_POSIX
-#else
+
+	char buffer[PATH_MAX + 1];
+	pathAppend(_path, _name, buffer, PATH_MAX + 1);
+
+	if (_recurse)
+	{
+		char *sep = strrchr(buffer, '/');
+		if (sep)
+		{
+			*sep = 0;
+			mkdir(buffer, 0777);
+			*sep = '/';
+		}
+	}
+
+	return (0 == mkdir(buffer, 0777));
 #endif
 }
 
@@ -512,11 +534,11 @@ bool pathRemoveDir(const char* _path, const char* _name)
 	if (!pathIsAbsolute(_path))
 		return false;
 
-	char buffer[2048];
-	if (!pathAppend(_path, _name, buffer, 2048))
+#if RTM_PLATFORM_WINDOWS
+	char buffer[8192];
+	if (!pathAppend(_path, _name, buffer, 8192))
 		return false;
 
-#if RTM_PLATFORM_WINDOWS
 	pathCanonicalize(buffer);
 	replaceSlashes(buffer, '\\');
 
@@ -525,8 +547,13 @@ bool pathRemoveDir(const char* _path, const char* _name)
 		return false;
 
 	return true;
+
 #elif RTM_PLATFORM_POSIX
-#else
+	char buffer[PATH_MAX+1];
+	if (!pathAppend(_path, _name, buffer, PATH_MAX + 1))
+		return false;
+
+	return 0 == rmdir(buffer);
 #endif
 }
 
