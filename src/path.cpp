@@ -9,8 +9,8 @@
 #include <rbase/inc/stringfn.h>
 
 #if RTM_PLATFORM_WINDOWS
-#include <Shlwapi.h>
-#pragma comment(lib, "Shlwapi.lib")
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 #elif RTM_PLATFORM_POSIX
 #include <unistd.h>
