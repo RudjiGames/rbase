@@ -352,28 +352,14 @@ bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, u
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	if (!pathAppend(_base, _relative, _buffer, _bufferSize))
+	char tmpBuffer[4096];
+	if (!pathAppend(_base, _relative, tmpBuffer, 4096))
 	{
 		_buffer[0] = 0;
 		return false;
 	}
 
-	char tmpBuffer[1024];
-	pathCanonicalize(_buffer, tmpBuffer, 1024);
-
-	if (!pathIsAbsolute(tmpBuffer))
-	{
-		char cwd[512];
-		if (pathGetCurrentDirectory(cwd, 512))
-		{
-			pathMakeAbsolute(tmpBuffer, cwd, _buffer, _bufferSize);
-			pathCanonicalize(_buffer);
-		}
-		else
-			return false;
-	}
-			
-	return true;
+	return pathCanonicalize(tmpBuffer, _buffer, _bufferSize);
 }
 
 bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, uint32_t _bufferSize)
@@ -528,7 +514,7 @@ bool pathRemoveDir(const char* _path, const char* _name)
 
 static inline const char* findSlash(const char* _str)
 {
-    while ((*_str != '/') && (*_str != '\\'))
+    while ((*_str != '\0') && !isSlash(*_str))
         ++_str;
     return _str;
 }
@@ -548,16 +534,16 @@ bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _string
 	if (ps)
 		pe = findSlash(ps + 1);
 
-	uint64_t dirOffsets[512];
+	uint32_t dirOffsets[512];
 	uint32_t numDirs = 0;
 
-	while (pe)
+	while ((*pe != '\0') && (numDirs < 512))
 	{
-		size_t ds = ps + 1 - _path;
-		size_t de = pe - _path;
+		uint32_t ds = (uint32_t)(ps + 1 - _path);
+		uint32_t de = (uint32_t)(pe - _path);
 
 		RTM_ASSERT(ds < (1<<16), "");
-		size_t offsets = ds + (de << 16);
+		uint32_t offsets = ds + (de << 16);
 
 		dirOffsets[numDirs++] = offsets;
 
@@ -572,10 +558,10 @@ bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _string
         return false;
     }
 
-	for (uint64_t i=0; i<numDirs; ++i)
+	for (uint32_t i=0; i<numDirs; ++i)
 	{
-		size_t de = (dirOffsets[i] >> 16) & 0xffffffff;
-		size_t ds =  dirOffsets[i] & 0xffff;
+		uint32_t de = (dirOffsets[i] >> 16) & 0xffffffff;
+		uint32_t ds =  dirOffsets[i] & 0xffff;
         _stringViews[i].set(&_path[ds], (uint32_t)(de-ds));
 	}
 

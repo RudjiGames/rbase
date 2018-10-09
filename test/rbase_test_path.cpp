@@ -90,6 +90,10 @@ SUITE(rbase)
 
 		// bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, size_t _bufferSize);
 
+		CHECK(false == pathMakeAbsolute("../dir2/file2.txt", "/root/dir1/file3.txt", buffer, 1024));
+		CHECK(true  == pathMakeAbsolute("../dir2/file2.txt", "/root/dir1/", buffer, 1024));
+		CHECK(0		== strCmp(buffer, "/root/dir2/file2.txt"));
+
 		///// Makes _path relative
 		//bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, size_t _bufferSize);
 
@@ -124,5 +128,9 @@ SUITE(rbase)
 		uint32_t numDirs;
 		StringView strs[16];
 		CHECK(true == pathSplit("/some/and/up/test.txt", &numDirs, strs, 16));
+		CHECK(3 == numDirs);
+		CHECK(0 == strCmp(strs[0], "some",	strs[0].length()));
+		CHECK(0 == strCmp(strs[1], "and",	strs[1].length()));
+		CHECK(0 == strCmp(strs[2], "up",	strs[2].length()));
 	}
 }

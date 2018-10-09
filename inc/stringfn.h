@@ -35,29 +35,29 @@ namespace rtm {
 
 	char toUpper(char _ch);
 
-	inline static uint32_t strLen(const char* _str, uint32_t _max = -1);
+	inline static uint32_t strLen(const char* _str, uint32_t _max = UINT32_MAX);
 
 	inline static void strToUpper(char* _str);
 
 	inline static void strToLower(char* _str);
 
 	template<fnChar fn>
-	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
+	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
 
 	template<fnChar fn>
-	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax = -1);
+	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax = UINT32_MAX);
 
-	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
+	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
 
-	inline static uint32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max = -1);
+	inline static uint32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
 
-	inline static uint32_t strlCpy(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num = -1);
+	inline static uint32_t strlCpy(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num = UINT32_MAX);
 
-	inline static uint32_t strlCat(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num = -1);
+	inline static uint32_t strlCat(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num = UINT32_MAX);
 
-	inline static const char* strStr(const char* _str, const char* _find, uint32_t _max = -1);
+	inline static const char* strStr(const char* _str, const char* _find, uint32_t _max = UINT32_MAX);
 
-	inline static const char* striStr(const char* _str, const char* _find, uint32_t _max = -1);
+	inline static const char* striStr(const char* _str, const char* _find, uint32_t _max = UINT32_MAX);
 
 	//--------------------------------------------------------------------------
 

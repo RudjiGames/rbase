@@ -44,8 +44,7 @@ namespace rtm {
     /// Removes relative portions of the path In place 
     void pathCanonicalize(char* _path);
 
-	/// Makes _relative path absolute by appending it to _base
-	/// and repeats using current directory if path is still relative
+	/// Makes relative path absolute by appending it to base and canonicalizing it
 	bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, uint32_t _bufferSize);
 
 	/// Makes _path relative
