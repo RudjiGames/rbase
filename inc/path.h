@@ -48,7 +48,7 @@ namespace rtm {
 	bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, uint32_t _bufferSize);
 
 	/// Makes _path relative
-	bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, uint32_t _bufferSize);
+	bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer, uint32_t _bufferSize);
 	
 	/// Checks if path is absolute
 	bool pathIsAbsolute(const char* _path);

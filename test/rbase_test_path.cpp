@@ -94,12 +94,16 @@ SUITE(rbase)
 		CHECK(true  == pathMakeAbsolute("../dir2/file2.txt", "/root/dir1/", buffer, 1024));
 		CHECK(0		== strCmp(buffer, "/root/dir2/file2.txt"));
 
-		///// Makes _path relative
-		//bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, size_t _bufferSize);
+		//bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer, size_t _bufferSize);
 
+		CHECK(true	== pathMakeRelative("/usr/tosa/test/dir/text.file", "/usr/tosa/some/other/dir/", buffer, 1024));
+		CHECK(0		== strCmp(buffer, "../../some/other/dir/"));
 
+		CHECK(true	== pathMakeRelative("/usr/tosa/some/other/dir/", "/usr/tosa/test/dir/text.file", buffer, 1024));
+		CHECK(0		== strCmp(buffer, "../../../test/dir/text.file"));
 
-
+		CHECK(false	== pathMakeRelative("/usr/tosa/test/dir/text.file", "/user/tosa/some/other/dir/", buffer, 1024));
+		CHECK(false	== pathMakeRelative("/usr/tosa/test/dir/text.file", "../usr/tosa/some/other/dir/", buffer, 1024));
 
 		//bool pathIsAbsolute(const char* _path);
 

@@ -362,28 +362,48 @@ bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, u
 	return pathCanonicalize(tmpBuffer, _buffer, _bufferSize);
 }
 
-bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, uint32_t _bufferSize)
+bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer, uint32_t _bufferSize)
 {
-#if RTM_PLATFORM_WINDOWS
-	wchar_t result[1024];
-	rtm::MultiToWide pf(_pathFrom);
-	rtm::MultiToWide pt(_pathTo);
+	RTM_ASSERT(_buffer, "");
 
-	if (!PathRelativePathToW(	result, 
-								pf.m_ptr, 
-								_fromDir ? FILE_ATTRIBUTE_DIRECTORY : 0,
-								pt.m_ptr,
-								_toDir ? FILE_ATTRIBUTE_DIRECTORY : 0))
+	if (!_pathFrom  || !_pathTo)
 		return false;
 
-	rtm::WideToMulti res(result);
-	return rtm::strLen(res) == rtm::strlCpy(_buffer, (int32_t)_bufferSize, res);
+	int cr=0;
+	int lastSlash = 0;
+	while (_pathFrom[cr] == _pathTo[cr])
+	{
+		if (isSlash(_pathFrom[cr]))
+			lastSlash = cr;
+		++cr;
+	}
 
-#elif RTM_PLATFORM_POSIX
+	if (lastSlash < 2) // no common root, only slash or nothing
+		return false;
 
-#else
-#endif
+	int dirs = 0;
+	int c = lastSlash + 1;
+	while (_pathFrom[c] != '\0')
+		if (isSlash(_pathFrom[c++]))
+			++dirs;
 
+	_buffer[0] = 0;
+	while (dirs-- && (_bufferSize > 3))
+	{
+		strlCat(_buffer, _bufferSize, "../");
+		_bufferSize -= 3;
+	}
+
+	uint32_t remLen = strLen(&_pathTo[lastSlash+1]);
+	if (_bufferSize > remLen)
+		strlCat(_buffer, _bufferSize, &_pathTo[lastSlash+1]);
+	else
+	{
+		_buffer[0] = 0;
+		return false;
+	}
+
+	return true;
 }
 
 bool pathIsAbsolute(const char* _path)
