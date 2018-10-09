@@ -391,20 +391,18 @@ bool pathIsAbsolute(const char* _path)
 	if (!_path)
 		return false;
 
+	if (isSlash(_path[0]))
+		return true;
+
 #if RTM_PLATFORM_WINDOWS
-	if (!_path || !*_path)
+	if (!*_path)
 		return false;
 
-	if (/*isSlash(_path[0]) || */(_path[1] == ':'))
+	if (_path[1] == ':')
 		return true;
-                
-	return false;
-
-#elif RTM_PLATFORM_POSIX
-    return _path[0] == '/';
-
-#else
 #endif
+
+	return false;
 }
 
 bool pathExists(const char* _path)

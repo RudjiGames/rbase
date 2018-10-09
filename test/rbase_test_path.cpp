@@ -97,8 +97,14 @@ SUITE(rbase)
 		///// Makes _path relative
 		//bool pathMakeRelative(const char* _pathFrom, bool _fromDir, const char* _pathTo, bool _toDir, char* _buffer, size_t _bufferSize);
 
-		///// Checks if path is absolute
+
+
+
+
 		//bool pathIsAbsolute(const char* _path);
+
+		CHECK(true  == pathIsAbsolute(pathFile));
+		CHECK(false == pathIsAbsolute("../test.txt"));
 
 		// bool pathExists(const char* _path);
 
