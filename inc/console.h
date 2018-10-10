@@ -52,7 +52,7 @@ namespace rtm {
 			}
 #else
 			RTM_UNUSED(_color);
-			printf("%s\n",buffer);
+			printf("%s",buffer);
 #endif
 		}
 
