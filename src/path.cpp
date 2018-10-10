@@ -17,8 +17,6 @@
 #include <limits.h>
 #include <sys/stat.h>
 #include <sys/stat.h>
-
-
 #endif
 
 namespace rtm {
@@ -192,8 +190,13 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 	return rtm::strLen(wb) == rtm::strlCpy(_buffer, (int32_t)_bufferSize, wb);
 
 #elif RTM_PLATFORM_POSIX
-	return _buffer == getcwd(_buffer, _bufferSize);
-#else
+	if (!(_buffer == getcwd(_buffer, _bufferSize)))
+		return false;
+
+	if (!pathIsDirectory(_buffer))
+		strlCat(_buffer, _bufferSize, "/");
+
+	return true;
 #endif
 }
 
@@ -318,7 +321,6 @@ bool pathCanonicalize(const char* _path, char* _buffer, uint32_t _bufferSize)
 	if (!_path)
 		return false;
 
-#if RTM_PLATFORM_WINDOWS
 	if (_buffer)
 	{
 		RTM_ASSERT(strLen(_path) < _bufferSize, "");
@@ -327,13 +329,6 @@ bool pathCanonicalize(const char* _path, char* _buffer, uint32_t _bufferSize)
 		return true;
 	}
 	return false;
-
-#elif RTM_PLATFORM_POSIX
-    RTM_ASSERT(PATH_MAX >= _bufferSize, "");
-	return _buffer == realpath(_path, _buffer);
-#else
-
-#endif
 }
 
 void pathCanonicalize(char* _path)
@@ -468,12 +463,16 @@ bool pathCreateDir(const char* _path, const char* _name, bool _recurse)
 	if (!pathIsAbsolute(_path))
 		return false;
 
-#if RTM_PLATFORM_WINDOWS
+	if (!pathIsDirectory(_path))
+		return false;
+
 	char buffer[8192];
 	if (!pathAppend(_path, _name, buffer, 8192))
 		return false;
 
 	pathCanonicalize(buffer);
+
+#if RTM_PLATFORM_WINDOWS
 	replaceSlashes(buffer, '\\');
 
 	bool ret = true;
@@ -507,10 +506,6 @@ bool pathCreateDir(const char* _path, const char* _name, bool _recurse)
 	return ret;
 
 #elif RTM_PLATFORM_POSIX
-
-	char buffer[PATH_MAX + 1];
-	pathAppend(_path, _name, buffer, PATH_MAX + 1);
-
 	if (_recurse)
 	{
 		char *sep = strrchr(buffer, '/');
