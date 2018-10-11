@@ -25,6 +25,10 @@ namespace rtm {
 
 	bool isHexNum(char _ch);
 
+	char toHexNum(char _ch);
+
+	char fromHexNum(char _ch);
+
 	char toNoop(char _ch);
 
 	bool isUpper(char _ch);
@@ -96,6 +100,16 @@ namespace rtm {
 		return isInRange(toLower(_ch), 'a', 'f') || isNumeric(_ch);
 	}
 
+	inline char toHexNum(char _ch)
+	{
+		return "0123456789ABCDEF"[_ch & 0xf];
+	}
+
+	inline char fromHexNum(char _ch)
+	{
+		return _ch >= 'A' ? 10 + _ch - 'A' : _ch - '0';
+	}
+	
 	inline char toNoop(char _ch)
 	{
 		return _ch;

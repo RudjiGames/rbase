@@ -5,7 +5,6 @@
 
 #include <rapp/inc/rapp.h>
 #include <rbase/inc/platform.h>
-#include <rbase/inc/path.h>
 #include <rbase/inc/console.h>
 
 #include <UnitTest++/UnitTest++.h>

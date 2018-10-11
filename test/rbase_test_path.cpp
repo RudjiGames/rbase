@@ -4,6 +4,7 @@
 //--------------------------------------------------------------------------//
 
 #include <rbase_test_pch.h>
+#include <rbase/inc/path.h>
 
 using namespace rtm;
 

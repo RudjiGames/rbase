@@ -66,7 +66,7 @@ namespace rtm {
 	bool pathRemoveDir(const char* _path, const char* _name);
 
 	/// Splits path and stores list of directories to _directories.
-	bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _stringViews, uint32_t _maxViews);
+	bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _dirList, uint32_t _maxDirs);
 
 } // namespace rtm
 

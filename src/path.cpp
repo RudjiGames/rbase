@@ -202,6 +202,9 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 
 bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 {
+	RTM_ASSERT(_buffer, "");
+	RTM_ASSERT(_bufferSize > 0, "");
+
 #if RTM_PLATFORM_WINDOWS
 
 	wchar_t executablePath[512];
@@ -316,7 +319,10 @@ bool pathUp(const char* _path, char* _buffer, uint32_t _bufferSize)
 
 bool pathCanonicalize(const char* _path, char* _buffer, uint32_t _bufferSize)
 {
-	RTM_UNUSED(_bufferSize);
+	RTM_ASSERT(_path, "");
+	RTM_ASSERT(_buffer, "");
+	RTM_ASSERT(_bufferSize > 0, "");
+
 
 	if (!_path)
 		return false;
@@ -333,6 +339,8 @@ bool pathCanonicalize(const char* _path, char* _buffer, uint32_t _bufferSize)
 
 void pathCanonicalize(char* _path)
 {
+	RTM_ASSERT(_path, "");
+
 	const char* pos = 0;
 	while ((pos = strStr(_path, "..")) != 0)
 	{
@@ -348,6 +356,8 @@ void pathCanonicalize(char* _path)
 
 bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, uint32_t _bufferSize)
 {
+	RTM_ASSERT(_relative, "");
+	RTM_ASSERT(_base, "");
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
@@ -363,7 +373,10 @@ bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, u
 
 bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer, uint32_t _bufferSize)
 {
+	RTM_ASSERT(_pathFrom, "");
+	RTM_ASSERT(_pathTo, "");
 	RTM_ASSERT(_buffer, "");
+	RTM_ASSERT(_bufferSize > 0, "");
 
 	if (!_pathFrom  || !_pathTo)
 		return false;
@@ -407,6 +420,8 @@ bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer,
 
 bool pathIsAbsolute(const char* _path)
 {
+	RTM_ASSERT(_path, "");
+
 	if (!_path)
 		return false;
 
@@ -426,6 +441,8 @@ bool pathIsAbsolute(const char* _path)
 
 bool pathExists(const char* _path)
 {
+	RTM_ASSERT(_path, "");
+
 	if (!_path)
 		return false;
 
@@ -448,6 +465,8 @@ bool pathExists(const char* _path)
 
 bool pathIsDirectory(const char* _path)
 {
+	RTM_ASSERT(_path, "");
+
 	if (!_path)
 		return false;
 
@@ -457,6 +476,9 @@ bool pathIsDirectory(const char* _path)
 
 bool pathCreateDir(const char* _path, const char* _name, bool _recurse)
 {
+	RTM_ASSERT(_path, "");
+	RTM_ASSERT(_name, "");
+
 	if (!_path)
 		return false;
 
@@ -523,6 +545,9 @@ bool pathCreateDir(const char* _path, const char* _name, bool _recurse)
 
 bool pathRemoveDir(const char* _path, const char* _name)
 {
+	RTM_ASSERT(_path, "");
+	RTM_ASSERT(_name, "");
+
 	if (!_path)
 		return false;
 
@@ -559,9 +584,12 @@ static inline const char* findSlash(const char* _str)
     return _str;
 }
 
-bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _stringViews, uint32_t _maxViews)
+bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _dirList, uint32_t _maxDirs)
 {
+	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_numDirectories, "");
+	RTM_ASSERT(_dirList, "");
+	RTM_ASSERT(_maxDirs > 0, "");
 
 	*_numDirectories = 0;
 
@@ -593,7 +621,7 @@ bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _string
 
 	*_numDirectories = static_cast<uint32_t>(numDirs);
 
-    if (numDirs > _maxViews)
+    if (numDirs > _maxDirs)
     {
         return false;
     }
@@ -602,7 +630,7 @@ bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _string
 	{
 		uint32_t de = (dirOffsets[i] >> 16) & 0xffffffff;
 		uint32_t ds =  dirOffsets[i] & 0xffff;
-        _stringViews[i].set(&_path[ds], (uint32_t)(de-ds));
+        _dirList[i].set(&_path[ds], (uint32_t)(de-ds));
 	}
 
     return true;
