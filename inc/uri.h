@@ -14,12 +14,16 @@ namespace rtm {
 	/// URI encoding
 	/// Returns UINT32_MAX if not enough space in destination buffer or
 	/// number of written characters on success.
-	uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize);
+
+	uint32_t uriEncode(const StringView& _str, char* _buffer, uint32_t _bufferSize);
+	uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32_t _maxUriChars = UINT32_MAX);
 
 	/// URI decoding
 	/// Returns UINT32_MAX if not enough space in destination buffer or 0 on error/
 	/// Returns number of written characters on success.
-	uint32_t uriDecode(const char* _uri, char* _buffer, uint32_t _bufferSize);
+
+	uint32_t uriDecode(const StringView& _str, char* _buffer, uint32_t _bufferSize);
+	uint32_t uriDecode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32_t _maxUriChars = UINT32_MAX);
 
 } // namespace rtm
 

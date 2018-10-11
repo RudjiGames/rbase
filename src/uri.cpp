@@ -18,12 +18,17 @@ static inline int shouldEncode(char ch)
 		|| '(' == ch || ')' == ch);
 }
 
-uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize)
+uint32_t uriEncode(const StringView& _str, char* _buffer, uint32_t _bufferSize)
+{
+	return uriEncode(_str.data(), _buffer, _bufferSize, _str.length());
+}
+
+uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32_t _maxUriChars)
 {
 	RTM_ASSERT(_uri, "");
 	RTM_ASSERT(_buffer, "");
 
-	uint32_t len = strLen(_uri);
+	uint32_t len = _maxUriChars == UINT32_MAX ? strLen(_uri) : _maxUriChars;
 	const char* uriEnd = _uri + len;
 
 	uint32_t dSize = 0;
@@ -60,12 +65,17 @@ uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize)
 	return dSize;
 }
 
-uint32_t uriDecode(const char* _uri, char* _buffer, uint32_t _bufferSize)
+uint32_t uriDecode(const StringView& _str, char* _buffer, uint32_t _bufferSize)
+{
+	return uriDecode(_str.data(), _buffer, _bufferSize, _str.length());
+}
+
+uint32_t uriDecode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32_t _maxUriChars)
 {
 	RTM_ASSERT(_uri, "");
 	RTM_ASSERT(_buffer, "");
 
-	uint32_t len = strLen(_uri);
+	uint32_t len = _maxUriChars == UINT32_MAX ? strLen(_uri) : _maxUriChars;
 	const char* uriEnd = _uri + len;
 
 	uint32_t dSize = 0;
