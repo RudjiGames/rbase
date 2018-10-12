@@ -14,7 +14,7 @@ addons:
     - gcc-5
     - g++-5
     - clang
-    - libX11-dev
+    - libx11-dev
 
 before_script:
     - git clone --depth 1 https://github.com/milostosic/build ../build
