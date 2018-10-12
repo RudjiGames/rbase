@@ -275,7 +275,7 @@ namespace rtm {
 	inline static const char* strStr(const StringView& _view, uint32_t _strMax, const char* _find, uint32_t _findMax)
 	{
 		_strMax = _strMax > _view.length() ? _view.length() : _strMax;
-		return strStr(_view.data(), smax, _find, _findMax);
+		return strStr(_view.data(), _strMax, _find, _findMax);
 	}
 
 	inline static uint32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max)
