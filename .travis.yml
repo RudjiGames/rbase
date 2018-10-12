@@ -14,7 +14,11 @@ addons:
     - gcc-5
     - g++-5
     - clang
-    - libx11-dev
+    - libxrandr-dev
+    - libxinerama-dev
+    - libxcursor-dev
+    - libxi-dev
+    - libegl1-mesa-dev
 
 before_script:
     - git clone --depth 1 https://github.com/milostosic/build ../build
