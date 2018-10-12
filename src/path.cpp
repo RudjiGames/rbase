@@ -51,7 +51,7 @@ const char* pathGetFileName(const char* _path)
 	return &_path[len + 1];
 }
 
-bool pathGetFilename(const char* _path, char* _buffer, uint32_t _bufferSize)
+bool pathGetFileName(const char* _path, char* _buffer, uint32_t _bufferSize)
 {
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_path, "");
@@ -230,7 +230,7 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 	}
 	*(++ptr) = 0;
 	
-	strlCat(ptr, uint32_t(mb - ptr), "/.data/windows/");
+	strlCpy(ptr, uint32_t(mb + len - ptr), "/.data/windows/");
 	return strlCpy(_buffer, _bufferSize, mb) == strLen(mb);
 #endif
 
@@ -243,7 +243,39 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 #endif
 
 #elif RTM_PLATFORM_POSIX
-    return -1 != readlink("/proc/self/exe", _buffer, _bufferSize);
+    if (-1 == readlink("/proc/self/exe", _buffer, _bufferSize))
+		return false;
+
+	#if RTM_DEBUG || RTM_RELEASE
+
+		// remove 8 slashes at end    \rtm\.build\windows\vs2017\x64\project\x64\bin\project.exe
+		uint32_t len = strLen(_buffer);
+		char* ptr = _buffer + len;
+
+		int numSlashes = 0;
+		while (numSlashes < 8)
+		{
+			while (*(--ptr) != L'/');
+			--ptr;
+			++numSlashes;
+		}
+		*(++ptr) = 0;
+
+		#if RTM_PLATFORM_LINUX
+			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/linux/");
+		#elif RTM_PLATFORM_OSX
+			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/osx/");
+		#else
+			#error
+		#endif
+
+	#endif
+
+	#if RTM_RETAIL
+		const char* fn = pathGetFileName(_buffer);
+		return 0 != strlCpy((char*)fn, _bufferSize - uint32_t(fn - _buffer), "data/");
+	#endif
+
 #endif
 }
 

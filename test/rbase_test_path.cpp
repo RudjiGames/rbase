@@ -22,12 +22,12 @@ SUITE(rbase)
 
 		char buffer[1024];
 
-		// bool pathGetFilename(const char* _path, char* _buffer, size_t _bufferSize);
+		// bool pathGetFileName(const char* _path, char* _buffer, size_t _bufferSize);
 
-		CHECK(true == pathGetFilename(pathFile, buffer, 1024));
+		CHECK(true == pathGetFileName(pathFile, buffer, 1024));
 		CHECK(0 == strCmp(buffer, "file.txt"));
 
-		CHECK(true == pathGetFilename(pathDir, buffer, 1024));
+		CHECK(true == pathGetFileName(pathDir, buffer, 1024));
 		CHECK(0 == strCmp(buffer, ""));
 
 		// bool pathGetFilenameNoExt(const char* _path, char* _buffer, size_t _bufferSize);

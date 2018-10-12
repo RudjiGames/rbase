@@ -15,7 +15,7 @@ namespace rtm {
 	const char* pathGetFileName(const char* _path);
 
     /// Retrieves file name with extension if it is a file path
-	bool pathGetFilename(const char* _path, char* _buffer, uint32_t _bufferSize);
+	bool pathGetFileName(const char* _path, char* _buffer, uint32_t _bufferSize);
 
 	/// Retrieves file name without extension if it is a file path
 	bool pathGetFilenameNoExt(const char* _path, char* _buffer, uint32_t _bufferSize);
