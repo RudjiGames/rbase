@@ -268,7 +268,7 @@ namespace rtm {
 	template<fnChar fn>
 	inline static uint32_t strCmp(const StringView& _view, const char* _cmp)
 	{
-		return strLen<fn>(_view.data(), _cmp, _view.length());;
+		return strCmp<fn>(_view.data(), _cmp, _view.length());;
 	}
 
 	template<fnChar fn>
