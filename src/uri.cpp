@@ -14,14 +14,18 @@ UriView::UriView()
 
 UriView::UriView(const char* _str, uint32_t _len)
 {
+	parse(StringView(_str, _len));
 }
 
 UriView::UriView(const StringView& _str)
 {
+	parse(_str);
 }
 
 void UriView::clear()
 {
+	for (int i=0; i<UriPart::Count; ++i)
+		m_parts[i].clear();
 }
 
 bool UriView::parse(const StringView& _str)
@@ -31,7 +35,7 @@ bool UriView::parse(const StringView& _str)
 
 const StringView& UriView::get(UriPart::Enum _part) const
 {
-	return m_parts[0];
+	return m_parts[_part];
 }
 
 static inline int shouldEncode(char ch)
