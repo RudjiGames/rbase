@@ -33,5 +33,8 @@ SUITE(rbase)
 
 		CHECK(40 == uriDecode("http%3A%2F%2Fhu.wikipedia.org%2Fwiki%2FS%C3%A3o_Paulo", buffer, 2048));
 		CHECK(0 == strCmp(buffer, "http://hu.wikipedia.org/wiki/São_Paulo"));
+
+		UriView uv("https://www.google.ca/?gws_rd=ssl#q=url+decoding");
+
 	}
 }

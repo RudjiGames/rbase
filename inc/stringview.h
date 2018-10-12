@@ -26,6 +26,7 @@ namespace rtm {
 
 	class StringView;
 	class String;
+	template <uint32_t S>
 	class StringTemp;
 
 	// string view, doesn't own data
@@ -39,13 +40,15 @@ namespace rtm {
 		StringView();
 		StringView(const StringView& _other);
 		StringView(const String& _other);
-		StringView(const StringTemp& _other);
+		template <uint32_t S>
+		StringView(const StringTemp<S>& _other);
 		StringView(const char* _str, uint32_t _len = UINT32_MAX);
 		StringView(const char* _start, const char* _end);
 
 		StringView& operator = (const StringView& _other);
 		StringView& operator = (const String& _other);
-		StringView& operator = (const StringTemp& _other);
+		template <uint32_t S>
+		StringView& operator = (const StringTemp<S>& _other);
 		StringView& operator = (const char* _str);
 
 		void		clear();
@@ -59,6 +62,16 @@ namespace rtm {
 		char operator[](uint32_t _index);
 	};
 
+	static uint32_t strLen(const StringView& _view);
+	template<fnChar fn>
+	static uint32_t strCmp(const StringView& _view, const char* _cmp);
+	template<fnChar fn>
+	static const char* strStr(const StringView& _view, uint32_t _strMax, const char* _find, uint32_t _findMax = UINT32_MAX);
+	static uint32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
+	static uint32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
+	static const char* strStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
+	static const char* striStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
+
 	// dynamically allocated string
 
 	class String
@@ -70,14 +83,16 @@ namespace rtm {
 		String();
 		String(const StringView& _view);
 		String(const String& _other);
-		String(const StringTemp& _temp);
+		template <uint32_t S>
+		String(const StringTemp<S>& _temp);
 		String(const char* _str, uint32_t _len = UINT32_MAX);
 		String(const char* _start, const char* _end);
 		~String();
 
 		String& operator = (const StringView& _other);
 		String& operator = (const String& _other);
-		String& operator = (const StringTemp& _other);
+		template <uint32_t S>
+		String& operator = (const StringTemp<S>& _other);
 		String& operator = (const char* _str);
 
 		void		clear();
@@ -85,7 +100,8 @@ namespace rtm {
 		void		set(const char* _start, const char* _end);
 		void		append(StringView& _view);
 		void		append(String& _string);
-		void		append(StringTemp& _view);
+		template <uint32_t S>
+		void		append(StringTemp<S>& _view);
 		void		append(const char* _str, uint32_t _len = UINT32_MAX);
 		void		append(const char* _start, const char* _end);
 		bool		isNull() const;
@@ -97,10 +113,9 @@ namespace rtm {
 
 	// dynamically allocated string for temporary use with on stack data up to 1024 chars
 
+	template <uint32_t S_ON_STACK_SIZE = 1024>
 	class StringTemp
 	{
-		static const int S_ON_STACK_SIZE = 1024;
-
 		char		m_strData[S_ON_STACK_SIZE];
 		char*		m_str;
 		uint32_t	m_len;
@@ -153,7 +168,8 @@ namespace rtm {
 		set(_other.data(), _other.length());
 	}
 
-	inline StringView::StringView(const StringTemp& _other)
+	template <uint32_t S>
+	inline StringView::StringView(const StringTemp<S>& _other)
 	{
 		set(_other.data(), _other.length());
 	}
@@ -181,7 +197,9 @@ namespace rtm {
 		m_len = _other.length();
 		return *this;
 	}
-	inline StringView& StringView::operator = (const StringTemp& _other)
+
+	template <uint32_t S>
+	inline StringView& StringView::operator = (const StringTemp<S>& _other)
 	{
 		m_str = _other.data();
 		m_len = _other.length();
@@ -242,6 +260,50 @@ namespace rtm {
 
 	//--------------------------------------------------------------------------
 
+	inline static uint32_t strLen(const StringView& _view)
+	{
+		return _view.length();
+	}
+
+	template<fnChar fn>
+	inline static uint32_t strCmp(const StringView& _view, const char* _cmp)
+	{
+		return strLen<fn>(_view.data(), _cmp, _view.length());;
+	}
+
+	template<fnChar fn>
+	inline static const char* strStr(const StringView& _view, uint32_t _strMax, const char* _find, uint32_t _findMax)
+	{
+		_strMax = _strMax > _view.length() ? _view.length() : _strMax;
+		return strStr(_view.data(), smax, _find, _findMax);
+	}
+
+	inline static uint32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max)
+	{
+		_max = _max > _view.length() ? _view.length() : _max;
+		return strCmp(_view.data(), _rhs, _max);
+	}
+
+	inline static uint32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max)
+	{
+		_max = _max > _view.length() ? _view.length() : _max;
+		return striCmp(_view.data(), _rhs, _max);
+	}
+
+	inline static const char* strStr(const StringView& _view, const char* _find, uint32_t _max)
+	{
+		_max = _max > _view.length() ? _view.length() : _max;
+		return strStr(_view.data(), _find, _max);
+	}
+
+	inline static const char* striStr(const StringView& _view, const char* _find, uint32_t _max)
+	{
+		_max = _max > _view.length() ? _view.length() : _max;
+		return striStr(_view.data(), _find, _max);
+	}
+
+	//--------------------------------------------------------------------------
+
 	inline String::String()
 		: m_str(0)
 		, m_len(0)
@@ -249,26 +311,32 @@ namespace rtm {
 	}
 
 	inline String::String(const StringView& _view)
+		: m_str(0) , m_len(0)
 	{
 		set(_view.data(), _view.length());
 	}
 
 	inline String::String(const String& _other)
+		: m_str(0) , m_len(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
-	inline String::String(const StringTemp& _temp)
+	template <uint32_t S>
+	inline String::String(const StringTemp<S>& _temp)
+		: m_str(0) , m_len(0)
 	{
 		set(_temp.data(), _temp.length());
 	}
 
 	inline String::String(const char* _str, uint32_t _len)
+		: m_str(0) , m_len(0)
 	{
 		set(_str, _len);
 	}
 
 	inline String::String(const char* _start, const char* _end)
+		: m_str(0) , m_len(0)
 	{
 		set(_start, _end);
 	}
@@ -284,7 +352,8 @@ namespace rtm {
 		return *this;
 	}
 
-	inline String& String::operator = (const StringTemp& _temp)
+	template <uint32_t S>
+	inline String& String::operator = (const StringTemp<S>& _temp)
 	{
 		set(_temp.data(), _temp.length());
 		return *this;
@@ -325,8 +394,9 @@ namespace rtm {
 			return;
 
 		m_len = _len == UINT32_MAX ? strLen(_str) : _len;
-		char* str = (char*)RTM_STRING_ALLOC(sizeof(char) * m_len);
-		strlCpy(str, m_len, _str);
+		char* str = (char*)RTM_STRING_ALLOC(sizeof(char) * (m_len+1));
+		strlCpy(str, m_len+1, _str, m_len);
+		str[m_len] = 0;
 		m_str = str;
 	}
 
@@ -341,7 +411,8 @@ namespace rtm {
 		append(_string.data(), _string.length());
 	}
 
-	inline void String::append(StringTemp& _temp)
+	template <uint32_t S>
+	inline void String::append(StringTemp<S>& _temp)
 	{
 		append(_temp.data(), _temp.length());
 	}
@@ -392,71 +463,83 @@ namespace rtm {
 
 	//--------------------------------------------------------------------------
 
-	inline StringTemp::StringTemp()
+	template <uint32_t S>
+	inline StringTemp<S>::StringTemp()
 		: m_str(0) , m_len(0)
 	{
 	}
 
-	inline StringTemp::StringTemp(const StringView& _other)
-		: m_str(0) , m_len(0)
-	{
-		set(_other.data(), _other.length());
-	}
-
-	inline StringTemp::StringTemp(const String& _other)
+	template <uint32_t S>
+	inline StringTemp<S>::StringTemp(const StringView& _other)
 		: m_str(0) , m_len(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
-	inline StringTemp::StringTemp(const StringTemp& _other)
+	template <uint32_t S>
+	inline StringTemp<S>::StringTemp(const String& _other)
 		: m_str(0) , m_len(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
-	inline StringTemp::StringTemp(const char* _str, uint32_t _len)
+	template <uint32_t S>
+	inline StringTemp<S>::StringTemp(const StringTemp& _other)
+		: m_str(0) , m_len(0)
+	{
+		set(_other.data(), _other.length());
+	}
+
+	template <uint32_t S>
+	inline StringTemp<S>::StringTemp(const char* _str, uint32_t _len)
 		: m_str(0) , m_len(0)
 	{
 		set(_str, _len);
 	}
 
-	inline StringTemp::StringTemp(const char* _start, const char* _end)
+	template <uint32_t S>
+	inline StringTemp<S>::StringTemp(const char* _start, const char* _end)
 		: m_str(0) , m_len(0)
 	{
 		set(_start, uint32_t(_end - _start));
 	}
 
-	inline StringTemp::~StringTemp()
+	template <uint32_t S>
+	inline StringTemp<S>::~StringTemp()
 	{
 		clear();
 	}
 
-	inline StringTemp& StringTemp::operator = (const StringView& _view)
+	template <uint32_t S>
+	inline StringTemp<S>& StringTemp<S>::operator = (const StringView& _view)
 	{
 		set(_view.data(), _view.length());
 		return *this;
 	}
 
-	inline StringTemp& StringTemp::operator = (const String& _str)
+	template <uint32_t S>
+	inline StringTemp<S>& StringTemp<S>::operator = (const String& _str)
 	{
 		set(_str.data(), _str.length());
 		return *this;
 	}
 
-	inline StringTemp& StringTemp::operator = (const StringTemp& _other)
+	template <uint32_t S>
+	inline StringTemp<S>& StringTemp<S>::operator = (const StringTemp& _other)
 	{
 		set(_other.data(), _other.length());
 		return *this;
 	}
 
-	inline StringTemp& StringTemp::operator = (const char* _str)
+	template <uint32_t S>
+	inline StringTemp<S>& StringTemp<S>::operator = (const char* _str)
 	{
 		set(_str, strLen(_str));
 		return *this;
 	}
 
-	inline void StringTemp::clear()
+	template <uint32_t S>
+	inline void StringTemp<S>::clear()
 	{
 		if (!isOnStack())
 		{
@@ -466,46 +549,52 @@ namespace rtm {
 		m_len = 0;
 	}
 
-	inline void StringTemp::set(const char* _str, uint32_t _len)
+	template <uint32_t S>
+	inline void StringTemp<S>::set(const char* _str, uint32_t _len)
 	{
 		uint32_t length = _len == UINT32_MAX ? strLen(_str) : _len;
 		set(_str, _str + length);
 	}
 
-	inline void StringTemp::set(const char* _start, const char* _end)
+	template <uint32_t S>
+	inline void StringTemp<S>::set(const char* _start, const char* _end)
 	{
 		uint32_t len = (uint32_t)(_end - _start);
 
 		clear();
 
-		if (len < S_ON_STACK_SIZE)
+		if (len < S)
 			m_str = &m_strData[0];
 		else
 		{
 			m_str = (char*)RTM_STRING_ALLOC(sizeof(char) * (len + 1));
 		}
 
-		strlCpy(m_str, len, _start, len);
+		strlCpy(m_str, len+1, _start, len);
 		m_str[len]	= 0;
 		m_len		= len;
 	}
 
-	inline void StringTemp::append(StringView& _view)
+	template <uint32_t S>
+	inline void StringTemp<S>::append(StringView& _view)
 	{
 		append(_view.data(), _view.length());
 	}
 
-	inline void StringTemp::append(String& _string)
+	template <uint32_t S>
+	inline void StringTemp<S>::append(String& _string)
 	{
 		append(_string.data(), _string.length());
 	}
 
-	inline void StringTemp::append(StringTemp& _view)
+	template <uint32_t S>
+	inline void StringTemp<S>::append(StringTemp& _view)
 	{
 		append(_view.data(), _view.length());
 	}
 
-	inline void StringTemp::append(const char* _str, uint32_t _len)
+	template <uint32_t S>
+	inline void StringTemp<S>::append(const char* _str, uint32_t _len)
 	{
 		uint32_t newLen = m_len + _len;
 
@@ -535,42 +624,48 @@ namespace rtm {
 		m_str[m_len] = 0;
 	}
 
-	inline void StringTemp::append(const char* _start, const char* _end)
+	template <uint32_t S>
+	inline void StringTemp<S>::append(const char* _start, const char* _end)
 	{
 		append(_start, (uint32_t)(_end - _start));
 	}
 
-	inline bool StringTemp::isNull() const
+	template <uint32_t S>
+	inline bool StringTemp<S>::isNull() const
 	{
 		return m_len == 0;
 	}
 
-	inline const char* StringTemp::data() const
+	template <uint32_t S>
+	inline const char* StringTemp<S>::data() const
 	{
 		return m_str;
 	}
 
-	inline uint32_t	StringTemp::length() const
+	template <uint32_t S>
+	inline uint32_t	StringTemp<S>::length() const
 	{
 		return m_len;
 	}
 
-	inline StringTemp::operator const char* ()
+	template <uint32_t S>
+	inline StringTemp<S>::operator const char* ()
 	{
 		return data();
 	}
 
-	inline char StringTemp::operator[](uint32_t _index)
+	template <uint32_t S>
+	inline char StringTemp<S>::operator[](uint32_t _index)
 	{
 		RTM_ASSERT(_index < m_len, "");
 		return m_str[_index];
 	}
 
-	inline bool StringTemp::isOnStack() const
+	template <uint32_t S>
+	inline bool StringTemp<S>::isOnStack() const
 	{
 		return m_str == &m_strData[0];
 	}
-
 
 } // namespace rtm
 

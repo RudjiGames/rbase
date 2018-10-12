@@ -41,9 +41,9 @@ namespace rtm {
 
 	inline static uint32_t strLen(const char* _str, uint32_t _max = UINT32_MAX);
 
-	inline static void strToUpper(char* _str);
+	inline static void strToUpper(char* _str, uint32_t _max = UINT32_MAX);
 
-	inline static void strToLower(char* _str);
+	inline static void strToLower(char* _str, uint32_t _max = UINT32_MAX);
 
 	template<fnChar fn>
 	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
@@ -145,14 +145,20 @@ namespace rtm {
 		return uint32_t(ptr - _str);
 	}
 
-	inline static void strToUpper(char* _str)
+	inline static void strToUpper(char* _str, uint32_t _max)
 	{
-		while (*_str) { *_str = toUpper(*_str); ++_str; }
+		while (*_str && _max--)
+		{
+			*_str = toUpper(*_str); ++_str;
+		}
 	}
 
-	inline static void strToLower(char* _str)
+	inline static void strToLower(char* _str, uint32_t _max)
 	{
-		while (*_str) { *_str = toLower(*_str); ++_str; }
+		while (*_str && _max--)
+		{
+			*_str = toLower(*_str); ++_str;
+		}
 	}
 
 	template<fnChar fn>
