@@ -7,6 +7,7 @@
 #define RTM_RBASE_CONSOLE_H
 
 #include <rbase/inc/platform.h>
+#include <rbase/inc/stringfn.h>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -19,55 +20,72 @@ namespace rtm {
 
 	class Console
 	{
-		enum MsgColor
-		{ 
-			MSG_RED		= 0x1,
-			MSG_GREEN	= 0x2,
-			MSG_BLUE	= 0x4,
-			MSG_LIGHT	= 0x8,
+		static char* itoaf(char* _buffer, uint8_t _val)
+		{
+			int numDigits = 0;
+			char digits[3];
 
-			MSG_WHITE = MSG_RED | MSG_GREEN | MSG_BLUE
-		};
+			while (_val)
+			{
+				digits[numDigits++] = '0' + (_val % 10);
+				_val /= 10;
+			}
 
-		static void vprintf(uint32_t _color, const char* _format, va_list& _args)
+			if (numDigits)
+			{
+				for (int i = numDigits - 1; i >= 0; --i)
+					*_buffer++ = digits[i];
+			}
+			else
+				*_buffer++ = '0';
+			*_buffer++ = ';';
+			return _buffer;
+		}
+
+		static void vprintf(uint8_t _r, uint8_t _g, uint8_t _b, const char* _format, va_list& _args)
 		{
 			char buffer[8192];
-			vsprintf(buffer, _format, _args);
 
 #if RTM_PLATFORM_WINDOWS
+			vsprintf(buffer, _format, _args);
 			HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 			if (INVALID_HANDLE_VALUE != console)
 			{
 				DWORD att = 0;
-				if (_color & MSG_RED)	att |= FOREGROUND_RED;
-				if (_color & MSG_GREEN)	att |= FOREGROUND_GREEN;
-				if (_color & MSG_BLUE)	att |= FOREGROUND_BLUE;
-				if (_color & MSG_LIGHT)	att |= FOREGROUND_INTENSITY;
+				if (_r)	att |= FOREGROUND_RED;
+				if (_g)	att |= FOREGROUND_GREEN;
+				if (_b)	att |= FOREGROUND_BLUE;
+				if (false
+					|| (_r > 192)
+					|| (_g > 192)
+					|| (_b > 192))
+					att |= FOREGROUND_INTENSITY;
 
-				SetConsoleTextAttribute(console, (WORD)att);	
+				SetConsoleTextAttribute(console, (WORD)att);
 				DWORD written;
 				WriteFile(console, buffer, (DWORD)strlen(buffer), &written, NULL);
 				att = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-				SetConsoleTextAttribute(console, (WORD)att);	
+				SetConsoleTextAttribute(console, (WORD)att);
 			}
 #else
-			RTM_UNUSED(_color);
-			printf("%s",buffer);
+			strlCpy(buffer, 8192, "\x1b[38;2;");
+			char* b = itoaf(&buffer[7], _r);
+			b = itoaf(b, _g);
+			b = itoaf(b, _b);
+			b[-1] = 'm';
+			vsprintf(b, _format, _args);
+			strlCat(buffer, 8192, "\x1b[0m");
+			printf("%s", buffer);
 #endif
 		}
 
 	public:
 
-		static void	custom(int _r, int _g, int _b, int _hl, const char* _format, ...)
+		static void	rgb(uint8_t _r, uint8_t _g, uint8_t _b, const char* _format, ...)
 		{
 			va_list args;
 			va_start(args, _format);
-			uint32_t col = 0;
-			col |= _r  ? MSG_RED   : 0;
-			col |= _g  ? MSG_GREEN : 0;
-			col |= _b  ? MSG_BLUE  : 0;
-			col |= _hl ? MSG_LIGHT : 0;
-			Console::vprintf(col, _format, args);
+			Console::vprintf(_r, _g, _b, _format, args);
 			va_end(args);
 		}
 
@@ -75,7 +93,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::vprintf(MSG_RED | MSG_GREEN | MSG_BLUE, _format, args);
+			Console::vprintf(192, 192, 192, _format, args);
 			va_end(args);
 		}
 
@@ -83,7 +101,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::vprintf(MSG_LIGHT | MSG_GREEN | MSG_BLUE, _format, args);
+			Console::vprintf(0, 255, 255, _format, args);
 			va_end(args);
 		}
 
@@ -91,7 +109,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::vprintf(MSG_RED | MSG_GREEN | MSG_LIGHT, _format, args);
+			Console::vprintf(255, 255, 0, _format, args);
 			va_end(args);
 		}
 
@@ -99,7 +117,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::vprintf(MSG_RED | MSG_LIGHT, _format, args);
+			Console::vprintf(255, 0, 0, _format, args);
 			va_end(args);
 		}
 	};
