@@ -29,7 +29,8 @@ linux-debug64: gmake-linux
 	make -R -C ../.build/linux/gcc/rbase/projects config=debug64
 linux-release64: gmake-linux
 	make -R -C ../.build/linux/gcc/rbase/projects config=release64
-linux: linux-debug32 linux-release32 linux-debug64 linux-release64
+#linux: linux-debug32 linux-release32 linux-debug64 linux-release64
+linux: linux-debug64 linux-release64
 
 gmake-mingw-gcc:
 	$(GENIE) --file=genie/genie.lua --gcc=mingw-gcc gmake
