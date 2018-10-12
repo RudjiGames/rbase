@@ -8,6 +8,32 @@
 
 namespace rtm {
 
+UriView::UriView()
+{
+}
+
+UriView::UriView(const char* _str, uint32_t _len)
+{
+}
+
+UriView::UriView(const StringView& _str)
+{
+}
+
+void UriView::clear()
+{
+}
+
+bool UriView::parse(const StringView& _str)
+{
+	return false;
+}
+
+const StringView& UriView::get(UriPart::Enum _part) const
+{
+	return m_parts[0];
+}
+
 static inline int shouldEncode(char ch)
 {
 	return !(false

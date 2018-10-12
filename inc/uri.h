@@ -11,6 +11,40 @@
 
 namespace rtm {
 
+	struct UriPart
+	{
+		enum Enum
+		{
+			Uri,
+			Scheme,
+			Authority,
+			User,
+			Host,
+			Port,
+			Path,
+			Query,
+			Fragment,
+
+			Count
+		};
+	};
+
+	class UriView
+	{
+		StringView	m_parts[UriPart::Count];
+
+	public:
+		UriView();
+		UriView(const char* _str, uint32_t _len = UINT32_MAX);
+		UriView(const StringView& _str);
+
+		void				clear();
+		bool				parse(const StringView& _str);
+		const StringView&	get(UriPart::Enum _part) const;
+
+		operator const StringView& () const { return m_parts[UriPart::Uri]; }
+	};
+
 	/// URI encoding
 	/// Returns UINT32_MAX if not enough space in destination buffer or
 	/// number of written characters on success.
