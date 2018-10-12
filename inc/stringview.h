@@ -598,9 +598,9 @@ namespace rtm {
 	{
 		uint32_t newLen = m_len + _len;
 
-		if (isOnStack() && (newLen < S_ON_STACK_SIZE))
+		if (isOnStack() && (newLen < S))
 		{
-			strlCat(m_str, S_ON_STACK_SIZE, _str, _len);
+			strlCat(m_str, S, _str, _len);
 			m_len = newLen;
 			return;
 		}
