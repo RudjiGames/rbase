@@ -59,16 +59,16 @@ namespace rtm {
 		uint32_t	length() const;
 
 		operator const char* ();
-		char operator[](uint32_t _index);
+		char operator[](uint32_t _index) const;
 	};
 
 	static uint32_t strLen(const StringView& _view);
 	template<fnChar fn>
-	static uint32_t strCmp(const StringView& _view, const char* _cmp);
+	static int32_t strCmp(const StringView& _view, const char* _cmp);
 	template<fnChar fn>
 	static const char* strStr(const StringView& _view, uint32_t _strMax, const char* _find, uint32_t _findMax = UINT32_MAX);
-	static uint32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
-	static uint32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
+	static int32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
+	static int32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
 	static const char* strStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
 	static const char* striStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
 
@@ -108,7 +108,7 @@ namespace rtm {
 		const char*	data() const;
 		uint32_t	length() const;
 		operator const char* ();
-		char operator[](uint32_t _index);
+		char operator[](uint32_t _index) const;
 	};
 
 	// dynamically allocated string for temporary use with on stack data up to 1024 chars
@@ -146,7 +146,7 @@ namespace rtm {
 		const char*	data() const;
 		uint32_t	length() const;
 		operator const char* ();
-		char operator[](uint32_t _index);
+		char operator[](uint32_t _index) const;
 	private:
 		bool		isOnStack() const;
 	};
@@ -252,7 +252,7 @@ namespace rtm {
 		return data();
 	}
 
-	inline char StringView::operator[](uint32_t _index)
+	inline char StringView::operator[](uint32_t _index) const 
 	{
 		RTM_ASSERT(_index < m_len, "");
 		return m_str[_index];
@@ -266,7 +266,7 @@ namespace rtm {
 	}
 
 	template<fnChar fn>
-	inline static uint32_t strCmp(const StringView& _view, const char* _cmp)
+	inline static int32_t strCmp(const StringView& _view, const char* _cmp)
 	{
 		return strCmp<fn>(_view.data(), _cmp, _view.length());;
 	}
@@ -278,26 +278,30 @@ namespace rtm {
 		return strStr<fn>(_view.data(), _strMax, _find, _findMax);
 	}
 
-	inline static uint32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max)
+	inline static int32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max)
 	{
+		if (!_view.length() && _max) return -1;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return strCmp(_view.data(), _rhs, _max);
 	}
 
-	inline static uint32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max)
+	inline static int32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max)
 	{
+		if (!_view.length() && _max) return -1;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return striCmp(_view.data(), _rhs, _max);
 	}
 
 	inline static const char* strStr(const StringView& _view, const char* _find, uint32_t _max)
 	{
+		if (!_view.length() && _max) return 0;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return strStr(_view.data(), _find, _max);
 	}
 
 	inline static const char* striStr(const StringView& _view, const char* _find, uint32_t _max)
 	{
+		if (!_view.length() && _max) return 0;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return striStr(_view.data(), _find, _max);
 	}
@@ -455,7 +459,7 @@ namespace rtm {
 		return data();
 	}
 
-	inline char String::operator[](uint32_t _index)
+	inline char String::operator[](uint32_t _index) const
 	{
 		RTM_ASSERT(_index < m_len, "");
 		return m_str[_index];
@@ -655,7 +659,7 @@ namespace rtm {
 	}
 
 	template <uint32_t S>
-	inline char StringTemp<S>::operator[](uint32_t _index)
+	inline char StringTemp<S>::operator[](uint32_t _index) const
 	{
 		RTM_ASSERT(_index < m_len, "");
 		return m_str[_index];

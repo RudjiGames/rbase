@@ -15,10 +15,11 @@ namespace rtm {
 	{
 		enum Enum
 		{
-			Uri,
 			Scheme,
 			Authority,
 			User,
+			UserName,
+			Password,
 			Host,
 			Port,
 			Path,
@@ -39,10 +40,8 @@ namespace rtm {
 		UriView(const StringView& _str);
 
 		void				clear();
-		bool				parse(const StringView& _str);
+		void				parse(const StringView& _str);
 		const StringView&	get(UriPart::Enum _part) const;
-
-		operator const StringView& () const { return m_parts[UriPart::Uri]; }
 	};
 
 	/// URI encoding

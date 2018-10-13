@@ -38,6 +38,11 @@ SUITE(rbase)
 
 		CHECK(0 == strCmp(vs, testString));
 
+		StringView blank;
+		CHECK(0 != strCmp("", "notblank"));
+		CHECK(0 != strCmp(blank, "notblank"));
+		CHECK(0 != strCmp(blank, ""));
+
 		CHECK(true);
 	}
 }

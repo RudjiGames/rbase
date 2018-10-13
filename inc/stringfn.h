@@ -46,14 +46,14 @@ namespace rtm {
 	inline static void strToLower(char* _str, uint32_t _max = UINT32_MAX);
 
 	template<fnChar fn>
-	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
+	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
 
 	template<fnChar fn>
 	inline static const char* strStr(const char* _str, uint32_t _strMax, const char* _find, uint32_t _findMax = UINT32_MAX);
 
-	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
+	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
 
-	inline static uint32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
+	inline static int32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max = UINT32_MAX);
 
 	inline static uint32_t strlCpy(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num = UINT32_MAX);
 
@@ -162,7 +162,7 @@ namespace rtm {
 	}
 
 	template<fnChar fn>
-	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
+	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		for (
 			; 0 < _max && fn(*_lhs) == fn(*_rhs)
@@ -220,12 +220,12 @@ namespace rtm {
 		return 0;
 	}
 
-	inline static uint32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
+	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		return strCmp<toNoop>(_lhs, _rhs, _max);
 	}
 
-	inline static uint32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max)
+	inline static int32_t striCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		return strCmp<toLower>(_lhs, _rhs, _max);
 	}
