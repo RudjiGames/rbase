@@ -8,32 +8,6 @@
 
 namespace rtm {
 
-bool isPartValid(const StringView& _view, UriPart::Enum _part)
-{
-	switch (_part)
-	{
-		case UriPart::Scheme:
-			{
-				const uint32_t len = _view.length();
-				for (uint32_t i = 0; i < len; ++i)
-				{
-					char c = _view[i];
-					if (!(false
-						|| isAlphaNum(c)
-						|| (c == '+')
-						|| (c == '.')
-						|| (c == '-')))
-						return false;
-				}
-				return true;
-			}
-			break;
-
-		default:
-			return false;
-	};
-}
-
 UriView::UriView()
 {
 }
@@ -61,8 +35,6 @@ void UriView::parse(const StringView& _str)
 		return clear();
 
 	m_parts[UriPart::Scheme] = StringView(_str.data(), schemeEnd);
-	if (!isPartValid(m_parts[UriPart::Scheme], UriPart::Scheme))
-		return clear();
 
 	const char* authority		= strStr(_str, "//");
 	const char* authorityEnd	= 0;
@@ -133,6 +105,62 @@ void UriView::parse(const StringView& _str)
 const StringView& UriView::get(UriPart::Enum _part) const
 {
 	return m_parts[_part];
+}
+
+uint32_t UriView::length(UriPart::Enum _exclude) const
+{
+	uint32_t len = 0;
+	for (int i=0; i<UriPart::Count; ++i)
+		if (_exclude != i)
+			len += m_parts[i].length();
+	return len;
+}
+
+Uri::Uri()
+{
+}
+
+Uri::Uri(const char* _str, uint32_t _len)
+{
+	m_uri.set(_str, _len);
+	parse(m_uri);
+}
+
+Uri::Uri(const StringView& _str)
+{
+	m_uri.set(_str.data(), _str.length());
+	parse(m_uri);
+}
+
+void Uri::setPart(UriPart::Enum _part, const StringView& _str)
+{
+	char  buffer[4096];
+	char* store = buffer;
+
+	uint32_t len = length(_part) + _str.length();
+	if (len >= 4096)
+		store = new char[len+1];
+	store[0] = 0;
+	char* ptr = store;
+
+	for (int i=0; i<UriPart::Count; ++i)
+	{
+		StringView part = get((UriPart::Enum)i);
+
+		if (i == _part)
+			part = _str;
+
+		strlCpy(ptr, len, part, part.length());
+		len -= part.length();
+		ptr += part.length();
+	}
+
+	*ptr = 0;
+
+	m_uri = store;
+
+	if (len >= 4096)
+		delete[] store;
 }
 
 static inline int shouldEncode(char ch)

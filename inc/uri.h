@@ -42,6 +42,21 @@ namespace rtm {
 		void				clear();
 		void				parse(const StringView& _str);
 		const StringView&	get(UriPart::Enum _part) const;
+		uint32_t			length(UriPart::Enum _exclude = UriPart::Count) const;
+	};
+
+	class Uri : public UriView
+	{
+		String	m_uri;
+
+	public:
+		Uri();
+		Uri(const char* _str, uint32_t _len = UINT32_MAX);
+		Uri(const StringView& _str);
+
+		void setPart(UriPart::Enum _part, const StringView& _str);
+
+		const String&	getUri() const { return m_uri; }
 	};
 
 	/// URI encoding
