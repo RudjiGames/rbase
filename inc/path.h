@@ -53,17 +53,8 @@ namespace rtm {
 	/// Checks if path is absolute
 	bool pathIsAbsolute(const char* _path);
 
-	/// Checks if file or directory at given path exists
-	bool pathExists(const char* _path);
-
 	/// Checks if given path refers to a directory
 	bool pathIsDirectory(const char* _path);
-
-	/// Creates a directory.
-	bool pathCreateDir(const char* _path, const char* _name, bool _recurse = false);
-
-	/// Deletes an existing empty directory.
-	bool pathRemoveDir(const char* _path, const char* _name);
 
 	/// Splits path and stores list of directories to _directories.
 	bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _dirList, uint32_t _maxDirs);
