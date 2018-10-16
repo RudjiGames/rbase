@@ -111,28 +111,10 @@ SUITE(rbase)
 		CHECK(true  == pathIsAbsolute(pathFile));
 		CHECK(false == pathIsAbsolute("../test.txt"));
 
-		// bool pathExists(const char* _path);
-
-		pathGetCurrentDirectory(buffer, 1024);
-		CHECK(true  == pathExists(buffer));
-		CHECK(false == pathExists("/some/dummy/path"));
-
 		// bool pathIsDirectory(const char* _path);
 
 		CHECK(true  == pathIsDirectory(pathDir));
 		CHECK(false == pathIsDirectory(pathFile));
-
-		//bool pathCreateDir(const char* _path, const char* _name, bool _recurse = false);
-
-		char newDir[1024];
-		pathGetCurrentDirectory(buffer, 1024);
-		pathAppend(buffer, "testdir/", newDir, 1024);
-		CHECK(true == pathCreateDir(buffer, "testDir", true));
-		CHECK(true == pathExists(newDir));
-
-		// bool pathRemoveDir(const char* _path, const char* _name);
-		CHECK(true  == pathRemoveDir(buffer, "testDir"));
-		CHECK(false == pathExists(newDir));
 
 		// bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _stringViews, uint32_t _maxViews);
 
