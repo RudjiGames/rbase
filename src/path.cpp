@@ -183,6 +183,7 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 
 	DWORD len = GetCurrentDirectoryW(size, wBuffer);
 	wcscat(wBuffer, L"\\");
+	toUnixSlashes(wBuffer);
 	if (len == 0)
 		return false;
 

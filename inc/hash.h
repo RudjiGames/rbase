@@ -81,13 +81,13 @@ namespace rtm {
 	//--------------------------------------------------------------------------
 	/// Calculate a string hash, suitable for short strings
 	//--------------------------------------------------------------------------
-	static inline uint32_t hashStr(const char* _string)
+	static inline uint32_t hashStr(const char* _string, uint32_t _maxChars = UINT32_MAX)
 	{
 	   uint32_t	h;
 	   uint8_t*	p = (uint8_t*)_string;
 
 	   h = 0;
-	   while (*p != '\0')
+	   while ((*p != '\0') && (_maxChars--))
 	   {
 		  h = 37 * h + *p;
 		  p++;
