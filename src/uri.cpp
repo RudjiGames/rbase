@@ -173,6 +173,32 @@ static inline int shouldEncode(char ch)
 		|| '(' == ch || ')' == ch);
 }
 
+uint32_t uriEncodedSize(const StringView& _str)
+{
+	return uriEncodedSize(_str.data(), _str.length());
+}
+
+uint32_t uriEncodedSize(const char* _uri, uint32_t _maxUriChars)
+{
+	RTM_ASSERT(_uri, "");
+
+	uint32_t len = _maxUriChars == UINT32_MAX ? strLen(_uri) : _maxUriChars;
+	const char* uriEnd = _uri + len;
+
+	uint32_t dSize = 0;
+	while (_uri < uriEnd)
+	{
+		char ch = *_uri++;
+
+		if (shouldEncode(ch))
+			dSize += 3;
+		else
+			dSize++;
+	}
+
+	return dSize + 1;
+}
+
 uint32_t uriEncode(const StringView& _str, char* _buffer, uint32_t _bufferSize)
 {
 	return uriEncode(_str.data(), _buffer, _bufferSize, _str.length());
@@ -218,6 +244,43 @@ uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32
 	_buffer[dSize++] = '\0';
 
 	return dSize;
+}
+
+uint32_t uriDecodedSize(const StringView& _str)
+{
+	return uriDecodedSize(_str.data(), _str.length());
+}
+
+uint32_t uriDecodedSize(const char* _uri, uint32_t _maxUriChars)
+{
+	RTM_ASSERT(_uri, "");
+
+	uint32_t len = _maxUriChars == UINT32_MAX ? strLen(_uri) : _maxUriChars;
+	const char* uriEnd = _uri + len;
+
+	uint32_t dSize = 0;
+	while (_uri < uriEnd)
+	{
+		char ch = *_uri++;
+
+		if (ch == '%')
+		{
+			if (_uri > uriEnd - 2)
+				return UINT32_MAX;
+
+			if (isHexNum(_uri[0]) && isHexNum(_uri[1]))
+			{
+				_uri += 2;
+				dSize++;
+			}
+			else
+				return UINT32_MAX;
+		}
+		else
+			dSize++;
+	}
+
+	return dSize + 1;
 }
 
 uint32_t uriDecode(const StringView& _str, char* _buffer, uint32_t _bufferSize)

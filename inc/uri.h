@@ -59,12 +59,25 @@ namespace rtm {
 		const String&	getUri() const { return m_uri; }
 	};
 
+	/// Returns size of buffer needed to store encoded version of input URI
+	/// Includes 0 terminator
+
+	uint32_t uriEncodedSize(const StringView& _str);
+	uint32_t uriEncodedSize(const char* _uri, uint32_t _maxUriChars = UINT32_MAX);
+
 	/// URI encoding
 	/// Returns UINT32_MAX if not enough space in destination buffer or
 	/// number of written characters on success.
 
 	uint32_t uriEncode(const StringView& _str, char* _buffer, uint32_t _bufferSize);
 	uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32_t _maxUriChars = UINT32_MAX);
+
+	/// Returns size of buffer needed to store decoded version of input encoded URI
+	/// Returns UINT32_MAX for invalid URIs
+	/// Includes 0 terminator
+
+	uint32_t uriDecodedSize(const StringView& _str);
+	uint32_t uriDecodedSize(const char* _uri, uint32_t _maxUriChars = UINT32_MAX);
 
 	/// URI decoding
 	/// Returns UINT32_MAX if not enough space in destination buffer or 0 on error/
