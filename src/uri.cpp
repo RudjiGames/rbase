@@ -9,15 +9,18 @@
 namespace rtm {
 
 UriView::UriView()
+	: m_length(0)
 {
 }
 
 UriView::UriView(const char* _str, uint32_t _len)
+	: m_length(0)
 {
 	parse(StringView(_str, _len));
 }
 
 UriView::UriView(const StringView& _str)
+	: m_length(0)
 {
 	parse(_str);
 }
@@ -26,6 +29,7 @@ void UriView::clear()
 {
 	for (int i=0; i<UriPart::Count; ++i)
 		m_parts[i].clear();
+	m_length = 0;
 }
 
 void UriView::parse(const StringView& _str)
@@ -66,6 +70,8 @@ void UriView::parse(const StringView& _str)
 			m_parts[UriPart::UserName] = StringView(authority, pwd);
 			m_parts[UriPart::Password] = StringView(pwd + 1, userInfoEnd);
 		}
+		else
+			m_parts[UriPart::UserName] = m_parts[UriPart::User];
 	}
 
 	StringView hostAndPort(hostStart, authorityEnd);
@@ -100,6 +106,14 @@ void UriView::parse(const StringView& _str)
 		if (fragment)
 			m_parts[UriPart::Fragment]	= StringView(fragment + 1, strEnd);
 	}
+
+	m_length = _str.length();
+}
+
+void UriView::parse(const char* _str, uint32_t _len)
+{
+	uint32_t len = _len == UINT32_MAX ? strLen(_str) : _len;
+	parse(StringView(_str, len));
 }
 
 const StringView& UriView::get(UriPart::Enum _part) const
@@ -107,13 +121,69 @@ const StringView& UriView::get(UriPart::Enum _part) const
 	return m_parts[_part];
 }
 
-uint32_t UriView::length(UriPart::Enum _exclude) const
+uint32_t UriView::length() const
 {
+	return m_length;
+}
+
+uint32_t UriView::write(char* _buffer, uint32_t _bufferSize, const StringView& _appendQuery) const
+{
+	RTM_ASSERT(_buffer, "");
+
 	uint32_t len = 0;
-	for (int i=0; i<UriPart::Count; ++i)
-		if (_exclude != i)
-			len += m_parts[i].length();
+
+	len += writePart(UriPart::Scheme,			&_buffer[len], _bufferSize - len);
+	len += writeString(StringView(":"),			&_buffer[len], _bufferSize - len);
+
+	if (m_parts[UriPart::Authority].length())
+	{
+		len += writeString(StringView("//"),	&_buffer[len], _bufferSize - len);
+
+		if (m_parts[UriPart::User].length())
+		{
+			len += writePart(UriPart::UserName,	&_buffer[len], _bufferSize - len);
+			len += writeString(StringView(":"),	&_buffer[len], _bufferSize - len);
+			len += writePart(UriPart::Password,	&_buffer[len], _bufferSize - len);
+			len += writeString(StringView("@"),	&_buffer[len], _bufferSize - len);
+		}
+		len += writePart(UriPart::Host,		&_buffer[len], _bufferSize - len);
+
+		if (m_parts[UriPart::Port].length())
+		{
+			len += writeString(StringView(":"),	&_buffer[len], _bufferSize - len);
+			len += writePart(UriPart::Port,		&_buffer[len], _bufferSize - len);
+		}
+	}
+
+	len += writePart(UriPart::Path,		&_buffer[len], _bufferSize - len);
+
+	if (m_parts[UriPart::Query].length())
+	{
+		len += writeString(StringView("?"),	&_buffer[len], _bufferSize - len);
+		len += writePart(UriPart::Query,	&_buffer[len], _bufferSize - len);
+
+		if (_appendQuery.length())
+		len += writeString(_appendQuery,	&_buffer[len], _bufferSize - len);
+	}
+
+	if (m_parts[UriPart::Fragment].length())
+	{
+		len += writeString(StringView("#"),	&_buffer[len], _bufferSize - len);
+		len += writePart(UriPart::Fragment,	&_buffer[len], _bufferSize - len);
+	}
+
 	return len;
+}
+
+uint32_t UriView::writePart(UriPart::Enum _part, char* _buffer, uint32_t _bufferSize) const
+{
+	RTM_ASSERT(_buffer, "");
+	return writeString(m_parts[_part], _buffer, _bufferSize);
+}
+
+uint32_t UriView::writeString(const StringView& _str, char* _buffer, uint32_t _bufferSize) const
+{
+	return strlCpy(_buffer, _bufferSize, _str.data(), _str.length());
 }
 
 Uri::Uri()
@@ -123,41 +193,31 @@ Uri::Uri()
 Uri::Uri(const char* _str, uint32_t _len)
 {
 	m_uri.set(_str, _len);
-	parse(m_uri);
+	parse(m_uri.data(), m_uri.length());
 }
 
 Uri::Uri(const StringView& _str)
 {
 	m_uri.set(_str.data(), _str.length());
-	parse(m_uri);
+	parse((StringView)m_uri);
 }
 
 void Uri::setPart(UriPart::Enum _part, const StringView& _str)
 {
+	m_parts[_part] = _str;
+
 	char  buffer[4096];
 	char* store = buffer;
 
-	uint32_t len = length(_part) + _str.length();
+	uint32_t len = length();
 	if (len >= 4096)
 		store = new char[len+1];
 	store[0] = 0;
-	char* ptr = store;
 
-	for (int i=0; i<UriPart::Count; ++i)
-	{
-		StringView part = get((UriPart::Enum)i);
-
-		if (i == _part)
-			part = _str;
-
-		strlCpy(ptr, len, part, part.length());
-		len -= part.length();
-		ptr += part.length();
-	}
-
-	*ptr = 0;
-
+	write(store, len);
 	m_uri = store;
+
+	parse(m_uri, len);
 
 	if (len >= 4096)
 		delete[] store;

@@ -32,7 +32,9 @@ namespace rtm {
 
 	class UriView
 	{
+	protected:
 		StringView	m_parts[UriPart::Count];
+		uint32_t	m_length;
 
 	public:
 		UriView();
@@ -41,8 +43,15 @@ namespace rtm {
 
 		void				clear();
 		void				parse(const StringView& _str);
+		void				parse(const char* _str, uint32_t _len = UINT32_MAX);
 		const StringView&	get(UriPart::Enum _part) const;
-		uint32_t			length(UriPart::Enum _exclude = UriPart::Count) const;
+		uint32_t			length() const;
+		uint32_t			write(char* _buffer, uint32_t _bufferSize, const StringView& _appendQuery = StringView()) const;
+		operator const char* () const { return m_parts[UriPart::Scheme].data(); } 
+
+	private:
+		uint32_t			writePart(UriPart::Enum _part, char* _buffer, uint32_t _bufferSize) const;
+		uint32_t			writeString(const StringView& _str, char* _buffer, uint32_t _bufferSize) const;
 	};
 
 	class Uri : public UriView

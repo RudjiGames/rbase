@@ -108,6 +108,7 @@ namespace rtm {
 		const char*	data() const;
 		uint32_t	length() const;
 		operator const char* ();
+		operator StringView ();
 		char operator[](uint32_t _index) const;
 	};
 
@@ -457,6 +458,11 @@ namespace rtm {
 	inline String::operator const char* ()
 	{
 		return data();
+	}
+
+	inline String::operator StringView ()
+	{
+		return StringView(data(), length());
 	}
 
 	inline char String::operator[](uint32_t _index) const
