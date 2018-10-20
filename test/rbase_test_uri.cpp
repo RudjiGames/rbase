@@ -14,52 +14,52 @@ SUITE(rbase)
 	{
 		char buffer[2048];
 
-		CHECK(14 == uriEncode("Hello World", buffer, 2048));
+		CHECK(13 == uriEncode("Hello World", buffer, 2048));
 		CHECK(0 == strCmp(buffer, "Hello%20World"));
 
-		CHECK(12 == uriDecode("Hello%20World", buffer, 2048));
+		CHECK(11 == uriDecode("Hello%20World", buffer, 2048));
 		CHECK(0 == strCmp(buffer, "Hello World"));
 
 
-		CHECK(67 == uriEncode("https://www.google.ca/?gws_rd=ssl#q=url+decoding", buffer, 2048));
+		CHECK(66 == uriEncode("https://www.google.ca/?gws_rd=ssl#q=url+decoding", buffer, 2048));
 		CHECK(0 == strCmp(buffer, "https%3A%2F%2Fwww.google.ca%2F%3Fgws_rd%3Dssl%23q%3Durl%2Bdecoding"));
 
-		CHECK(49 == uriDecode("https%3A%2F%2Fwww.google.ca%2F%3Fgws_rd%3Dssl%23q%3Durl%2Bdecoding", buffer, 2048));
+		CHECK(48 == uriDecode("https%3A%2F%2Fwww.google.ca%2F%3Fgws_rd%3Dssl%23q%3Durl%2Bdecoding", buffer, 2048));
 		CHECK(0 == strCmp(buffer, "https://www.google.ca/?gws_rd=ssl#q=url+decoding"));
 
 
-		CHECK(54 == uriEncode("http://hu.wikipedia.org/wiki/São_Paulo", buffer, 2048));
+		CHECK(53 == uriEncode("http://hu.wikipedia.org/wiki/São_Paulo", buffer, 2048));
 		CHECK(0 == strCmp(buffer, "http%3A%2F%2Fhu.wikipedia.org%2Fwiki%2FS%C3%A3o_Paulo"));
 
-		CHECK(40 == uriDecode("http%3A%2F%2Fhu.wikipedia.org%2Fwiki%2FS%C3%A3o_Paulo", buffer, 2048));
+		CHECK(39 == uriDecode("http%3A%2F%2Fhu.wikipedia.org%2Fwiki%2FS%C3%A3o_Paulo", buffer, 2048));
 		CHECK(0 == strCmp(buffer, "http://hu.wikipedia.org/wiki/São_Paulo"));
 
 
-		UriView uri1("https://user:password@www.google.ca:23/?gws_rd=ssl#q=url+decoding");
+		UriView uri("https://user:password@www.google.ca:23/?gws_rd=ssl#q=url+decoding");
 
-		CHECK(0 == strCmp(uri1.get(UriPart::Scheme),	"https"));
-		CHECK(0 == strCmp(uri1.get(UriPart::Authority),	"user:password@www.google.ca:23"));
-		CHECK(0 == strCmp(uri1.get(UriPart::User),		"user:password"));
-		CHECK(0 == strCmp(uri1.get(UriPart::UserName),	"user"));
-		CHECK(0 == strCmp(uri1.get(UriPart::Password),	"password"));
-		CHECK(0 == strCmp(uri1.get(UriPart::Host),		"www.google.ca"));
-		CHECK(0 == strCmp(uri1.get(UriPart::Port),		"23"));
-		CHECK(0 == strCmp(uri1.get(UriPart::Path),		"/"));
-		CHECK(0 == strCmp(uri1.get(UriPart::Query),		"gws_rd=ssl"));
-		CHECK(0 == strCmp(uri1.get(UriPart::Fragment),	"q=url+decoding"));
+		CHECK(0 == strCmp(uri.get(UriPart::Scheme),	"https"));
+		CHECK(0 == strCmp(uri.get(UriPart::Authority),	"user:password@www.google.ca:23"));
+		CHECK(0 == strCmp(uri.get(UriPart::User),		"user:password"));
+		CHECK(0 == strCmp(uri.get(UriPart::UserName),	"user"));
+		CHECK(0 == strCmp(uri.get(UriPart::Password),	"password"));
+		CHECK(0 == strCmp(uri.get(UriPart::Host),		"www.google.ca"));
+		CHECK(0 == strCmp(uri.get(UriPart::Port),		"23"));
+		CHECK(0 == strCmp(uri.get(UriPart::Path),		"/"));
+		CHECK(0 == strCmp(uri.get(UriPart::Query),		"gws_rd=ssl"));
+		CHECK(0 == strCmp(uri.get(UriPart::Fragment),	"q=url+decoding"));
 
-		UriView uri2("https://user:password@www.google.ca:23");
+		uri.parse("https://user:password@www.google.ca:23");
 
-		CHECK(0 == strCmp(uri2.get(UriPart::Scheme),	"https"));
-		CHECK(0 == strCmp(uri2.get(UriPart::Authority), "user:password@www.google.ca:23"));
-		CHECK(0 == strCmp(uri2.get(UriPart::User),		"user:password"));
-		CHECK(0 == strCmp(uri2.get(UriPart::UserName),	"user"));
-		CHECK(0 == strCmp(uri2.get(UriPart::Password),	"password"));
-		CHECK(0 == strCmp(uri2.get(UriPart::Host),		"www.google.ca"));
-		CHECK(0 == strCmp(uri2.get(UriPart::Port),		"23"));
-		CHECK(0 == uri2.get(UriPart::Path).length());
-		CHECK(0 == uri2.get(UriPart::Query).length());
-		CHECK(0 == uri2.get(UriPart::Fragment).length());
+		CHECK(0 == strCmp(uri.get(UriPart::Scheme),	"https"));
+		CHECK(0 == strCmp(uri.get(UriPart::Authority), "user:password@www.google.ca:23"));
+		CHECK(0 == strCmp(uri.get(UriPart::User),		"user:password"));
+		CHECK(0 == strCmp(uri.get(UriPart::UserName),	"user"));
+		CHECK(0 == strCmp(uri.get(UriPart::Password),	"password"));
+		CHECK(0 == strCmp(uri.get(UriPart::Host),		"www.google.ca"));
+		CHECK(0 == strCmp(uri.get(UriPart::Port),		"23"));
+		CHECK(0 == uri.get(UriPart::Path).length());
+		CHECK(0 == uri.get(UriPart::Query).length());
+		CHECK(0 == uri.get(UriPart::Fragment).length());
 
 		const char* URIs[7] = {
 			"ftp://ftp.is.co.za/rfc/rfc1808.txt",
@@ -86,5 +86,35 @@ SUITE(rbase)
 			UriView uv(URIs[i]);
 			CHECK(0 == strCmp(uv.get(UriPart::Host), HOSTs[i]));
 		}
+
+		const char* uri1 = "file://d:/data/file.zip#asd";
+		const char* uri2 = "zip:/zdir/inner.zip";
+		const char* uri3 = "zip:/dir/file.txt";
+
+		UriView uris[3] = {
+			uri1, uri2, uri3
+		};
+
+		uint32_t len = uriNest(UriView(uri1), UriView(uri2), buffer, 2048);
+		CHECK(len == strLen(buffer));
+		CHECK(0 == strCmp(buffer, "file://d/data/file.zip?vfs=zip%3A%2Fzdir%2Finner.zip#asd"));
+
+		len = uriNestArr(uris, 3, buffer, 2048);
+		CHECK(len == strLen(buffer));
+		CHECK(0 == strCmp(buffer, "file://d/data/file.zip?vfs=zip%3A%2Fzdir%2Finner.zip&vfs=zip%3A%2Fdir%2Ffile.txt#asd"));
+
+		StringView keyValuePairs[16];
+		UriView nested(buffer);
+		CHECK(4 == uriParseQuery(nested, keyValuePairs, 16));
+
+		CHECK(0 == strCmp(keyValuePairs[0], "vfs"));
+		CHECK(0 == strCmp(keyValuePairs[2], "vfs"));
+
+		char decoded[256];
+		uriDecode(keyValuePairs[1], decoded, 256);
+		CHECK(0 == strCmp(decoded, uri2));
+		uriDecode(keyValuePairs[3], decoded, 256);
+		CHECK(0 == strCmp(decoded, uri3));
 	}
 }
+

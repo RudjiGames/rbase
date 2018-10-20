@@ -71,6 +71,8 @@ namespace rtm {
 	static int32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
 	static const char* strStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
 	static const char* striStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
+	static const char* strChr(const StringView& _view, char _find, uint32_t _max = UINT32_MAX);
+	static const char* striChr(const StringView& _view, char _find, uint32_t _max = UINT32_MAX);
 
 	// dynamically allocated string
 
@@ -305,6 +307,20 @@ namespace rtm {
 		if (!_view.length() && _max) return 0;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return striStr(_view.data(), _find, _max);
+	}
+
+	inline static const char* strChr(const StringView& _view, char _find, uint32_t _max)
+	{
+		if (!_view.length() && _max) return 0;
+		_max = _max > _view.length() ? _view.length() : _max;
+		return strChr(_view.data(), _find, _max);
+	}
+
+	inline static const char* striChr(const StringView& _view, char _find, uint32_t _max)
+	{
+		if (!_view.length() && _max) return 0;
+		_max = _max > _view.length() ? _view.length() : _max;
+		return striChr(_view.data(), _find, _max);
 	}
 
 	//--------------------------------------------------------------------------

@@ -34,7 +34,9 @@ void UriView::clear()
 
 void UriView::parse(const StringView& _str)
 {
-	const char* schemeEnd = strStr(_str, ":");
+	clear();
+
+	const char* schemeEnd = strChr(_str, ':');
 	if (!schemeEnd)
 		return clear();
 
@@ -49,8 +51,8 @@ void UriView::parse(const StringView& _str)
 	else
 		authority += 2;
 
-	const char* userInfoEnd = strStr(authority, "@");
-	authorityEnd = strStr(authority, "/");
+	const char* userInfoEnd = strChr(authority, '@');
+	authorityEnd = strChr(authority, '/');
 
 	if (!authorityEnd)
 		authorityEnd = strEnd;
@@ -65,7 +67,7 @@ void UriView::parse(const StringView& _str)
 
 		StringView user = StringView(authority, userInfoEnd);
 		m_parts[UriPart::User] = user;
-		if (const char* pwd = strStr(user, ":"))
+		if (const char* pwd = strChr(user, ':'))
 		{
 			m_parts[UriPart::UserName] = StringView(authority, pwd);
 			m_parts[UriPart::Password] = StringView(pwd + 1, userInfoEnd);
@@ -75,7 +77,7 @@ void UriView::parse(const StringView& _str)
 	}
 
 	StringView hostAndPort(hostStart, authorityEnd);
-	if (const char* port = strStr(hostAndPort, ":"))
+	if (const char* port = strChr(hostAndPort, ':'))
 	{
 		m_parts[UriPart::Host] = StringView(hostStart, port);
 		m_parts[UriPart::Port] = StringView(port + 1, authorityEnd);
@@ -85,11 +87,11 @@ void UriView::parse(const StringView& _str)
 
 	if (*authorityEnd == '/')
 	{
-		const char* path		= strStr(authorityEnd, "/");
-		const char* query		= strStr(authorityEnd, "?");
-		const char* fragment	= strStr(authorityEnd, "#");
+		const char* path		= strChr(authorityEnd, '/');
+		const char* query		= strChr(authorityEnd, '?');
+		const char* fragment	= strChr(authorityEnd, '#');
 
-		const char* pathEnd		= query < fragment ? query : fragment;
+		const char* pathEnd		= query ? query : fragment;
 		if (!pathEnd)
 			pathEnd = strEnd;
 
@@ -126,7 +128,7 @@ uint32_t UriView::length() const
 	return m_length;
 }
 
-uint32_t UriView::write(char* _buffer, uint32_t _bufferSize, const StringView& _appendQuery) const
+uint32_t UriView::write(char* _buffer, uint32_t _bufferSize, bool _skipFragment) const
 {
 	RTM_ASSERT(_buffer, "");
 
@@ -162,11 +164,9 @@ uint32_t UriView::write(char* _buffer, uint32_t _bufferSize, const StringView& _
 		len += writeString(StringView("?"),	&_buffer[len], _bufferSize - len);
 		len += writePart(UriPart::Query,	&_buffer[len], _bufferSize - len);
 
-		if (_appendQuery.length())
-		len += writeString(_appendQuery,	&_buffer[len], _bufferSize - len);
 	}
 
-	if (m_parts[UriPart::Fragment].length())
+	if (m_parts[UriPart::Fragment].length() && !_skipFragment)
 	{
 		len += writeString(StringView("#"),	&_buffer[len], _bufferSize - len);
 		len += writePart(UriPart::Fragment,	&_buffer[len], _bufferSize - len);
@@ -256,7 +256,7 @@ uint32_t uriEncodedSize(const char* _uri, uint32_t _maxUriChars)
 			dSize++;
 	}
 
-	return dSize + 1;
+	return dSize;
 }
 
 uint32_t uriEncode(const StringView& _str, char* _buffer, uint32_t _bufferSize)
@@ -301,8 +301,7 @@ uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32
 			_buffer[dSize++] = ch;
 	}
 
-	_buffer[dSize++] = '\0';
-
+	_buffer[dSize] = '\0';
 	return dSize;
 }
 
@@ -340,7 +339,7 @@ uint32_t uriDecodedSize(const char* _uri, uint32_t _maxUriChars)
 			dSize++;
 	}
 
-	return dSize + 1;
+	return dSize;
 }
 
 uint32_t uriDecode(const StringView& _str, char* _buffer, uint32_t _bufferSize)
@@ -393,9 +392,129 @@ uint32_t uriDecode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32
 			_buffer[dSize++] = ch;
 	}
 
-	_buffer[dSize++] = '\0';
-
+	_buffer[dSize] = '\0';
 	return dSize;
+}
+
+uint32_t uriNest(const UriView& _uri, const UriView& _nestedUri, char* _buffer, uint32_t _bufferSize, uint32_t* _neededBufferSize)
+{
+	const uint32_t keyLen = 4; // 4 for strLen("vfs=") or strLen("vfs=")
+	uint32_t encNestLen = uriEncodedSize(_nestedUri, _nestedUri.length()) + keyLen;
+
+	if (_uri.length() + encNestLen >= _bufferSize)
+	{
+		if (_neededBufferSize)
+			*_neededBufferSize = _uri.length() + encNestLen;
+		return 0;
+	}
+
+	uint32_t written = _uri.write(_buffer, _bufferSize, true);
+	StringView query	= _uri.get(UriPart::Query);
+	StringView fragment	= _uri.get(UriPart::Fragment);
+
+	if (!query.length())
+		written += strlCpy(&_buffer[written], _bufferSize - written, "?");
+	else
+		written += strlCpy(&_buffer[written], _bufferSize - written, "&");
+
+	written += strlCpy(&_buffer[written], _bufferSize - written, "vfs=");
+	written += uriEncode(_nestedUri, &_buffer[written], _bufferSize - written, _nestedUri.length());
+
+	if (fragment.length())
+	{
+		written += strlCpy(&_buffer[written], _bufferSize - written, "#");
+		written += strlCpy(&_buffer[written], _bufferSize - written, fragment.data(), fragment.length());
+	}
+
+	_buffer[written] = 0;
+
+	return written;
+}
+
+uint32_t uriNestArr(const UriView* _uris, uint32_t _numUris, char* _buffer, uint32_t _bufferSize, uint32_t* _neededBufferSize)
+{
+	const uint32_t keyLen = 4; // 4 for strLen("vfs=") or strLen("vfs=")
+	uint32_t uri0Len	= _uris[0].length();
+	uint32_t totalLen	= 0;
+
+	for (uint32_t i=1; i<_numUris; ++i)
+		totalLen += keyLen + uriEncodedSize(_uris[i]);
+
+	totalLen += uri0Len;
+
+	if (totalLen >= _bufferSize)
+	{
+		if (_neededBufferSize)
+			*_neededBufferSize = totalLen;
+		return 0;
+	}
+
+	uint32_t written = _uris[0].write(_buffer, _bufferSize, true);
+	StringView query	= _uris[0].get(UriPart::Query);
+	StringView fragment = _uris[0].get(UriPart::Fragment);
+
+	if (!query.length())
+		written += strlCpy(&_buffer[written], _bufferSize - written, "?");
+	else
+		written += strlCpy(&_buffer[written], _bufferSize - written, "&");
+
+	for (uint32_t i=1; i<_numUris; ++i)
+	{
+		written += strlCpy(&_buffer[written], _bufferSize - written, "vfs=");
+		written += uriEncode(_uris[i], &_buffer[written], _bufferSize - written, _uris[i].length());
+		if (i < _numUris - 1)
+		written += strlCpy(&_buffer[written], _bufferSize - written, "&");
+	}
+
+	if (fragment.length())
+	{
+		written += strlCpy(&_buffer[written], _bufferSize - written, "#");
+		written += strlCpy(&_buffer[written], _bufferSize - written, fragment.data(), fragment.length());
+	}
+
+	_buffer[written] = 0;
+
+	return written;
+}
+
+uint32_t uriParseQuery(const StringView& _uri, StringView* _strs, uint32_t _numStrs, uint32_t* _numStrsNeeded)
+{
+	const char* ptr		= _uri.data();
+	const char* ptrEnd	= ptr + _uri.length();
+	const char* kvEnd	= 0;
+
+	uint32_t storeIndex = 0;
+	uint32_t kvPairs	= 0;
+
+	while (kvEnd < ptrEnd)
+	{
+		kvEnd	= strChr(ptr, '&');
+		if (!kvEnd) kvEnd = ptrEnd;
+
+		const char* eq = strChr(ptr, '=', (uint32_t)(kvEnd - ptr));
+		StringView key(ptr, eq);
+		StringView value(eq+1, kvEnd);
+
+		if (storeIndex < _numStrs)	_strs[storeIndex++] = key;
+		if (storeIndex < _numStrs)	_strs[storeIndex++] = value;
+
+		ptr = kvEnd + 1;
+		++kvPairs;
+	}
+
+	if (kvPairs * 2 == storeIndex)
+		return storeIndex;
+
+	if (*_numStrsNeeded)
+		*_numStrsNeeded = kvPairs * 2;
+
+	return 0;
+}
+
+uint32_t uriParseQuery(const UriView& _uri, StringView* _strs, uint32_t _numStrs, uint32_t* _numStrsNeeded)
+{
+	StringView query = _uri.get(UriPart::Query);
+	return uriParseQuery(query, _strs, _numStrs, _numStrsNeeded);
 }
 
 } // namespace rtm

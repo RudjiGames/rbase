@@ -46,7 +46,7 @@ namespace rtm {
 		void				parse(const char* _str, uint32_t _len = UINT32_MAX);
 		const StringView&	get(UriPart::Enum _part) const;
 		uint32_t			length() const;
-		uint32_t			write(char* _buffer, uint32_t _bufferSize, const StringView& _appendQuery = StringView()) const;
+		uint32_t			write(char* _buffer, uint32_t _bufferSize, bool _skipFragment = false) const;
 		operator const char* () const { return m_parts[UriPart::Scheme].data(); } 
 
 	private:
@@ -94,6 +94,17 @@ namespace rtm {
 
 	uint32_t uriDecode(const StringView& _str, char* _buffer, uint32_t _bufferSize);
 	uint32_t uriDecode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32_t _maxUriChars = UINT32_MAX);
+
+	/// URI nesting
+	/// Stores nested URI in a query component with the form 'vfs=URI'
+
+	uint32_t uriNest(const UriView& _uri, const UriView& _nestedUri, char* _buffer, uint32_t _bufferSize, uint32_t* _neededBufferSize = 0);
+	uint32_t uriNestArr(const UriView* _uris, uint32_t _numUris, char* _buffer, uint32_t _bufferSize, uint32_t* _neededBufferSize = 0);
+
+	/// Parse URI query and retrieve key value pairs
+
+	uint32_t uriParseQuery(const StringView& _uri, StringView* _strs, uint32_t _numStrs, uint32_t* _numStrsNeeded = 0);
+	uint32_t uriParseQuery(const UriView& _uri, StringView* _strs, uint32_t _numStrs, uint32_t* _numStrsNeeded = 0);
 
 } // namespace rtm
 
