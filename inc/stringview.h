@@ -622,6 +622,7 @@ namespace rtm {
 	template <uint32_t S>
 	inline void StringTemp<S>::append(const char* _str, uint32_t _len)
 	{
+		_len = _len == UINT32_MAX ? strLen(_str) : _len;
 		uint32_t newLen = m_len + _len;
 
 		if (isOnStack() && (newLen < S))
