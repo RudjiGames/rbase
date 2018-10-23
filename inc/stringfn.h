@@ -230,6 +230,16 @@ namespace rtm {
 		return 0;
 	}
 
+	template<fnChar fn>
+	inline static const char* strrChr(const char* _str, uint32_t _strMax, char _find)
+	{
+		int32_t stringLen = static_cast<int32_t>(strLen(_str, _strMax));
+		for (int32_t i=stringLen-1; i>=0; --i)
+			if (fn(_str[i]) == _find)
+				return &_str[i];
+		return 0;
+	}
+
 	inline static int32_t strCmp(const char* _lhs, const char* _rhs, uint32_t _max)
 	{
 		return strCmp<toNoop>(_lhs, _rhs, _max);
@@ -273,14 +283,24 @@ namespace rtm {
 		return strStr<toLower>(_str, _max, _find, INT32_MAX);
 	}
 
-	inline static const char* strChr(const char* _str, char _find, uint32_t _max)
+	inline static const char* strChr(const char* _str, char _find, uint32_t _max = UINT32_MAX)
 	{
 		return strChr<toNoop>(_str, _max, _find);
 	}
 
-	inline static const char* striChr(const char* _str, char _find, uint32_t _max)
+	inline static const char* striChr(const char* _str, char _find, uint32_t _max = UINT32_MAX)
 	{
 		return strChr<toLower>(_str, _max, _find);
+	}
+
+	inline static const char* strrChr(const char* _str, char _find, uint32_t _max = UINT32_MAX)
+	{
+		return strrChr<toNoop>(_str, _max, _find);
+	}
+
+	inline static const char* strriChr(const char* _str, char _find, uint32_t _max = UINT32_MAX)
+	{
+		return strrChr<toLower>(_str, _max, _find);
 	}
 
 } // namespace rtm
