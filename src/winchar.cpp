@@ -75,8 +75,9 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 
 MultiToWide::MultiToWide(const char* _string, bool _path)
 {
-	m_ptr = &m_string[0];
-	*m_ptr = 0;
+	m_size	= 0;
+	m_ptr	= &m_string[0];
+	*m_ptr	= 0;
 
 	if (!_string)
 		return;
@@ -97,7 +98,7 @@ MultiToWide::MultiToWide(const char* _string, bool _path)
 	else
 		m_ptr = &m_string[0];
 
-	MultiByteToWideChar(CP_UTF8, 0, pathToConvert, -1, m_ptr, size_needed);
+	m_size = MultiByteToWideChar(CP_UTF8, 0, pathToConvert, -1, m_ptr, size_needed);
 
 	if (_path)
 		delete[] tmpBuff;
@@ -111,7 +112,8 @@ MultiToWide::~MultiToWide()
 
 WideToMulti::WideToMulti(const wchar_t* _string)
 {
-	m_ptr = &m_string[0];
+	m_size		= 0;
+	m_ptr		= &m_string[0];
 	m_string[0] = 0;
 
 	if (!_string)
@@ -123,7 +125,7 @@ WideToMulti::WideToMulti(const wchar_t* _string)
 	else
 		m_ptr = &m_string[0];
 
-	WideCharToMultiByte(CP_UTF8, 0, _string, -1, m_ptr, size_needed, NULL, NULL);
+	m_size = WideCharToMultiByte(CP_UTF8, 0, _string, -1, m_ptr, size_needed, NULL, NULL);
 }
 
 WideToMulti::~WideToMulti()
