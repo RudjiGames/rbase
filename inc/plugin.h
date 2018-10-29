@@ -72,7 +72,7 @@ typedef uint32_t		(__stdcall *rtmPluginGetType)();
 typedef uint64_t		(__stdcall *rtmPluginGetID)();
 
 /* Returns plugin property value pointer. Returnz 0 for end of list. Size is used to return length of strings. */
-typedef void*			(__stdcall *rtmPluginGetProperty)(uint32_t _index, uint32_t* _propertyType);
+typedef void*			(__stdcall *rtmPluginGetProperty)(uint32_t _index, uint32_t* _propertyType, const char** _name);
 
 /* Sets value of a property. */
 typedef uint32_t		(__stdcall *rtmPluginSetProperty)(uint32_t _index, void* _propertyData);
