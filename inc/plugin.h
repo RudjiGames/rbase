@@ -11,6 +11,9 @@
 #define	RTM_PLUGIN_VERSION_HIGH				1
 #define	RTM_PLUGIN_VERSION_LOW				0
 #define RTM_PLUGIN_VERSION					((RTM_PLUGIN_VERSION_HIGH << 16) | RTM_PLUGIN_VERSION_LOW)
+#define RTM_PLUGIN_MAKE_VERSION(_h, _l)		((_h << 16) | _l)
+#define RTM_PLUGIN_GET_VERSION_LOW(_v)		(_v & 0x0000ffff)
+#define RTM_PLUGIN_GET_VERSION_HIGH(_v)		((_v >> 16) & 0x0000ffff)
 
 /* Return values */
 
@@ -39,8 +42,9 @@
 #define RTM_PROPERTY_TYPE_DOUBLE			11
 #define RTM_PROPERTY_TYPE_STRING			12
 #define RTM_PROPERTY_TYPE_TIME				13
-#define RTM_PROPERTY_TYPE_UNSIGNED_MAXK		0x80000000
-#define RTM_PROPERTY_TYPE_IS_UNSIGNED(x)	(x & RTM_PROPERTY_TYPE_UNSIGNED_MAXK)
+#define RTM_PROPERTY_TYPE_UNSIGNED_MASK		0x80000000
+#define RTM_PROPERTY_TYPE_MAKE_UNSIGNED(_x)	(_x | RTM_PROPERTY_TYPE_UNSIGNED_MASK)
+#define RTM_PROPERTY_TYPE_IS_UNSIGNED(_x)	(_x & RTM_PROPERTY_TYPE_UNSIGNED_MASK)
 
 /* Returns version of the plugin */
 typedef void* (__stdcall *rtmPluginRealloc)(void* _ptr, size_t _size);
@@ -78,7 +82,7 @@ typedef void*			(__stdcall *rtmPluginGetProperty)(uint32_t _index, uint32_t* _pr
 typedef uint32_t		(__stdcall *rtmPluginSetProperty)(uint32_t _index, void* _propertyData);
 
 /* Creates an instance of the plugin. */
-typedef uint32_t		(__stdcall *rtmPluginCreate)(void** _pluginInstance);
+typedef uint32_t		(__stdcall *rtmPluginCreate)(void** _pluginInstance, void* _userData);
 
 /* Destroys an instance of the plugin. */
 typedef uint32_t		(__stdcall *rtmPluginDestroy)(void* _pluginInstance);

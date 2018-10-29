@@ -289,16 +289,17 @@ namespace rtm {
 
 } // namespace rtm
 
-struct rtmLibInterface
+typedef struct _rtmLibInterface
 {
 	rtm::MemoryManager*	m_memory;
 	rtm::ErrorHandler*	m_error;
 
-	rtmLibInterface()
+	_rtmLibInterface()
 		: m_memory(0)
 		, m_error(0)
 	{}
-};
+
+} rtmLibInterface;
 
 //--------------------------------------------------------------------------
 /// Utility
