@@ -71,8 +71,11 @@ typedef uint32_t		(__stdcall *rtmPluginGetType)();
 /* Returns plugin identifier. Should be an unique 64bit number. */
 typedef uint64_t		(__stdcall *rtmPluginGetID)();
 
-/* Returns plugin property. Returnz 0 for end of list. Size is used to return length of strings. */
-typedef void*			(__stdcall *rtmPluginGetProperty)(uint32_t _index, uint32_t* _propertyType, uint32_t* _size);
+/* Returns plugin property value pointer. Returnz 0 for end of list. Size is used to return length of strings. */
+typedef void*			(__stdcall *rtmPluginGetProperty)(uint32_t _index, uint32_t* _propertyType);
+
+/* Sets value of a property. */
+typedef uint32_t		(__stdcall *rtmPluginSetProperty)(uint32_t _index, void* _propertyData);
 
 /* Creates an instance of the plugin. */
 typedef uint32_t		(__stdcall *rtmPluginCreate)(void** _pluginInstance);
@@ -91,6 +94,7 @@ typedef struct _rtmPluginDescriptor
 	rtmPluginGetType		pluginGetType;
 	rtmPluginGetID			pluginGetID;
 	rtmPluginGetProperty	pluginGetProperty;
+	rtmPluginSetProperty	pluginSetProperty;
 	rtmPluginCreate			pluginCreateInstance;
 	rtmPluginDestroy		pluginDestroyInstance;
 
