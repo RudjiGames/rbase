@@ -264,8 +264,12 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 
 		#if RTM_PLATFORM_LINUX
 			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/linux/");
+		#elif RTM_PLATFORM_IOS
+			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/ios/");
 		#elif RTM_PLATFORM_OSX
 			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/osx/");
+		#elif RTM_PLATFORM_ANDROID
+			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/android/");
 		#else
 			#error
 		#endif

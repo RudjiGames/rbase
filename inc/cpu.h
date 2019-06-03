@@ -43,7 +43,7 @@ namespace rtm {
 #elif RTM_PLATFORM_PS4
 			int64_t q = sceKernelReadTsc();
 #elif RTM_PLATFORM_ANDROID
-			int64_t q = clock();
+			int64_t q = ::clock();
 #else
 			struct timeval now;
 			gettimeofday(&now, 0);

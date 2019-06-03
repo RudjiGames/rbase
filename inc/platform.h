@@ -20,7 +20,6 @@
 #define RTM_PLATFORM_PS3		0
 #define RTM_PLATFORM_PS4		0
 #define RTM_PLATFORM_ANDROID	0
-#define RTM_PLATFORM_XBOX360	0
 #define RTM_PLATFORM_XBOXONE	0
 
 //--------------------------------------------------------------------------
@@ -100,10 +99,7 @@
 //--------------------------------------------------------------------------
 /// Detect platform
 //--------------------------------------------------------------------------
-#if defined(_XBOX_VER)
-#undef  RTM_PLATFORM_XBOX360
-#define RTM_PLATFORM_XBOX360	1
-#elif defined(_DURANGO) || defined(_XBOX_ONE)
+#if defined(_DURANGO) || defined(_XBOX_ONE)
 #undef  RTM_PLATFORM_XBOXONE
 #define RTM_PLATFORM_XBOXONE	1
 #elif defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
