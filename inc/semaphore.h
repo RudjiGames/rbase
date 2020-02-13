@@ -12,7 +12,7 @@
 	#include <windows.h>
 	#include <winbase.h>
 #elif RTM_PLATFORM_POSIX
-	#include <errno.h>
+	//#include <errno.h>
 	#include <semaphore.h>
 	#include <time.h>
 	#include <pthread.h>
