@@ -102,8 +102,8 @@ namespace rtm {
 	{
 		rtm_mutex m_mutex;
 
-		Mutex(const Mutex& _rhs);
-		Mutex& operator=(const Mutex& _rhs);
+		Mutex(const Mutex& _rhs) = delete;
+		Mutex& operator=(const Mutex& _rhs) = delete;
 		
 	public:
 
@@ -138,9 +138,9 @@ namespace rtm {
 	{
 		Mutex& m_mutex;
 
-		ScopedMutexLocker();
-		ScopedMutexLocker(const ScopedMutexLocker&);
-		ScopedMutexLocker& operator = (const ScopedMutexLocker&);
+		ScopedMutexLocker() = delete;
+		ScopedMutexLocker(const ScopedMutexLocker&) = delete;
+		ScopedMutexLocker& operator = (const ScopedMutexLocker&) = delete;
 
 	public:
 
