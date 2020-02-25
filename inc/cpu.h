@@ -24,6 +24,8 @@
 	#include <sys/sys_time.h>
 #elif RTM_PLATFORM_ANDROID
 	#include <time.h>
+#elif RTM_PLATFORM_EMSCRIPTEN
+	#include <emscripten.h>
 #else
 	#include <sys/time.h>
 #endif
@@ -44,6 +46,8 @@ namespace rtm {
 			int64_t q = sceKernelReadTsc();
 #elif RTM_PLATFORM_ANDROID
 			int64_t q = ::clock();
+#elif RTM_PLATFORM_EMSCRIPTEN
+			int64_t q = (int64_t)(emscripten_get_now() * 1000.0);
 #else
 			struct timeval now;
 			gettimeofday(&now, 0);

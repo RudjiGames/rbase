@@ -21,6 +21,7 @@
 #define RTM_PLATFORM_PS4		0
 #define RTM_PLATFORM_ANDROID	0
 #define RTM_PLATFORM_XBOXONE	0
+#define RTM_PLATFORM_EMSCRIPTEN	0
 
 //--------------------------------------------------------------------------
 /// Compilers
@@ -101,60 +102,64 @@
 //--------------------------------------------------------------------------
 #if defined(_DURANGO) || defined(_XBOX_ONE)
 #undef  RTM_PLATFORM_XBOXONE
-#define RTM_PLATFORM_XBOXONE	1
+#define RTM_PLATFORM_XBOXONE		1
 #elif defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
 #undef  RTM_PLATFORM_WINDOWS
-#define RTM_PLATFORM_WINDOWS	1
+#define RTM_PLATFORM_WINDOWS		1
 #else
 #undef  RTM_PLATFORM_WINRT
-#define RTM_PLATFORM_WINRT		1
+#define RTM_PLATFORM_WINRT			1
 #endif
 #elif defined(__ANDROID__)
-#undef RTM_PLATFORM_ANDROID
-#define RTM_PLATFORM_ANDROID	1
+#undef	RTM_PLATFORM_ANDROID
+#define RTM_PLATFORM_ANDROID		1
 #elif defined(__linux__) || defined(linux)
-#undef RTM_PLATFORM_LINUX
-#define RTM_PLATFORM_LINUX		1
+#undef	RTM_PLATFORM_LINUX
+#define RTM_PLATFORM_LINUX			1
 #elif defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__)
 #undef  RTM_PLATFORM_IOS
-#define RTM_PLATFORM_IOS		1
+#define RTM_PLATFORM_IOS			1
 #elif defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 #undef  RTM_PLATFORM_OSX
-#define RTM_PLATFORM_OSX		1
+#define RTM_PLATFORM_OSX			1
 #elif defined(__ORBIS__)
-#undef RTM_PLATFORM_PS4
-#define RTM_PLATFORM_PS4		1
+#undef	RTM_PLATFORM_PS4
+#define RTM_PLATFORM_PS4			1
+#elif defined(__EMSCRIPTEN__)
+#undef  RTMB_PLATFORM_EMSCRIPTEN
+#define RTMB_PLATFORM_EMSCRIPTEN	1
 #else
 #error "Platform not supported!"
 #endif
 
-#define RTM_PLATFORM_POSIX (RTM_PLATFORM_LINUX		|| \
-							RTM_PLATFORM_OSX		|| \
-							RTM_PLATFORM_ANDROID	|| \
-							RTM_PLATFORM_IOS		|| \
-							RTM_PLATFORM_PS4		|| \
+#define RTM_PLATFORM_POSIX (RTM_PLATFORM_LINUX			|| \
+							RTM_PLATFORM_OSX			|| \
+							RTM_PLATFORM_ANDROID		|| \
+							RTM_PLATFORM_IOS			|| \
+							RTM_PLATFORM_PS4			|| \
+							RTMB_PLATFORM_EMSCRIPTEN	|| \
 							0)
 
 //--------------------------------------------------------------------------
 /// Detect CPU
 //--------------------------------------------------------------------------
 #if defined(__arm__) ||  defined(__aarch64__) || defined(_M_ARM) 
-#undef  RTM_CPU_ARM
-#define RTM_CPU_ARM				1
-#define RTM_CACHE_LINE_SIZE		64
+#undef	RTM_CPU_ARM
+#define	RTM_CPU_ARM				1
+#define	RTM_CACHE_LINE_SIZE		64
 #elif defined(__MIPSEL__) || defined(__mips_isa_rev)
-#undef  RTM_CPU_MIPS
-#define RTM_CPU_MIPS			1
-#define RTM_CACHE_LINE_SIZE		64
+#undef	RTM_CPU_MIPS
+#define	RTM_CPU_MIPS			1
+#define	RTM_CACHE_LINE_SIZE		64
 #elif defined(_M_PPC) || defined(__powerpc__) || defined(__powerpc64__) || defined(__PPU__)
-#undef  RTM_CPU_PPC
-#define RTM_CPU_PPC				1
-#define RTM_CACHE_LINE_SIZE		128
+#undef	RTM_CPU_PPC
+#define	RTM_CPU_PPC				1
+#define	RTM_CACHE_LINE_SIZE		128
 #elif defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)
-#undef  RTM_CPU_X86
-#define RTM_CPU_X86				1
-#define RTM_CACHE_LINE_SIZE		64
+#undef	RTM_CPU_X86
+#define	RTM_CPU_X86				1
+#define	RTM_CACHE_LINE_SIZE		64
 #else
 #error "Platform not supported!"
 #endif
@@ -163,11 +168,11 @@
 /// Detect endianess
 //--------------------------------------------------------------------------
 #if RTM_CPU_PPC
-#undef RTM_BIG_ENDIAN
-#define RTM_BIG_ENDIAN			1
+#undef	RTM_BIG_ENDIAN
+#define	RTM_BIG_ENDIAN			1
 #else
-#undef RTM_LITTLE_ENDIAN
-#define RTM_LITTLE_ENDIAN		1
+#undef	RTM_LITTLE_ENDIAN
+#define	RTM_LITTLE_ENDIAN		1
 #endif
 
 //--------------------------------------------------------------------------
@@ -175,11 +180,11 @@
 //--------------------------------------------------------------------------
 
 #if (defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(__amd64) || defined(__ppc64__) || defined(_WIN64) || defined(__LP64__) || defined(_LP64) )
-#undef RTM_64BIT
-#define RTM_64BIT 1
+#undef	RTM_64BIT
+#define	RTM_64BIT 1
 #else
-#undef RTM_32BIT
-#define RTM_32BIT 1
+#undef	RTM_32BIT
+#define	RTM_32BIT 1
 #endif
 
 //--------------------------------------------------------------------------

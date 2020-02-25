@@ -182,7 +182,7 @@ namespace rtm {
 		static inline void sleep(uint32_t _ms)
 		{
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
-			Sleep(_ms);
+			::Sleep(_ms);
 #else
 			timespec req = {(time_t)_ms/1000, (long)((_ms%1000)*1000000)};
 			timespec rem = {0, 0};
