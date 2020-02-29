@@ -108,7 +108,11 @@ namespace rtm {
 	}
 
 #else
-	#error "Unsupported platform!"
+	static inline uint32_t getStackTrace(void* _traces[], uint32_t _numFrames, uint32_t _skip)
+	{
+		RTM_UNUSED_3(_traces, _numFrames, _skip);
+		return 0;
+	}
 #endif
 
 } // namespace rtm

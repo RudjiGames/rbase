@@ -12,7 +12,7 @@
 	#include <windows.h>
 #endif // RTM_PLATFORM_WINDOWS
 
-#if RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX
+#if RTM_PLATFORM_POSIX
 	#include <pthread.h>
 #endif
 
@@ -45,7 +45,7 @@ namespace rtm {
 		LeaveCriticalSection(_mutex);
 	}
 
-#elif RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_ANDROID
+#elif RTM_PLATFORM_POSIX
 	typedef pthread_mutex_t rtm_mutex;
 
 	static inline void rtm_mutex_init(rtm_mutex* _mutex) {

@@ -47,7 +47,7 @@
 #define RTM_PROPERTY_TYPE_IS_UNSIGNED(_x)	(_x & RTM_PROPERTY_TYPE_UNSIGNED_MASK)
 
 /* Returns version of the plugin */
-typedef void* (__stdcall *rtmPluginRealloc)(void* _ptr, size_t _size);
+typedef void* (*rtmPluginRealloc)(void* _ptr, size_t _size);
 
 /* 
  * Common plugin function prototypes.
@@ -55,37 +55,37 @@ typedef void* (__stdcall *rtmPluginRealloc)(void* _ptr, size_t _size);
  */
 
 /* Initializes the plugin. */
-typedef uint32_t		(__stdcall *rtmPluginInit)(rtmPluginRealloc _realloc);
+typedef uint32_t		(*rtmPluginInit)(rtmPluginRealloc _realloc);
 
 /* Initializes the plugin. */
-typedef uint32_t		(__stdcall *rtmPluginShutDown)();
+typedef uint32_t		(*rtmPluginShutDown)();
 
 /* Returns name of the plugin */
-typedef const char*		(__stdcall *rtmPluginGetName)();
+typedef const char*		(*rtmPluginGetName)();
 
 /* Returns version of the plugin */
-typedef uint32_t		(__stdcall *rtmPluginGetVersion)();
+typedef uint32_t		(*rtmPluginGetVersion)();
 
 /* Returns name of the plugin */
-typedef const char*		(__stdcall *rtmPluginGetAuthor)();
+typedef const char*		(*rtmPluginGetAuthor)();
 
 /* Returns type of the plugin */
-typedef uint32_t		(__stdcall *rtmPluginGetType)();
+typedef uint32_t		(*rtmPluginGetType)();
 
 /* Returns plugin identifier. Should be an unique 64bit number. */
-typedef uint64_t		(__stdcall *rtmPluginGetID)();
+typedef uint64_t		(*rtmPluginGetID)();
 
 /* Returns plugin property value pointer. Returnz 0 for end of list. Size is used to return length of strings. */
-typedef void*			(__stdcall *rtmPluginGetProperty)(uint32_t _index, uint32_t* _propertyType, const char** _name);
+typedef void*			(*rtmPluginGetProperty)(uint32_t _index, uint32_t* _propertyType, const char** _name);
 
 /* Sets value of a property. */
-typedef uint32_t		(__stdcall *rtmPluginSetProperty)(uint32_t _index, void* _propertyData);
+typedef uint32_t		(*rtmPluginSetProperty)(uint32_t _index, void* _propertyData);
 
 /* Creates an instance of the plugin. */
-typedef uint32_t		(__stdcall *rtmPluginCreate)(void** _pluginInstance, void* _userData);
+typedef uint32_t		(*rtmPluginCreate)(void** _pluginInstance, void* _userData);
 
 /* Destroys an instance of the plugin. */
-typedef uint32_t		(__stdcall *rtmPluginDestroy)(void* _pluginInstance);
+typedef uint32_t		(*rtmPluginDestroy)(void* _pluginInstance);
 
 /* Plugin description and utility functions */
 typedef struct _rtmPluginDescriptor
@@ -105,6 +105,6 @@ typedef struct _rtmPluginDescriptor
 } rtmPluginDescriptor;
 
 /* Every plugin must implement PluginGetDescriptor function */
-typedef uint32_t (__stdcall *PluginGetDescriptor)(rtmPluginDescriptor* _plugin);
+typedef uint32_t (*PluginGetDescriptor)(rtmPluginDescriptor* _plugin);
 
 #endif /* RTM_RBASE_PLUGIN_H */

@@ -38,6 +38,7 @@
 #define RTM_CPU_PPC				0
 #define RTM_CPU_ARM				0
 #define RTM_CPU_MIPS			0
+#define RTM_CPU_JIT				0
 
 //--------------------------------------------------------------------------
 /// Endianess
@@ -127,18 +128,18 @@
 #undef	RTM_PLATFORM_PS4
 #define RTM_PLATFORM_PS4			1
 #elif defined(__EMSCRIPTEN__)
-#undef  RTMB_PLATFORM_EMSCRIPTEN
-#define RTMB_PLATFORM_EMSCRIPTEN	1
+#undef  RTM_PLATFORM_EMSCRIPTEN
+#define RTM_PLATFORM_EMSCRIPTEN		1
 #else
 #error "Platform not supported!"
 #endif
 
-#define RTM_PLATFORM_POSIX (RTM_PLATFORM_LINUX			|| \
-							RTM_PLATFORM_OSX			|| \
-							RTM_PLATFORM_ANDROID		|| \
-							RTM_PLATFORM_IOS			|| \
-							RTM_PLATFORM_PS4			|| \
-							RTMB_PLATFORM_EMSCRIPTEN	|| \
+#define RTM_PLATFORM_POSIX (RTM_PLATFORM_LINUX		|| \
+							RTM_PLATFORM_OSX		|| \
+							RTM_PLATFORM_ANDROID	|| \
+							RTM_PLATFORM_IOS		|| \
+							RTM_PLATFORM_PS4		|| \
+							RTM_PLATFORM_EMSCRIPTEN	|| \
 							0)
 
 //--------------------------------------------------------------------------
@@ -160,6 +161,10 @@
 #undef	RTM_CPU_X86
 #define	RTM_CPU_X86				1
 #define	RTM_CACHE_LINE_SIZE		64
+#elif RTM_PLATFORM_EMSCRIPTEN
+#undef	RTM_CPU_JIT
+#define	RTM_CPU_JIT				1
+#define	RTM_CACHE_LINE_SIZE		64	// common
 #else
 #error "Platform not supported!"
 #endif
