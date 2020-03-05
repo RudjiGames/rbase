@@ -61,38 +61,38 @@
 
 #ifdef RTM_DEBUG_BUILD
 #undef	RTM_DEBUG
-#define	RTM_DEBUG 1
+#define	RTM_DEBUG				1
 #endif
 
 #ifdef RTM_RELEASE_BUILD
 #undef	RTM_RELEASE
-#define	RTM_RELEASE 1
+#define	RTM_RELEASE				1
 #endif
 
 #ifdef RTM_RETAIL_BUILD
 #undef	RTM_RETAIL
-#define	RTM_RETAIL 1
+#define	RTM_RETAIL				1
 #endif
 
 //--------------------------------------------------------------------------
 /// Detect compiler
 //--------------------------------------------------------------------------
 #if defined(__SNC__)
-#undef RTM_COMPILER_SNC
-#define RTM_COMPILER_SNC		1
+#undef	RTM_COMPILER_SNC
+#define	RTM_COMPILER_SNC		1
 
 // check for clang before GCC as clang defines GNU macros as well
 #elif defined(__clang__)
-#undef RTM_COMPILER_CLANG
-#define RTM_COMPILER_CLANG		1
+#undef	RTM_COMPILER_CLANG
+#define	RTM_COMPILER_CLANG		1
 
 #elif defined(__GNUC__)
-#undef RTM_COMPILER_GCC
-#define RTM_COMPILER_GCC		1
+#undef	RTM_COMPILER_GCC
+#define	RTM_COMPILER_GCC		1
 
 #elif defined(_MSC_VER)
-#undef RTM_COMPILER_MSVC
-#define RTM_COMPILER_MSVC		1
+#undef	RTM_COMPILER_MSVC
+#define	RTM_COMPILER_MSVC		1
 
 #else
 #error "Compiler not supported!"
