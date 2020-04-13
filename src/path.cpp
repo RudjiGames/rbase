@@ -173,14 +173,13 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 
 #if RTM_PLATFORM_WINDOWS
 	DWORD size = GetCurrentDirectoryW(0, nullptr);
+	if (size > 4095) // trailing zero
+		return false;
+
 	if ((size == 0) || (size >= static_cast<DWORD>(_bufferSize)))
 		return false;
 
-    if (size > 4095) // trailing zero
-        return false;
-
 	wchar_t wBuffer[4096];
-
 	DWORD len = GetCurrentDirectoryW(size, wBuffer);
 	wcscat(wBuffer, L"\\");
 	toUnixSlashes(wBuffer);
