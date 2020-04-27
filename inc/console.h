@@ -10,10 +10,20 @@
 #include <rbase/inc/stringfn.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <time.h>
 
 #if RTM_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#endif
+
+#define RTM_WINDOWS_CONSOLE 0
+
+#if RTM_PLATFORM_WINDOWS
+#if (_WIN32_WINNT < 0x0603)
+#undef	RTM_WINDOWS_CONSOLE
+#define	RTM_WINDOWS_CONSOLE 1
+#endif
 #endif
 
 namespace rtm {
@@ -42,12 +52,9 @@ namespace rtm {
 			return _buffer;
 		}
 
-		static void vprintf(uint8_t _r, uint8_t _g, uint8_t _b, const char* _format, va_list& _args)
+		static inline void setColor(uint8_t _r, uint8_t _g, uint8_t _b)
 		{
-			char buffer[8192];
-
-#if RTM_PLATFORM_WINDOWS
-			vsprintf(buffer, _format, _args);
+#if RTM_WINDOWS_CONSOLE
 			HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 			if (INVALID_HANDLE_VALUE != console)
 			{
@@ -62,21 +69,56 @@ namespace rtm {
 					att |= FOREGROUND_INTENSITY;
 
 				SetConsoleTextAttribute(console, (WORD)att);
-				DWORD written;
-				WriteFile(console, buffer, (DWORD)strlen(buffer), &written, NULL);
-				att = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-				SetConsoleTextAttribute(console, (WORD)att);
 			}
 #else
-			strlCpy(buffer, 8192, "\x1b[38;2;");
+			char buffer[32];
+			strlCpy(buffer, 32, "\x1b[38;2;");
 			char* b = itoaf(&buffer[7], _r);
 			b = itoaf(b, _g);
 			b = itoaf(b, _b);
 			b[-1] = 'm';
-			vsprintf(b, _format, _args);
-			strlCat(buffer, 8192, "\x1b[0m");
-			printf("%s", buffer);
+			b[0] = '\0';
+			::printf(buffer);
 #endif
+		}
+
+		static inline void restoreColor()
+		{
+#if RTM_WINDOWS_CONSOLE
+			setColor(255, 255, 255);
+#else
+			printf("\x1b[0m");
+#endif
+		}
+
+		static inline void printf(const char* _str)
+		{
+#if RTM_WINDOWS_CONSOLE
+			DWORD written = 0;
+			HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+			if (INVALID_HANDLE_VALUE != console)
+				WriteFile(console, _str, (DWORD)strlen(_str), &written, NULL);
+#else
+			::printf(_str);
+#endif
+		}
+
+		static inline void vprintf(const char* _format, va_list& _args)
+		{
+			char buffer[8192];
+			vsprintf(buffer, _format, _args);
+			Console::printf(buffer);
+		}
+
+		static void printTime()
+		{
+			char buffer[16];
+			time_t t = time(NULL);
+			struct tm *lt = localtime(&t);
+			size_t len = strftime(buffer, sizeof(buffer), "%H:%M:%S", lt);
+			buffer[len + 0] = ' ';
+			buffer[len + 1] = '\0';
+			Console::printf(buffer);
 		}
 
 	public:
@@ -85,7 +127,10 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::vprintf(_r, _g, _b, _format, args);
+			Console::printTime();
+			setColor(_r, _g, _b);
+			Console::vprintf(_format, args);
+			restoreColor();
 			va_end(args);
 		}
 
@@ -93,7 +138,11 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::vprintf(192, 192, 192, _format, args);
+			Console::printTime();
+			Console::setColor(0, 192, 0);
+			Console::printf("INFO  ");
+			Console::restoreColor();
+			Console::vprintf(_format, args);
 			va_end(args);
 		}
 
@@ -101,7 +150,11 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::vprintf(0, 255, 255, _format, args);
+			Console::printTime();
+			Console::setColor(0, 192, 192);
+			Console::printf("DEBUG ");
+			Console::restoreColor();
+			Console::vprintf(_format, args);
 			va_end(args);
 		}
 
@@ -109,7 +162,11 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::vprintf(255, 255, 0, _format, args);
+			Console::printTime();
+			Console::setColor(224, 224, 0);
+			Console::printf("WARN  ");
+			Console::restoreColor();
+			Console::vprintf(_format, args);
 			va_end(args);
 		}
 
@@ -117,7 +174,11 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::vprintf(255, 0, 0, _format, args);
+			Console::printTime();
+			Console::setColor(255, 0, 0);
+			Console::printf("ERROR ");
+			Console::restoreColor();
+			Console::vprintf(_format, args);
 			va_end(args);
 		}
 	};

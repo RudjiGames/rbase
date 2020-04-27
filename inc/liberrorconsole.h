@@ -12,17 +12,17 @@ struct ConsoleErrorHandler : public rtm::ErrorHandler
 {
 	virtual void fatal(const char* _file, int _line, const char* _message)
 	{
-		rtm::Console::error("ERROR: %s\nFile: %s Line:%d\n", _message, _file, _line);
+		rtm::Console::error("%s:%d  %s", _file, _line, _message);
 	}
 		
 	virtual void warning(const char* _file, int _line, const char* _message)
 	{
-		rtm::Console::warning("WARNING: %s\nFile: %s Line: %d\n", _message, _file, _line);
+		rtm::Console::warning("%s:%d  %s", _file, _line, _message);
 	}
 
 	virtual void debug(const char* _file, int _line, const char* _message)
 	{
-		rtm::Console::debug("LOG: %s\nFile: %s Line: %d\n", _message, _file, _line);
+		rtm::Console::debug("%s:%d  %s", _file, _line, _message);
 	}
 };
 
