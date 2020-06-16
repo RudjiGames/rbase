@@ -17,7 +17,8 @@
 #include <Windows.h>
 #endif
 
-#define RTM_WINDOWS_CONSOLE 0
+#define RTM_CONSOLE_TEMP_BUFFER_SIZE	512
+#define RTM_WINDOWS_CONSOLE				0
 
 #if RTM_PLATFORM_WINDOWS
 #if (_WIN32_WINNT < 0x0603)
@@ -25,8 +26,6 @@
 #define	RTM_WINDOWS_CONSOLE 1
 #endif
 #endif
-
-#define RTM_CONSOLE_TEMP_BUFFER_SIZE	512
 
 namespace rtm {
 
@@ -57,22 +56,23 @@ namespace rtm {
 		static inline char* setColor(char* _buffer, uint32_t _buffSize, uint8_t _r, uint8_t _g, uint8_t _b)
 		{
 #if RTM_WINDOWS_CONSOLE
-			RTM_UNUSED_1(_bufferSize);
-			HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-			if (INVALID_HANDLE_VALUE != console)
-			{
-				DWORD att = 0;
-				if (_r)	att |= FOREGROUND_RED;
-				if (_g)	att |= FOREGROUND_GREEN;
-				if (_b)	att |= FOREGROUND_BLUE;
-				if (false
-					|| (_r > 192)
-					|| (_g > 192)
-					|| (_b > 192))
-					att |= FOREGROUND_INTENSITY;
+			// can't make below thread safe in a cheap way, ignore
+			RTM_UNUSED_4(_buffSize, _r, _g, _b);
+			//HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+			//if (INVALID_HANDLE_VALUE != console)
+			//{
+			//	DWORD att = 0;
+			//	if (_r)	att |= FOREGROUND_RED;
+			//	if (_g)	att |= FOREGROUND_GREEN;
+			//	if (_b)	att |= FOREGROUND_BLUE;
+			//	if (false
+			//		|| (_r > 192)
+			//		|| (_g > 192)
+			//		|| (_b > 192))
+			//		att |= FOREGROUND_INTENSITY;
 
-				SetConsoleTextAttribute(console, (WORD)att);
-			}
+			//	SetConsoleTextAttribute(console, (WORD)att);
+			//}
 			return _buffer;
 #else
 			RTM_ASSERT(_buffSize >= 32, "");
@@ -89,7 +89,9 @@ namespace rtm {
 		static inline void restoreColor(char* _buffer, uint32_t _buffSize)
 		{
 #if RTM_WINDOWS_CONSOLE
-			setColor(255, 255, 255);
+			RTM_UNUSED_2(_buffer, _buffSize);
+			// can't make below thread safe in a cheap way, ignore
+			//setColor(_buffer, _buffSize, 255, 255, 255);
 #else
 			rtm::strlCat(_buffer, _buffSize, "\x1b[0m");
 #endif
