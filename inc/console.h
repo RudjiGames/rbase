@@ -26,6 +26,8 @@
 #endif
 #endif
 
+#define RTM_CONSOLE_TEMP_BUFFER_SIZE	512
+
 namespace rtm {
 
 	class Console
@@ -52,9 +54,10 @@ namespace rtm {
 			return _buffer;
 		}
 
-		static inline void setColor(uint8_t _r, uint8_t _g, uint8_t _b)
+		static inline char* setColor(char* _buffer, uint32_t _buffSize, uint8_t _r, uint8_t _g, uint8_t _b)
 		{
 #if RTM_WINDOWS_CONSOLE
+			RTM_UNUSED_1(_bufferSize);
 			HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 			if (INVALID_HANDLE_VALUE != console)
 			{
@@ -70,24 +73,25 @@ namespace rtm {
 
 				SetConsoleTextAttribute(console, (WORD)att);
 			}
+			return _buffer;
 #else
-			char buffer[32];
-			strlCpy(buffer, 32, "\x1b[38;2;");
-			char* b = itoaf(&buffer[7], _r);
+			RTM_ASSERT(_buffSize >= 32, "");
+			rtm::strlCat(_buffer, _buffSize, "\x1b[38;2;");
+			char* b = itoaf(&_buffer[7], _r);
 			b = itoaf(b, _g);
 			b = itoaf(b, _b);
 			b[-1] = 'm';
 			b[0] = '\0';
-			::printf(buffer);
+			return b;
 #endif
 		}
 
-		static inline void restoreColor()
+		static inline void restoreColor(char* _buffer, uint32_t _buffSize)
 		{
 #if RTM_WINDOWS_CONSOLE
 			setColor(255, 255, 255);
 #else
-			printf("\x1b[0m");
+			rtm::strlCat(_buffer, _buffSize, "\x1b[0m");
 #endif
 		}
 
@@ -110,15 +114,30 @@ namespace rtm {
 			Console::printf(buffer);
 		}
 
-		static void printTime()
+		static char* printTime(char* buffer)
 		{
-			char buffer[16];
 			time_t t = time(NULL);
 			struct tm *lt = localtime(&t);
-			size_t len = strftime(buffer, sizeof(buffer), "%H:%M:%S", lt);
+			size_t len = strftime(buffer, RTM_CONSOLE_TEMP_BUFFER_SIZE, "%H:%M:%S", lt);
 			buffer[len + 0] = ' ';
 			buffer[len + 1] = '\0';
-			Console::printf(buffer);
+			return &buffer[len + 1];
+		}
+
+		static void	rgbInternal(uint8_t _r, uint8_t _g, uint8_t _b, const char* _prepend, const char* _format, ...)
+		{
+			char buffer[RTM_CONSOLE_TEMP_BUFFER_SIZE];
+			va_list args;
+			va_start(args, _format);
+			char* append = Console::printTime(buffer);
+			uint32_t remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - (append - buffer);
+			append = setColor(append, remainder, _r, _g, _b);
+			remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - (append - buffer);
+			rtm::strlCpy(append, remainder, _prepend);
+			rtm::strlCat(append, remainder, _format);
+			restoreColor(append, remainder);
+			Console::vprintf(buffer, args);
+			va_end(args);
 		}
 
 	public:
@@ -127,10 +146,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::printTime();
-			setColor(_r, _g, _b);
-			Console::vprintf(_format, args);
-			restoreColor();
+			rgbInternal(_r, _g, _b, "", _format, args);
 			va_end(args);
 		}
 
@@ -138,11 +154,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::printTime();
-			Console::setColor(0, 192, 0);
-			Console::printf("INFO  ");
-			Console::restoreColor();
-			Console::vprintf(_format, args);
+			rgbInternal(0, 192, 0, "INFO  ", _format, args);
 			va_end(args);
 		}
 
@@ -150,11 +162,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::printTime();
-			Console::setColor(0, 192, 192);
-			Console::printf("DEBUG ");
-			Console::restoreColor();
-			Console::vprintf(_format, args);
+			rgbInternal(0, 192, 192, "DEBUG ", _format, args);
 			va_end(args);
 		}
 
@@ -162,11 +170,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::printTime();
-			Console::setColor(224, 224, 0);
-			Console::printf("WARN  ");
-			Console::restoreColor();
-			Console::vprintf(_format, args);
+			rgbInternal(224, 224, 0, "WARN  ", _format, args);
 			va_end(args);
 		}
 
@@ -174,11 +178,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			Console::printTime();
-			Console::setColor(255, 0, 0);
-			Console::printf("ERROR ");
-			Console::restoreColor();
-			Console::vprintf(_format, args);
+			rgb(255, 0, 0, "ERROR ", _format, args);
 			va_end(args);
 		}
 	};
