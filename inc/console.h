@@ -18,7 +18,7 @@
 #endif
 
 #define RTM_CONSOLE_TEMP_BUFFER_SIZE	512
-#define RTM_WINDOWS_CONSOLE				0
+#define RTM_CONSOLE_ENABLE_ANSI			1
 
 #if RTM_PLATFORM_WINDOWS
 #if (_WIN32_WINNT < 0x0603)
@@ -55,24 +55,8 @@ namespace rtm {
 
 		static inline char* setColor(char* _buffer, uint32_t _buffSize, uint8_t _r, uint8_t _g, uint8_t _b)
 		{
-#if RTM_WINDOWS_CONSOLE
-			// can't make below thread safe in a cheap way, ignore
+#if !RTM_CONSOLE_ENABLE_ANSI
 			RTM_UNUSED_4(_buffSize, _r, _g, _b);
-			//HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-			//if (INVALID_HANDLE_VALUE != console)
-			//{
-			//	DWORD att = 0;
-			//	if (_r)	att |= FOREGROUND_RED;
-			//	if (_g)	att |= FOREGROUND_GREEN;
-			//	if (_b)	att |= FOREGROUND_BLUE;
-			//	if (false
-			//		|| (_r > 192)
-			//		|| (_g > 192)
-			//		|| (_b > 192))
-			//		att |= FOREGROUND_INTENSITY;
-
-			//	SetConsoleTextAttribute(console, (WORD)att);
-			//}
 			return _buffer;
 #else
 			RTM_ASSERT(_buffSize >= 32, "");
@@ -88,10 +72,8 @@ namespace rtm {
 
 		static inline void restoreColor(char* _buffer, uint32_t _buffSize)
 		{
-#if RTM_WINDOWS_CONSOLE
+#if !RTM_CONSOLE_ENABLE_ANSI
 			RTM_UNUSED_2(_buffer, _buffSize);
-			// can't make below thread safe in a cheap way, ignore
-			//setColor(_buffer, _buffSize, 255, 255, 255);
 #else
 			rtm::strlCat(_buffer, _buffSize, "\x1b[0m");
 #endif
@@ -99,9 +81,18 @@ namespace rtm {
 
 		static inline void printf(const char* _str)
 		{
-#if RTM_WINDOWS_CONSOLE
-			DWORD written = 0;
+#if RTM_PLATFORM_WINDOWS
 			HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+			static bool ansiModeSet = false;
+			if (!ansiModeSet)
+			{
+				ansiModeSet = true;
+				DWORD dwMode = 0;
+				GetConsoleMode(console, &dwMode);
+				dwMode |= 0x0004;//ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+				SetConsoleMode(console, dwMode);
+			}
+			DWORD written = 0;
 			if (INVALID_HANDLE_VALUE != console)
 				WriteFile(console, _str, (DWORD)strlen(_str), &written, NULL);
 #else
