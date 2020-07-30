@@ -117,20 +117,17 @@ namespace rtm {
 			return &buffer[len + 1];
 		}
 
-		static void	rgbInternal(uint8_t _r, uint8_t _g, uint8_t _b, const char* _prepend, const char* _format, ...)
+		static void	rgbInternal(uint8_t _r, uint8_t _g, uint8_t _b, const char* _prepend, const char* _format, va_list& _args)
 		{
 			char buffer[RTM_CONSOLE_TEMP_BUFFER_SIZE];
-			va_list args;
-			va_start(args, _format);
 			char* append = Console::printTime(buffer);
-			uint32_t remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - (append - buffer);
+			uint32_t remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - uint32_t(append - buffer);
 			append = setColor(append, remainder, _r, _g, _b);
-			remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - (append - buffer);
+			remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - uint32_t(append - buffer);
 			rtm::strlCpy(append, remainder, _prepend);
 			rtm::strlCat(append, remainder, _format);
 			restoreColor(append, remainder);
-			Console::vprintf(buffer, args);
-			va_end(args);
+			Console::vprintf(buffer, _args);
 		}
 
 	public:
