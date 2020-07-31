@@ -21,7 +21,12 @@ namespace rtm {
 
 	public:
 
-		CommandLine(int _argc, const char* _argv[]) : 
+		CommandLine(int _argc, const char* const* _argv) :
+			m_argc(_argc), m_argv(_argv)
+		{
+		}
+
+		CommandLine(int _argc, const char* _argv[]) :
 			m_argc(_argc), m_argv(_argv)
 		{
 		}
