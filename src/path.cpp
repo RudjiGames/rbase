@@ -271,6 +271,8 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/android/");
 		#elif RTM_PLATFORM_EMSCRIPTEN
 			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/asmjs/");
+		#elif RTM_PLATFORM_SWITCH
+			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/switch/");
 		#else
 			#error
 		#endif

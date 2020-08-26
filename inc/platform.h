@@ -22,6 +22,7 @@
 #define RTM_PLATFORM_ANDROID	0
 #define RTM_PLATFORM_XBOXONE	0
 #define RTM_PLATFORM_EMSCRIPTEN	0
+#define RTM_PLATFORM_SWITCH		0
 
 //--------------------------------------------------------------------------
 /// Compilers
@@ -130,6 +131,9 @@
 #elif defined(__EMSCRIPTEN__)
 #undef  RTM_PLATFORM_EMSCRIPTEN
 #define RTM_PLATFORM_EMSCRIPTEN		1
+#elif defined(__NINTENDO__)
+#undef	RTM_PLATFORM_SWITCH
+#define	RTM_PLATFORM_SWITCH			1
 #else
 #error "Platform not supported!"
 #endif
@@ -140,6 +144,7 @@
 							RTM_PLATFORM_IOS		|| \
 							RTM_PLATFORM_PS4		|| \
 							RTM_PLATFORM_EMSCRIPTEN	|| \
+							RTM_PLATFORM_SWITCH		|| \
 							0)
 
 //--------------------------------------------------------------------------

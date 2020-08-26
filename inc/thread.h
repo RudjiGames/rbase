@@ -172,7 +172,7 @@ namespace rtm {
 			sys_ppu_thread_t tid;
 			sys_ppu_thread_get_id(&tid);
 			return (uint64_t)tid;
-#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_EMSCRIPTEN
+#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_EMSCRIPTEN || RTM_PLATFORM_SWITCH
 			return pthread_self();
 #else
 			#error "Undefined platform!"
@@ -196,7 +196,7 @@ namespace rtm {
 			::SwitchToThread();
 #elif RTM_PLATFORM_WINRT
 			RTM_ERROR("yield not implemented!");
-#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_EMSCRIPTEN
+#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_EMSCRIPTEN || RTM_PLATFORM_SWITCH
 			::sched_yield();
 #elif RTM_PLATFORM_PS4
 			scePthreadYield();
