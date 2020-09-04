@@ -96,7 +96,7 @@ namespace rtm {
 			if (INVALID_HANDLE_VALUE != console)
 				WriteFile(console, _str, (DWORD)strlen(_str), &written, NULL);
 #else
-			::printf(_str);
+			::printf("%s", _str);
 #endif
 		}
 
