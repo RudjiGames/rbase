@@ -500,41 +500,41 @@ namespace rtm {
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp()
-		: m_str(&m_strData[0]) , m_len(0)
+		: m_str(0) , m_len(0)
 	{
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const StringView& _other)
-		: m_str(&m_strData[0]) , m_len(0)
+		: m_str(0) , m_len(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const String& _other)
-		: m_str(&m_strData[0]) , m_len(0)
+		: m_str(0) , m_len(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const StringTemp& _other)
-		: m_str(&m_strData[0]) , m_len(0)
+		: m_str(0) , m_len(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const char* _str, uint32_t _len)
-		: m_str(&m_strData[0]) , m_len(0)
+		: m_str(0) , m_len(0)
 	{
 		set(_str, _len);
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const char* _start, const char* _end)
-		: m_str(&m_strData[0]) , m_len(0)
+		: m_str(0) , m_len(0)
 	{
 		set(_start, uint32_t(_end - _start));
 	}
@@ -691,16 +691,17 @@ namespace rtm {
 		if (isOnStack())
 		{
 			// allocate, copy, append
-			char* newStr = (char*)RTM_STRING_ALLOC(newLen);
-			strlCpy(newStr, newLen, m_str);
-			strlCat(newStr, newLen, _str);
+			char* newStr = (char*)RTM_STRING_ALLOC(newLen + 1);
+			if (m_len)
+				rtm::strlCpy(newStr, m_len, m_str);
+			rtm::strlCpy(&newStr[m_len], _len, _str);
 			m_str = newStr;
 		}
 		else
 		{
 			// reallocate, append
-			m_str = (char*)RTM_STRING_REALLOC(m_str, newLen);
-			rtm::strlCpy(&m_str[m_len], newLen, _str, _len);
+			m_str = (char*)RTM_STRING_REALLOC(m_str, newLen + 1);
+			rtm::strlCpy(&m_str[m_len], _len, _str, _len);
 		}
 
 		m_len = newLen;
