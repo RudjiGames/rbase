@@ -622,7 +622,7 @@ namespace rtm {
 	template <uint32_t S>
 	inline void StringTemp<S>::set(const char* _str, uint32_t _len)
 	{
-		uint32_t length = _len == UINT32_MAX ? strLen(_str) : _len;
+		uint32_t length = _len == UINT32_MAX ? rtm::strLen(_str) : _len;
 		set(_str, _str + length);
 	}
 
@@ -640,7 +640,7 @@ namespace rtm {
 			m_str = (char*)RTM_STRING_ALLOC(sizeof(char) * (len + 1));
 		}
 
-		strlCpy(m_str, len+1, _start, len);
+		rtm::strlCpy(m_str, len+1, _start, len);
 		m_str[len]	= 0;
 		m_len		= len;
 	}
@@ -666,7 +666,7 @@ namespace rtm {
 	template <uint32_t S>
 	inline void StringTemp<S>::append(char* _str, size_t _len)
 	{
-		append(_str, _len ? _len : rtm::strLen(_str));
+		append(const_cast<const char*>(_str), (uint32_t)(_len ? _len : rtm::strLen(_str)));
 	}
 
 	template <uint32_t S>
@@ -700,7 +700,7 @@ namespace rtm {
 		{
 			// reallocate, append
 			m_str = (char*)RTM_STRING_REALLOC(m_str, newLen);
-			strlCat(m_str, newLen, _str, _len);
+			rtm::strlCpy(&m_str[m_len], newLen, _str, _len);
 		}
 
 		m_len = newLen;
@@ -734,7 +734,7 @@ namespace rtm {
 	template <uint32_t S>
 	inline StringTemp<S>::operator const char* () const
 	{
-		return data();
+		return m_str;
 	}
 
 	template <uint32_t S>
