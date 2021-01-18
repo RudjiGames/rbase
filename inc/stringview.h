@@ -500,41 +500,41 @@ namespace rtm {
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp()
-		: m_str(0) , m_len(0)
+		: m_str(&m_strData[0]) , m_len(0)
 	{
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const StringView& _other)
-		: m_str(0) , m_len(0)
+		: m_str(&m_strData[0]) , m_len(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const String& _other)
-		: m_str(0) , m_len(0)
+		: m_str(&m_strData[0]) , m_len(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const StringTemp& _other)
-		: m_str(0) , m_len(0)
+		: m_str(&m_strData[0]) , m_len(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const char* _str, uint32_t _len)
-		: m_str(0) , m_len(0)
+		: m_str(&m_strData[0]) , m_len(0)
 	{
 		set(_str, _len);
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const char* _start, const char* _end)
-		: m_str(0) , m_len(0)
+		: m_str(&m_strData[0]) , m_len(0)
 	{
 		set(_start, uint32_t(_end - _start));
 	}
@@ -615,7 +615,7 @@ namespace rtm {
 		{
 			RTM_STRING_FREE((void*)m_str);
 		}
-		m_str = 0;
+		m_str = &m_strData[0];
 		m_len = 0;
 	}
 
@@ -683,7 +683,7 @@ namespace rtm {
 
 		if (isOnStack() && (newLen < S))
 		{
-			strlCat(m_str, S, _str, _len);
+			rtm::strlCpy(&m_str[m_len], S, _str, _len);
 			m_len = newLen;
 			return;
 		}
