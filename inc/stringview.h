@@ -137,19 +137,28 @@ namespace rtm {
 		StringTemp& operator = (const StringTemp& _str);
 		StringTemp& operator = (const char* _str);
 
+		StringTemp& operator += (const StringView& _view);
+		StringTemp& operator += (const String& _other);
+		StringTemp& operator += (const StringTemp& _str);
+		StringTemp& operator += (const char* _str);
+		StringTemp& operator += (char _c);
+
 		void		clear();
 		void		set(const char* _str, uint32_t _len = UINT32_MAX);
 		void		set(const char* _start, const char* _end);
 		void		append(StringView& _view);
 		void		append(String& _string);
 		void		append(StringTemp& _view);
+		void		append(char* _str, size_t _len = 0);
+		void		append(char _c);
 		void		append(const char* _str, uint32_t _len = UINT32_MAX);
 		void		append(const char* _start, const char* _end);
 		bool		isNull() const;
 		const char*	data() const;
 		uint32_t	length() const;
-		operator const char* ();
+		operator const char* () const;
 		char operator[](uint32_t _index) const;
+		char& operator[](uint32_t _index);
 	private:
 		bool		isOnStack() const;
 	};
@@ -565,6 +574,41 @@ namespace rtm {
 	}
 
 	template <uint32_t S>
+	inline StringTemp<S>& StringTemp<S>::operator += (const StringView& _view)
+	{
+		append(_view);
+		return *this;
+	}
+
+	template <uint32_t S>
+	inline StringTemp<S>& StringTemp<S>::operator += (const String& _other)
+	{
+		append(_other);
+		return *this;
+	}
+
+	template <uint32_t S>
+	inline StringTemp<S>& StringTemp<S>::operator += (const StringTemp& _str)
+	{
+		append(_str);
+		return *this;
+	}
+
+	template <uint32_t S>
+	inline StringTemp<S>& StringTemp<S>::operator += (const char* _str)
+	{
+		append(_str);
+		return *this;
+	}
+
+	template <uint32_t S>
+	inline StringTemp<S>& StringTemp<S>::operator += (char _c)
+	{
+		append(_c);
+		return *this;
+	}
+
+	template <uint32_t S>
 	inline void StringTemp<S>::clear()
 	{
 		if (!isOnStack())
@@ -617,6 +661,18 @@ namespace rtm {
 	inline void StringTemp<S>::append(StringTemp& _view)
 	{
 		append(_view.data(), _view.length());
+	}
+
+	template <uint32_t S>
+	inline void StringTemp<S>::append(char* _str, size_t _len)
+	{
+		append(_str, _len ? _len : rtm::strLen(_str));
+	}
+
+	template <uint32_t S>
+	inline void StringTemp<S>::append(char _c)
+	{
+		append(&_c, 1);
 	}
 
 	template <uint32_t S>
@@ -676,13 +732,20 @@ namespace rtm {
 	}
 
 	template <uint32_t S>
-	inline StringTemp<S>::operator const char* ()
+	inline StringTemp<S>::operator const char* () const
 	{
 		return data();
 	}
 
 	template <uint32_t S>
 	inline char StringTemp<S>::operator[](uint32_t _index) const
+	{
+		RTM_ASSERT(_index < m_len, "");
+		return m_str[_index];
+	}
+
+	template <uint32_t S>
+	inline char& StringTemp<S>::operator[](uint32_t _index)
 	{
 		RTM_ASSERT(_index < m_len, "");
 		return m_str[_index];
