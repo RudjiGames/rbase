@@ -16,6 +16,7 @@ configuration:
 install:
   - git clone --depth 1 https://github.com/milostosic/build ..\build
   - git clone --depth 1 https://github.com/milostosic/rapp  ..\rapp
+  - git clone --depth 1 https://github.com/milostosic/enkiTS  ..\enkiTS
   - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git ..\unittest-cpp
   - ..\build\tools\bin\windows\genie --file=genie\genie.lua %TOOLSET%
 
