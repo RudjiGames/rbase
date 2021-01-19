@@ -149,7 +149,6 @@ namespace rtm {
 		void		append(StringView& _view);
 		void		append(String& _string);
 		void		append(StringTemp& _view);
-		void		append(char* _str, size_t _len = 0);
 		void		append(char _c);
 		void		append(const char* _str, uint32_t _len = UINT32_MAX);
 		void		append(const char* _start, const char* _end);
@@ -661,12 +660,6 @@ namespace rtm {
 	inline void StringTemp<S>::append(StringTemp& _view)
 	{
 		append(_view.data(), _view.length());
-	}
-
-	template <uint32_t S>
-	inline void StringTemp<S>::append(char* _str, size_t _len)
-	{
-		append(const_cast<const char*>(_str), (uint32_t)(_len ? _len : rtm::strLen(_str)));
 	}
 
 	template <uint32_t S>
