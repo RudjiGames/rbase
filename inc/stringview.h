@@ -119,9 +119,10 @@ namespace rtm {
 	template <uint32_t S_ON_STACK_SIZE = 1024>
 	class StringTemp
 	{
-		char		m_strData[S_ON_STACK_SIZE];
-		char*		m_str;
 		uint32_t	m_len;
+		uint32_t	m_capacity;
+		char*		m_str;
+		char		m_strData[S_ON_STACK_SIZE];
 
 	public:
 		StringTemp();
@@ -154,12 +155,16 @@ namespace rtm {
 		void		append(const char* _start, const char* _end);
 		bool		isNull() const;
 		const char*	data() const;
+		char*		data();
 		uint32_t	length() const;
+		void		setLength(uint32_t _len);
+		uint32_t	capacity() const;
 		operator const char* () const;
 		char operator[](uint32_t _index) const;
 		char& operator[](uint32_t _index);
 	private:
 		bool		isOnStack() const;
+		void		expandCapacity(uint32_t _minCapacity);
 	};
 
 	//--------------------------------------------------------------------------
@@ -499,41 +504,41 @@ namespace rtm {
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp()
-		: m_str(0) , m_len(0)
+		: m_len(0), m_capacity(S), m_str(0)
 	{
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const StringView& _other)
-		: m_str(0) , m_len(0)
+		: m_len(0), m_capacity(S), m_str(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const String& _other)
-		: m_str(0) , m_len(0)
+		: m_len(0), m_capacity(S), m_str(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const StringTemp& _other)
-		: m_str(0) , m_len(0)
+		: m_len(0), m_capacity(S), m_str(0)
 	{
 		set(_other.data(), _other.length());
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const char* _str, uint32_t _len)
-		: m_str(0) , m_len(0)
+		: m_len(0), m_capacity(S), m_str(0)
 	{
 		set(_str, _len);
 	}
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp(const char* _start, const char* _end)
-		: m_str(0) , m_len(0)
+		: m_len(0), m_capacity(S), m_str(0)
 	{
 		set(_start, uint32_t(_end - _start));
 	}
@@ -614,8 +619,9 @@ namespace rtm {
 		{
 			RTM_STRING_FREE((void*)m_str);
 		}
-		m_str = &m_strData[0];
-		m_len = 0;
+		m_str		= &m_strData[0];
+		m_len		= 0;
+		m_capacity	= S;
 	}
 
 	template <uint32_t S>
@@ -636,7 +642,11 @@ namespace rtm {
 			m_str = &m_strData[0];
 		else
 		{
-			m_str = (char*)RTM_STRING_ALLOC(sizeof(char) * (len + 1));
+			if (len + 1 > m_capacity)
+			{
+				m_str		= (char*)RTM_STRING_ALLOC(sizeof(char) * (len + 1));
+				m_capacity	= len + 1;
+			}
 		}
 
 		rtm::strlCpy(m_str, len+1, _start, len);
@@ -688,17 +698,19 @@ namespace rtm {
 			if (m_len)
 				rtm::strlCpy(newStr, m_len, m_str);
 			rtm::strlCpy(&newStr[m_len], _len, _str);
-			m_str = newStr;
+			m_str		= newStr;
+			m_capacity	= newLen + 1;
 		}
 		else
 		{
 			// reallocate, append
-			m_str = (char*)RTM_STRING_REALLOC(m_str, newLen + 1);
+			if (newLen + 1 > m_capacity)
+				expandCapacity(newLen + 1);
 			rtm::strlCpy(&m_str[m_len], _len, _str, _len);
 		}
 
-		m_len = newLen;
-		m_str[m_len] = 0;
+		m_len			= newLen;
+		m_str[m_len]	= 0;
 	}
 
 	template <uint32_t S>
@@ -720,9 +732,27 @@ namespace rtm {
 	}
 
 	template <uint32_t S>
+	inline char* StringTemp<S>::data()
+	{
+		return m_str;
+	}
+
+	template <uint32_t S>
 	inline uint32_t	StringTemp<S>::length() const
 	{
 		return m_len;
+	}
+
+	template <uint32_t S>
+	inline void	StringTemp<S>::setLength(uint32_t _len)
+	{
+		m_len = _len;
+	}
+
+	template <uint32_t S>
+	inline uint32_t	StringTemp<S>::capacity() const
+	{
+		return m_capacity;
 	}
 
 	template <uint32_t S>
@@ -749,6 +779,16 @@ namespace rtm {
 	inline bool StringTemp<S>::isOnStack() const
 	{
 		return m_str == &m_strData[0];
+	}
+
+	template <uint32_t S>
+	inline void StringTemp<S>::expandCapacity(uint32_t _minCapacity)
+	{
+		RTM_ASSERT(!isOnStack(), "");
+		m_capacity = m_capacity * 2;
+		if (_minCapacity > m_capacity)
+			m_capacity = _minCapacity;
+		m_str = (char*)RTM_STRING_REALLOC(m_str, m_capacity);
 	}
 
 } // namespace rtm
