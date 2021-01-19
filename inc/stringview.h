@@ -694,19 +694,19 @@ namespace rtm {
 		if (isOnStack())
 		{
 			// allocate, copy, append
-			char* newStr = (char*)RTM_STRING_ALLOC(newLen + 1);
+			m_capacity = newLen + 1;
+			char* newStr = (char*)RTM_STRING_ALLOC(m_capacity);
 			if (m_len)
 				rtm::strlCpy(newStr, m_len, m_str);
-			rtm::strlCpy(&newStr[m_len], _len, _str);
+			rtm::strlCpy(&newStr[m_len], m_capacity, _str, _len);
 			m_str		= newStr;
-			m_capacity	= newLen + 1;
 		}
 		else
 		{
 			// reallocate, append
 			if (newLen + 1 > m_capacity)
 				expandCapacity(newLen + 1);
-			rtm::strlCpy(&m_str[m_len], _len, _str, _len);
+			rtm::strlCpy(&m_str[m_len], m_capacity - m_len, _str, _len);
 		}
 
 		m_len			= newLen;
