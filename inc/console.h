@@ -17,7 +17,7 @@
 #include <Windows.h>
 #endif
 
-#define RTM_CONSOLE_TEMP_BUFFER_SIZE	512
+#define RTM_CONSOLE_TEMP_BUFFER_SIZE	8192+128
 #define RTM_CONSOLE_ENABLE_ANSI			1
 
 #if RTM_PLATFORM_WINDOWS
@@ -120,7 +120,11 @@ namespace rtm {
 		static void	rgbInternal(uint8_t _r, uint8_t _g, uint8_t _b, const char* _prepend, const char* _format, va_list& _args)
 		{
 			char buffer[RTM_CONSOLE_TEMP_BUFFER_SIZE];
-			char* append = Console::printTime(buffer);
+			uint32_t len = rtm::strLen(_prepend);
+			char* append = buffer;
+			buffer[0] = '\0';
+			if (len > 0)
+				Console::printTime(buffer);
 			uint32_t remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - uint32_t(append - buffer);
 			append = setColor(append, remainder, _r, _g, _b);
 			remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - uint32_t(append - buffer);
@@ -137,6 +141,14 @@ namespace rtm {
 			va_list args;
 			va_start(args, _format);
 			rgbInternal(_r, _g, _b, "", _format, args);
+			va_end(args);
+		}
+
+		static void	print(const char* _format, ...)
+		{
+			va_list args;
+			va_start(args, _format);
+			rgbInternal(224, 224, 224, "", _format, args);
 			va_end(args);
 		}
 
