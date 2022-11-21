@@ -12,6 +12,8 @@
 	extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char* _str);
 #elif RTM_PLATFORM_ANDROID
 	#include <android/log.h>
+#elif RTM_PLATFORM_EMSCRIPTEN
+	#include <emscripten/emscripten.h>
 #else
 	#include <stdio.h>
 #endif
@@ -29,6 +31,8 @@ namespace rtm {
 		OutputDebugStringA(_out);
 #elif RTM_PLATFORM_ANDROID
 		__android_log_write(ANDROID_LOG_DEBUG, "", _out);
+#elif RTM_PLATFORM_EMSCRIPTEN
+		emscripten_log(EM_LOG_CONSOLE, "%s", _out);
 #else
 		fputs(_out, stderr);
 		fflush(stderr);
