@@ -155,7 +155,7 @@ struct FileWriterLocal : public FileWriter
 };
 
 #if RTM_PLATFORM_EMSCRIPTEN
-struct FileReaderHTTP : public FileReaderLocal
+struct FileReaderHTTP : public FileReader
 {
 	int			m_reqHandle;
 	uint8_t*	m_fileData;
