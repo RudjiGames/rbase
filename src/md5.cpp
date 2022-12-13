@@ -25,7 +25,7 @@ static char chrToHex(const char _char)
 		return ((char)'A' - (char)10) + _char;
 }
 
-void md5_calculate(void* _data, uint32_t _dataSize, uint8_t _digest[16])
+void md5_calculate(const void* _data, uint32_t _dataSize, uint8_t _digest[16])
 {
 	MD5 md5;
 	md5.process(_data, _dataSize);
@@ -49,7 +49,7 @@ MD5::MD5()
 	init();
 }
 
-void MD5::process(void* _input, uint32_t _inputLength)
+void MD5::process(const void* _input, uint32_t _inputLength)
 {
 	uint8_t* input = (uint8_t*)_input;
 
