@@ -5,6 +5,7 @@
 
 #include <rbase_pch.h>
 #include <rbase/inc/file.h>
+#include <rbase/inc/datastore.h>
 #include <rbase/inc/stringfn.h>
 #include <rbase/inc/hash.h>
 #include <rbase/inc/console.h>
@@ -14,309 +15,542 @@
 #include <emscripten/wget.h>
 #endif // RTM_PLATFORM_EMSCRIPTEN
 
+#define HTTP_LOCAL_CACHE 1
+
 #include <stdio.h>
 
 namespace rtm {
 
-struct FileReaderNoop : public FileReader
+constexpr int RTM_MAX_FILES = 64;
+
+struct FileReader
 {
-	virtual ~FileReaderNoop() {}
-	bool open(const char* /*_file*/) { return false; }
-	void close() {}
-	int64_t	seek(int64_t /*_offset*/, uint32_t /*_origin*/) { return 0; }
-	int32_t	read(void* /*_dest*/, uint32_t /*_size*/, void* /*_userData*/) { return 0; }
+	RTM_ALIGN(16) uint8_t	m_data[64];
+	FileCallBacks			m_callBacks;
+
+	void	(*construct)(FileReader*);
+	void	(*destruct)(FileReader*);
+	bool	(*open)(FileReader*, const char* _file);
+	void	(*close)(FileReader*);
+	int64_t	(*seek)(FileReader*, int64_t _offset, uint32_t _origin);
+	int32_t	(*read)(FileReader*, void* _dest, uint32_t _size);
 };
 
-struct FileWriterNoop : public FileWriter
+struct FileWriter
 {
-	virtual ~FileWriterNoop() {}
-	bool open(const char* /*_file*/) { return false; }
-	void close() {}
-	int64_t	seek(int64_t /*_offset*/, uint32_t /*_origin*/) { return 0; }
-	int32_t	write(void* /*_src*/, uint32_t /*_size*/, void* /*_userData*/) { return 0; }
+	RTM_ALIGN(16) uint8_t	m_data[64];
+	FileCallBacks			m_callBacks;
+
+	void	(*construct)(FileWriter*);
+	void	(*destruct)(FileWriter*);
+	bool	(*open)(FileWriter*, const char* _file);
+	void	(*close)(FileWriter*);
+	int64_t	(*seek)(FileWriter*, int64_t _offset, uint32_t _origin);
+	int32_t	(*write)(FileWriter*, void* _dest, uint32_t _size);
 };
 
-struct FileReaderLocal : public FileReader
+rtm::Data<FileReader, RTM_MAX_FILES, rtm::Storage::Dense>	s_readers;
+rtm::Data<FileWriter, RTM_MAX_FILES, rtm::Storage::Dense>	s_writers;
+
+// ------------------------------------------------
+/// Noop reader/writer
+// ------------------------------------------------
+
+bool	noopReadOpen(FileReader*, const char* _path) { RTM_UNUSED(_path); return false; }
+void	noopReadClose(FileReader*) {}
+int64_t	noopReadSeek(FileReader*, int64_t _offset, uint32_t _origin) { RTM_UNUSED_2(_offset, _origin); return 0; }
+int32_t	noopReadRead(FileReader*, void* _dest, uint32_t _size) { RTM_UNUSED_2(_dest, _size); return 0; }
+
+bool	noopWriteOpen(FileWriter*, const char* _path) { RTM_UNUSED(_path); return false; }
+void	noopWriteClose(FileWriter*) {}
+int64_t	noopWriteSeek(FileWriter*, int64_t _offset, uint32_t _origin) { RTM_UNUSED_2(_offset, _origin); return 0; }
+int32_t	noopWriteWrite(FileWriter*, void* _dest, uint32_t _size) { RTM_UNUSED_2(_dest, _size); return 0; }
+
+void fileReaderSetNoop(FileReader* _reader)
 {
-	FILE*	m_file;
+	_reader->construct	= noopReadClose;	// same fn declaration
+	_reader->destruct	= noopReadClose;	// same fn declaration
+	_reader->open		= noopReadOpen;
+	_reader->close		= noopReadClose;
+	_reader->seek		= noopReadSeek;
+	_reader->read		= noopReadRead;
+}
 
-	FileReaderLocal()
-		: m_file(0)
-	{
-	}
+void fileWriterSetNoop(FileWriter* _writer)
+{
+	_writer->construct	= noopWriteClose;	// same fn declaration
+	_writer->destruct	= noopWriteClose;	// same fn declaration
+	_writer->open		= noopWriteOpen;
+	_writer->close		= noopWriteClose;
+	_writer->seek		= noopWriteSeek;
+	_writer->write		= noopWriteWrite;
+}
 
-	virtual ~FileReaderLocal()
-	{
-		close();
-	}
+// ------------------------------------------------
+/// Local storage reader/writer
+// ------------------------------------------------
 
-	bool open(const char* _file) override
-	{
-		m_file = fopen(_file, "rb");
-		if ((!m_file) && failCb)
-			failCb("Failed to open file!");
-		return m_file != 0;
-	}
-
-	void close() override
-	{
-		if (m_file)
-			fclose(m_file);
-		else
-			if (failCb)
-				failCb("Cannot close file that is not open!");
-
-		m_file = 0;
-	}
-
-	int64_t	seek(int64_t _offset, uint32_t _origin) override
-	{
-		RTM_ASSERT(m_file != 0, "");
-		if (!m_file)
-		{
-			if (failCb) failCb("Cannot seek file that is not open!");
-			return 0;
-		}
-		fseek(m_file, (long)_offset, _origin);
-		return ftell(m_file);
-	}
-
-	int32_t	read(void* _dest, uint32_t _size, void* _userData) override
-	{
-		RTM_ASSERT(m_file != 0, "");
-		if (!m_file)
-		{
-			if (failCb) failCb("Cannot read file that is not open!");
-			return 0;
-		}
-		int32_t bytesRead = fread(_dest, 1, _size, m_file);
-		if (doneCb)
-			doneCb(_dest, bytesRead, _userData);
-		return bytesRead;
-	}
+struct membersLocal
+{
+	FILE* m_file;
 };
 
-struct FileWriterLocal : public FileWriter
+#define LOCAL(_file) (*(membersLocal*)_file->m_data)
+
+void localReadConstruct(FileReader* _file)
 {
-	FILE*	m_file;
+	LOCAL(_file).m_file = 0;
+}
 
-	FileWriterLocal()
-		: m_file(0)
+bool localReadOpen(FileReader* _file, const char* _path)
+{
+	LOCAL(_file).m_file = fopen(_path, "rb");
+	if (LOCAL(_file).m_file)
 	{
+		if (_file->m_callBacks.m_doneCb)
+			_file->m_callBacks.m_doneCb(_path);
+		return 0;
 	}
 
-	virtual ~FileWriterLocal()
+	return LOCAL(_file).m_file != 0;
+}
+
+void localReadClose(FileReader* _file)
+{
+	if (LOCAL(_file).m_file)
 	{
-		close();
+		fclose(LOCAL(_file).m_file);
+		LOCAL(_file).m_file = 0;
+	}
+}
+
+void localReadDestruct(FileReader* _file)
+{
+	localReadClose(_file);
+}
+
+int64_t	localReadSeek(FileReader* _file, int64_t _offset, uint32_t _origin)
+{
+	if (!LOCAL(_file).m_file)
+	{
+		if (_file->m_callBacks.m_failCb)
+			_file->m_callBacks.m_failCb("Cannot seek. File is not open!");
+		return 0;
 	}
 
-	bool open(const char* _file) override
+	fseek(LOCAL(_file).m_file, (long)_offset, _origin);
+	return ftell(LOCAL(_file).m_file);
+}
+
+int32_t	localReadRead(FileReader* _file, void* _dest, uint32_t _size)
+{
+	if (!LOCAL(_file).m_file)
 	{
-		m_file = fopen(_file, "wb");
-		return m_file != 0;
+		if (_file->m_callBacks.m_failCb)
+			_file->m_callBacks.m_failCb("Cannot read. File is not open!");
+		return 0;
 	}
 
-	void close() override
-	{
-		if (m_file)
-			fclose(m_file);
-		else
-			if (failCb)
-				failCb("Cannot close file that is not open!");
+	return fread(_dest, 1, _size, LOCAL(_file).m_file);
+}
 
-		m_file = 0;
+void localWriteConstruct(FileWriter* _file)
+{
+	LOCAL(_file).m_file = 0;
+}
+
+bool localWriteOpen(FileWriter* _file, const char* _path)
+{
+	LOCAL(_file).m_file = fopen(_path, "wb");
+	return LOCAL(_file).m_file != 0;
+}
+
+void localWriteClose(FileWriter* _file)
+{
+	if (LOCAL(_file).m_file)
+	{
+		fclose(LOCAL(_file).m_file);
+		LOCAL(_file).m_file = 0;
+	}
+}
+
+void localWriteDestruct(FileWriter* _file)
+{
+	localWriteClose(_file);
+}
+
+int64_t	localWriteSeek(FileWriter* _file, int64_t _offset, uint32_t _origin)
+{
+	if (!LOCAL(_file).m_file)
+	{
+		if (_file->m_callBacks.m_failCb)
+			_file->m_callBacks.m_failCb("Cannot seek. File is not open!");
+		return 0;
 	}
 
-	int64_t	seek(int64_t _offset, uint32_t _origin) override
+	fseek(LOCAL(_file).m_file, (long)_offset, _origin);
+	return ftell(LOCAL(_file).m_file);
+}
+
+int32_t	localWriteWrite(FileWriter* _file, void* _dest, uint32_t _size)
+{
+	if (!LOCAL(_file).m_file)
 	{
-		RTM_ASSERT(m_file != 0, "");
-		if (!m_file)
-		{
-			if (failCb) failCb("Cannot seek file that is not open!");
-			return 0;
-		}
-		fseek(m_file, (long)_offset, _origin);
-		return ftell(m_file);
+		if (_file->m_callBacks.m_failCb)
+			_file->m_callBacks.m_failCb("Cannot write. File is not open!");
+		return 0;
 	}
 
-	int32_t	write(void* _src, uint32_t _size, void* _userData) override
-	{
-		RTM_ASSERT(m_file != 0, "");
-		if (!m_file)
-		{
-			if (failCb) failCb("Cannot write file that is not open!");
-			return 0;
-		}
-		int32_t bytesWritten = fwrite(_src, 1, _size, m_file);
-		if (doneCb)
-			doneCb(_src, bytesWritten, _userData);
-		return bytesWritten;
-	}
-};
+	return fwrite(_dest, 1, _size, LOCAL(_file).m_file);
+}
+
+void fileReaderSetLocal(FileReader* _reader)
+{
+	_reader->construct	= localReadConstruct;
+	_reader->destruct	= localReadDestruct;
+	_reader->open		= localReadOpen;
+	_reader->close		= localReadClose;
+	_reader->seek		= localReadSeek;
+	_reader->read		= localReadRead;
+}
+
+void fileWriterSetLocal(FileWriter* _writer)
+{
+	_writer->construct	= localWriteConstruct;
+	_writer->destruct	= localWriteDestruct;
+	_writer->open		= localWriteOpen;
+	_writer->close		= localWriteClose;
+	_writer->seek		= localWriteSeek;
+	_writer->write		= localWriteWrite;
+}
+
+// ------------------------------------------------
+/// HTTP reader/writer
+// ------------------------------------------------
 
 #if RTM_PLATFORM_EMSCRIPTEN
-struct FileReaderHTTP : public FileReader
+
+struct membersHTTP
 {
-	int			m_reqHandle;
-	uint8_t*	m_fileData;
-	int32_t		m_fileSize;
-	int32_t		m_filePtr;
-
-	FileReaderHTTP()
-		: m_reqHandle(0)
-		, m_fileData(0)
-		, m_fileSize(0)
-		, m_filePtr(0)
-	{
-	}
-
-	virtual ~FileReaderHTTP()
-	{
-		close();
-	}
-
-	bool open(const char* _file) override
-	{
-		m_reqHandle = emscripten_async_wget2_data(_file, "GET", 0, this, 0, onLoad, onError, onProgress);
-		return true;
-	}
-
-	void close() override
-	{
-		if (m_fileData)
-		{
-			free(m_fileData);
-			m_fileData	= 0;
-			m_fileSize	= 0;
-			m_filePtr	= 0;
-
-		}
-
-		if (m_reqHandle)
-			emscripten_async_wget2_abort(m_reqHandle);
-		m_reqHandle = 0;
-	}
-
-	int64_t	seek(int64_t _offset, uint32_t _origin) override
-	{
-		switch (_origin)
-		{
-			case SEEK_CUR:
-				_offset += (int64_t)m_filePtr;
-				break;
-
-			case SEEK_END:
-				_offset += (int64_t)m_fileSize;
-				break;
-			
-			case SEEK_SET:
-				_offset += (int64_t)0;
-				break;
-		};
-
-		if (_offset < 0)			_offset = 0;
-		if (_offset > m_fileSize)	_offset = m_fileSize;
-
-		int64_t ret = _offset - (int64_t)(m_filePtr);
-		m_filePtr = (uint32_t)_offset;
-		return ret;
-	}
-
-	int32_t	read(void* _dest, uint32_t _size, void* _userData) override
-	{
-		if (!m_fileData)
-			return 0;
-
-		uint32_t size = rtm::uint32_min(_size, (uint32_t)(m_fileSize - m_filePtr));
-
-		if (size)
-		{
-			memcpy(_dest, &m_fileData[m_filePtr], _size);
-			m_filePtr += _size;
-		}
-
-		if (doneCb)
-			doneCb(_dest, size, _userData);
-
-		return size;
-	}
-
-	static void onLoad(unsigned _handle, void* _userData, void* _buffer, unsigned _bufferSize)
-	{
-		FileReaderHTTP* reader = (FileReaderHTTP*)_userData;
-		RTM_ASSERT(reader->m_reqHandle == _handle, "");
-		reader->m_reqHandle	= 0;
-		reader->m_fileData	= (uint8_t*)_buffer;
-		reader->m_fileSize	= (int32_t)_bufferSize;
-
-		reader->doneCb(_buffer, (int32_t)_bufferSize, _userData);
-		memcpy(reader->m_fileData, _buffer, _bufferSize);
-	}
-
-	static void onError(unsigned _handle, void* _userData, int /*_httpErrorCode*/, const char* _statusMessage)
-	{
-		FileReaderHTTP* reader = (FileReaderHTTP*)_userData;
-		RTM_ASSERT(reader->m_reqHandle == _handle, "");
-		reader->m_reqHandle	= 0;
-		reader->failCb(_statusMessage);
-	}
-
-	static void onProgress(unsigned _handle, void* _userData, int _loaded, int _totalSizeOrZeroIfUnknown)
-	{
-		FileReaderHTTP* reader = (FileReaderHTTP*)_userData;
-		RTM_ASSERT(reader->m_reqHandle == _handle, "");
-
-		// just pick some size and clamp progress to 1
-		if (_totalSizeOrZeroIfUnknown == 0)
-			_totalSizeOrZeroIfUnknown = 64 * 1024;
-
-		float progress = (float)_loaded / (float)_totalSizeOrZeroIfUnknown;
-		if (progress > 1.0f)
-			progress = 1.0f;
-
-		reader->progCb(progress);
-	}
+	int		m_reqHandle;
+	FILE*	m_file;
 };
 
-//#elif RTM_PLATFORM_WINDOWS
-//struct FileReaderHTTP : public FileReaderLocal
-//{
-//};
-//
-#else
-typedef FileReaderNoop FileReaderHTTP;
-#endif
+#define HTTP(_file) (*(membersHTTP*)_file->m_data)
 
-FileReader*	createFileReader(FileReader::Enum _type)
+static void onLoad(unsigned _handle, void* _userData, const char* _path)
 {
-	switch (_type)
-	{
-	case FileReader::LocalStorage:	return new FileReaderLocal();
-	case FileReader::HTTP:			return new FileReaderHTTP();
-	};
+	FileReader* _file = (FileReader*)_userData;
+	RTM_ASSERT(HTTP(_file).m_reqHandle == _handle, "");
+	RTM_UNUSED(_handle);
+	HTTP(_file).m_reqHandle		= 0;
+	HTTP(_file).m_file			= fopen(_path, "rb");
 
+	if ((!HTTP(_file).m_file) && (_file->m_callBacks.m_failCb))
+		_file->m_callBacks.m_failCb("Failed to open file!");
+	else
+		if (_file->m_callBacks.m_doneCb)
+			_file->m_callBacks.m_doneCb(_path);
+}
+
+static void onError(unsigned _handle, void* _userData, int /*_httpErrorCode*/)
+{
+	FileReader* _file = (FileReader*)_userData;
+	RTM_ASSERT(HTTP(_file).m_reqHandle == _handle, "");
+	RTM_UNUSED(_handle);
+	HTTP(_file).m_reqHandle	= 0;
+
+	if (_file->m_callBacks.m_failCb)
+		_file->m_callBacks.m_failCb("Download failed!");
+}
+
+static void onProgress(unsigned _handle, void* _userData, int _percent)
+{
+	FileReader* _file = (FileReader*)_userData;
+	RTM_ASSERT(HTTP(_file).m_reqHandle == _handle, "");
+	RTM_UNUSED(_handle);
+
+	float progress = (float)_percent / (float)100.0f;
+	if (progress > 1.0f)
+		progress = 1.0f;
+
+	if (_file->m_callBacks.m_progCb)
+		_file->m_callBacks.m_progCb(progress);
+}
+
+void httpReadConstruct(FileReader* _file)
+{
+	HTTP(_file).m_reqHandle		= 0;
+	HTTP(_file).m_file			= 0;
+}
+
+bool httpReadOpen(FileReader* _file, const char* _path)
+{
+	uint8_t digest[16];
+	char	hash[33];
+	rtm::md5_calculate(_path, rtm::strLen(_path), digest);
+	rtm::md5_to_string(digest, hash);
+	rtm::Console::debug("Downloading %s to %s\n", _path, hash);
+
+#if HTTP_LOCAL_CACHE
+	HTTP(_file).m_file = fopen(_path, "rb");
+#endif // HTTP_LOCAL_CACHE
+	if (!HTTP(_file).m_file)
+		HTTP(_file).m_reqHandle = emscripten_async_wget2(_path, hash, "GET", 0, _file, onLoad, onError, onProgress);
+
+	return ((HTTP(_file).m_file != 0) || (HTTP(_file).m_reqHandle != 0));
+}
+
+void httpReadClose(FileReader* _file)
+{
+	if (HTTP(_file).m_reqHandle)
+		emscripten_async_wget2_abort(HTTP(_file).m_reqHandle);
+	HTTP(_file).m_reqHandle = 0;
+
+	if (HTTP(_file).m_file)
+	{
+		fclose(HTTP(_file).m_file);
+		HTTP(_file).m_file = 0;
+	}
+}
+
+void httpReadDestruct(FileReader* _file)
+{
+	httpReadClose(_file);
+}
+
+int64_t	httpReadSeek(FileReader* _file, int64_t _offset, uint32_t _origin)
+{
+	RTM_ASSERT(HTTP(_file).m_file != 0, "");
+	if (!HTTP(_file).m_file)
+	{
+		if (_file->m_callBacks.m_failCb)
+			_file->m_callBacks.m_failCb("Cannot seek. File is not open!");
+		return 0;
+	}
+	fseek(HTTP(_file).m_file, (long)_offset, _origin);
+	return ftell(HTTP(_file).m_file);
+}
+
+int32_t	httpReadRead(FileReader* _file, void* _dest, uint32_t _size)
+{
+	if (!HTTP(_file).m_file)
+	{
+		if (_file->m_callBacks.m_failCb)
+			_file->m_callBacks.m_failCb("Cannot read. File is not open!");
+		return 0;
+	}
+	return fread(_dest, 1, _size, HTTP(_file).m_file);
+}
+
+#else // RTM_PLATFORM_EMSCRIPTEN
+	#define httpReadConstruct	noopReadClose
+	#define httpReadDestruct	noopReadClose
+	#define httpReadOpen		noopReadOpen
+	#define httpReadClose		noopReadClose
+	#define httpReadSeek		noopReadSeek
+	#define httpReadRead		noopReadRead
+#endif // RTM_PLATFORM_EMSCRIPTEN
+
+void httpWriteConstruct(FileWriter* _file)
+{
+	RTM_UNUSED(_file);
+}
+
+bool httpWriteOpen(FileWriter* _file, const char* _path)
+{
+	RTM_UNUSED_2(_file, _path);
+	return false;
+}
+
+void httpWriteClose(FileWriter* _file)
+{
+	RTM_UNUSED(_file);
+}
+
+void httpWriteDestruct(FileWriter* _file)
+{
+	httpWriteClose(_file);
+}
+
+int64_t	httpWriteSeek(FileWriter* _file, int64_t _offset, uint32_t _origin)
+{
+	RTM_UNUSED_3(_file, _offset, _origin);
 	return 0;
 }
 
-void deleteFileReader(FileReader* _instance)
+int32_t	httpWriteWrite(FileWriter* _file, void* _dest, uint32_t _size)
 {
-	delete _instance;
-}
-
-FileWriter*	createFileWriter(FileWriter::Enum _type)
-{
-	switch (_type)
-	{
-	case FileWriter::LocalStorage:	return new FileWriterLocal();
-	case FileWriter::HTTP:			return 0;
-	};
-
+	RTM_UNUSED_3(_file, _dest, _size);
 	return 0;
 }
 
-void deleteFileWriter(FileWriter* _instance)
+void fileReaderSetHTTP(FileReader* _reader)
 {
-	delete _instance;
+	_reader->construct	= httpReadConstruct;
+	_reader->destruct	= httpReadDestruct;
+	_reader->open		= httpReadOpen;
+	_reader->close		= httpReadClose;
+	_reader->seek		= httpReadSeek;
+	_reader->read		= httpReadRead;
+}
+
+void fileWriterSetHTTP(FileWriter* _writer)
+{
+	_writer->construct	= httpWriteConstruct;
+	_writer->destruct	= httpWriteDestruct;
+	_writer->open		= httpWriteOpen;
+	_writer->close		= httpWriteClose;
+	_writer->seek		= httpWriteSeek;
+	_writer->write		= httpWriteWrite;
+}
+
+// ------------------------------------------------
+/// API
+// ------------------------------------------------
+
+FileReaderHandle fileReaderCreate(File::Enum _type, FileCallBacks* _callBacks)
+{
+	FileReader* reader = 0;
+	uint32_t idx = s_readers.allocate(reader);
+
+	if (s_readers.isValid(idx))
+	{
+		switch (_type)
+		{
+			case File::LocalStorage:	fileReaderSetLocal(reader); break;
+			case File::HTTP:			fileReaderSetHTTP(reader); break;
+			default:					fileReaderSetNoop(reader); break;
+		};
+
+		if (_callBacks)
+			reader->m_callBacks = *_callBacks;
+
+		reader->construct(reader);
+
+		return { idx };
+	}
+
+	return { UINT32_MAX };
+}
+
+void fileReaderDestroy(FileReaderHandle _handle)
+{
+	if (!s_readers.isValid(_handle.idx))
+		return;
+
+	FileReader* reader = s_readers.getDataPtr(_handle.idx);
+	reader->destruct(reader);
+
+	s_readers.free(_handle.idx);
+}
+
+bool fileReaderOpen(FileReaderHandle _handle, const char* _path)
+{
+	if (!s_readers.isValid(_handle.idx))
+		return false;
+
+	FileReader* reader = s_readers.getDataPtr(_handle.idx);
+	return reader->open(reader, _path);
+}
+
+void fileReaderClose(FileReaderHandle _handle)
+{
+	if (!s_readers.isValid(_handle.idx))
+		return;
+
+	FileReader* reader = s_readers.getDataPtr(_handle.idx);
+	return reader->close(reader);
+}
+
+int64_t	fileReaderSeek(FileReaderHandle _handle, int64_t _offset, uint32_t _origin)
+{
+	if (!s_readers.isValid(_handle.idx))
+		return 0;
+
+	FileReader* reader = s_readers.getDataPtr(_handle.idx);
+	return reader->seek(reader, _offset, _origin);
+}
+
+int32_t	fileReaderRead(FileReaderHandle _handle, void* _dest, uint32_t _size)
+{
+	if (!s_readers.isValid(_handle.idx))
+		return 0;
+
+	FileReader* reader = s_readers.getDataPtr(_handle.idx);
+	return reader->read(reader, _dest, _size);
+}
+
+FileWriterHandle fileWriterCreate(File::Enum _type, FileCallBacks* _callBacks)
+{
+	FileWriter* writer = 0;
+	uint32_t idx = s_writers.allocate(writer);
+
+	if (s_writers.isValid(idx))
+	{
+		switch (_type)
+		{
+			case File::LocalStorage:	fileWriterSetLocal(writer); break;
+			case File::HTTP:			fileWriterSetHTTP(writer); break;
+			default:					fileWriterSetNoop(writer); break;
+		};
+
+		if (_callBacks)
+			writer->m_callBacks = *_callBacks;
+
+		writer->construct(writer);
+
+		return { idx };
+	}
+
+	return { UINT32_MAX };
+}
+
+void fileWriterDestroy(FileWriterHandle _handle)
+{
+	if (!s_writers.isValid(_handle.idx))
+		return;
+
+	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
+	writer->destruct(writer);
+
+	s_writers.free(_handle.idx);
+}
+
+bool fileWriterOpen(FileWriterHandle _handle, const char* _path)
+{
+	if (!s_writers.isValid(_handle.idx))
+		return false;
+
+	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
+	return writer->open(writer, _path);
+}
+
+void fileWriterClose(FileWriterHandle _handle)
+{
+	if (!s_writers.isValid(_handle.idx))
+		return;
+
+	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
+	return writer->close(writer);
+}
+
+int64_t	fileWriterSeek(FileWriterHandle _handle, int64_t _offset, uint32_t _origin)
+{
+	if (!s_writers.isValid(_handle.idx))
+		return 0;
+
+	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
+	return writer->seek(writer, _offset, _origin);
+}
+
+int32_t	fileWriterRead(FileWriterHandle _handle, void* _dest, uint32_t _size)
+{
+	if (!s_writers.isValid(_handle.idx))
+		return 0;
+
+	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
+	return writer->write(writer, _dest, _size);
 }
 
 } // namespace rtm

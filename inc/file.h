@@ -10,52 +10,85 @@
 
 namespace rtm {
 
-	constexpr uint32_t SEEK_CUR = 1;
-	constexpr uint32_t SEEK_END = 2;
-	constexpr uint32_t SEEK_SET = 0;
-
-	struct FileIO
+	struct File
 	{
+		enum Seek
+		{
+			Seek_CUR = 1,
+			Seek_END = 2,
+			Seek_SET = 0
+		};
+
 		enum Enum
 		{
 			LocalStorage,
 			HTTP
 		};
-
-		typedef void (*prog)(float _progress);
-		typedef void (*done)(void* _data, int32_t _numBytes, void* _userData);
-		typedef void (*fail)(const char* _errorMessage);
-
-		prog	progCb;
-		done	doneCb;
-		fail	failCb;
-
-		FileIO() : progCb(0), doneCb(0), failCb(0) {}
-		virtual ~FileIO() {}
 	};
 
-	struct FileReader : public FileIO
+	struct FileCallBacks
 	{
-		virtual ~FileReader() {}
-		virtual bool	open(const char* _file) = 0;
-		virtual void	close() = 0;
-		virtual int64_t	seek(int64_t _offset, uint32_t _origin = SEEK_CUR) = 0;
-		virtual int32_t	read(void* _dest, uint32_t _size, void* _userData = 0) = 0;
+		typedef void (*progCb)(float _progress);
+		typedef void (*doneCb)(const char* _path);
+		typedef void (*failCb)(const char* _errorMessage);
+
+		progCb	m_progCb;
+		doneCb	m_doneCb;
+		failCb	m_failCb;
+
+		FileCallBacks()
+			: m_progCb(0)
+			, m_doneCb(0)
+			, m_failCb(0)
+		{}
 	};
 
-	struct FileWriter : public FileIO
-	{
-		virtual ~FileWriter() {}
-		virtual bool	open(const char* _file) = 0;
-		virtual void	close() = 0;
-		virtual int64_t	seek(int64_t _offset, uint32_t _origin = SEEK_CUR) = 0;
-		virtual int32_t	write(void* _src, uint32_t _size, void* _userData = 0) = 0;
-	};
+	struct FileReaderHandle { uint32_t idx; };
+	struct FileWriterHandle { uint32_t idx; };
 
-	FileReader*	createFileReader(FileIO::Enum _type);
-	void		deleteFileReader(FileReader*);
-	FileWriter*	createFileWriter(FileIO::Enum _type);
-	void		deleteFileWriter(FileWriter*);
+	// ------------------------------------------------
+	/// File reader functions
+	// ------------------------------------------------
+
+	///
+	FileReaderHandle fileReaderCreate(File::Enum _type = File::LocalStorage, FileCallBacks* _callBacks = 0);
+
+	///
+	void fileReaderDestroy(FileReaderHandle _handle);
+
+	///
+	bool fileReaderOpen(FileReaderHandle _handle, const char* _path);
+
+	///
+	void fileReaderClose(FileReaderHandle _handle);
+
+	///
+	int64_t	fileReaderSeek(FileReaderHandle _handle, int64_t _offset, uint32_t _origin = File::Seek_CUR);
+
+	///
+	int32_t	fileReaderRead(FileReaderHandle _handle, void* _dest, uint32_t _size);
+
+	// ------------------------------------------------
+	/// File writer functions
+	// ------------------------------------------------
+
+	///
+	FileWriterHandle fileWriterCreate(File::Enum _type = File::LocalStorage, FileCallBacks* _callBacks = 0);
+
+	///
+	void fileWriterDestroy(FileWriterHandle _handle);
+
+	///
+	bool fileWriterOpen(FileWriterHandle _handle, const char* _path);
+
+	///
+	void fileWriterClose(FileWriterHandle _handle);
+
+	///
+	int64_t	fileWriterSeek(FileWriterHandle _handle, int64_t _offset, uint32_t _origin = File::Seek_CUR);
+
+	///
+	int32_t	fileWriterRead(FileWriterHandle _handle, void* _dest, uint32_t _size);
 
 } // namespace rtm
 
