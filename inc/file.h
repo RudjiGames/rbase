@@ -14,9 +14,16 @@ namespace rtm {
 	{
 		enum Seek
 		{
-			Seek_CUR = 1,
-			Seek_END = 2,
-			Seek_SET = 0
+			Seek_CUR	= 1,
+			Seek_END	= 2,
+			Seek_SET	= 0
+		};
+
+		enum Open
+		{
+			OK			= 1,
+			Fail,
+			Download
 		};
 
 		enum Enum
@@ -57,7 +64,10 @@ namespace rtm {
 	void fileReaderDestroy(FileReaderHandle _handle);
 
 	///
-	bool fileReaderOpen(FileReaderHandle _handle, const char* _path);
+	File::Open fileReaderOpen(FileReaderHandle _handle, const char* _path);
+
+	///
+	bool fileReaderIsDownloadDone(FileReaderHandle _handle);
 
 	///
 	void fileReaderClose(FileReaderHandle _handle);
@@ -79,7 +89,10 @@ namespace rtm {
 	void fileWriterDestroy(FileWriterHandle _handle);
 
 	///
-	bool fileWriterOpen(FileWriterHandle _handle, const char* _path);
+	File::Open fileWriterOpen(FileWriterHandle _handle, const char* _path);
+
+	///
+	bool fileWriterIsUploadDone(FileReaderHandle _handle);
 
 	///
 	void fileWriterClose(FileWriterHandle _handle);

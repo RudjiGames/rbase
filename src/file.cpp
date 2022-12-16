@@ -27,12 +27,13 @@ struct FileReader
 	RTM_ALIGN(16) uint8_t	m_data[64];
 	FileCallBacks			m_callBacks;
 
-	void	(*construct)(FileReader*);
-	void	(*destruct)(FileReader*);
-	bool	(*open)(FileReader*, const char* _file);
-	void	(*close)(FileReader*);
-	int64_t	(*seek)(FileReader*, int64_t _offset, uint32_t _origin);
-	int32_t	(*read)(FileReader*, void* _dest, uint32_t _size);
+	void		(*construct)(FileReader*);
+	void		(*destruct)(FileReader*);
+	File::Open	(*open)(FileReader*, const char* _file);
+	bool		(*dldone)(FileReader*);
+	void		(*close)(FileReader*);
+	int64_t		(*seek)(FileReader*, int64_t _offset, uint32_t _origin);
+	int32_t		(*read)(FileReader*, void* _dest, uint32_t _size);
 };
 
 struct FileWriter
@@ -40,12 +41,13 @@ struct FileWriter
 	RTM_ALIGN(16) uint8_t	m_data[64];
 	FileCallBacks			m_callBacks;
 
-	void	(*construct)(FileWriter*);
-	void	(*destruct)(FileWriter*);
-	bool	(*open)(FileWriter*, const char* _file);
-	void	(*close)(FileWriter*);
-	int64_t	(*seek)(FileWriter*, int64_t _offset, uint32_t _origin);
-	int32_t	(*write)(FileWriter*, void* _dest, uint32_t _size);
+	void		(*construct)(FileWriter*);
+	void		(*destruct)(FileWriter*);
+	File::Open	(*open)(FileWriter*, const char* _file);
+	bool		(*uldone)(FileWriter*);
+	void		(*close)(FileWriter*);
+	int64_t		(*seek)(FileWriter*, int64_t _offset, uint32_t _origin);
+	int32_t		(*write)(FileWriter*, void* _dest, uint32_t _size);
 };
 
 rtm::Data<FileReader, RTM_MAX_FILES, rtm::Storage::Dense>	s_readers;
@@ -55,21 +57,24 @@ rtm::Data<FileWriter, RTM_MAX_FILES, rtm::Storage::Dense>	s_writers;
 /// Noop reader/writer
 // ------------------------------------------------
 
-bool	noopReadOpen(FileReader*, const char* _path) { RTM_UNUSED(_path); return false; }
-void	noopReadClose(FileReader*) {}
-int64_t	noopReadSeek(FileReader*, int64_t _offset, uint32_t _origin) { RTM_UNUSED_2(_offset, _origin); return 0; }
-int32_t	noopReadRead(FileReader*, void* _dest, uint32_t _size) { RTM_UNUSED_2(_dest, _size); return 0; }
+File::Open	noopReadOpen(FileReader*, const char* _path) { RTM_UNUSED(_path); return File::Fail; }
+void		noopReadClose(FileReader*) {}
+bool		noopReadDlDone(FileReader*) { return false; }
+int64_t		noopReadSeek(FileReader*, int64_t _offset, uint32_t _origin) { RTM_UNUSED_2(_offset, _origin); return 0; }
+int32_t		noopReadRead(FileReader*, void* _dest, uint32_t _size) { RTM_UNUSED_2(_dest, _size); return 0; }
 
-bool	noopWriteOpen(FileWriter*, const char* _path) { RTM_UNUSED(_path); return false; }
-void	noopWriteClose(FileWriter*) {}
-int64_t	noopWriteSeek(FileWriter*, int64_t _offset, uint32_t _origin) { RTM_UNUSED_2(_offset, _origin); return 0; }
-int32_t	noopWriteWrite(FileWriter*, void* _dest, uint32_t _size) { RTM_UNUSED_2(_dest, _size); return 0; }
+File::Open	noopWriteOpen(FileWriter*, const char* _path) { RTM_UNUSED(_path); return File::Fail; }
+void		noopWriteClose(FileWriter*) {}
+bool		noopWriteUlDone(FileWriter*) { return false; }
+int64_t		noopWriteSeek(FileWriter*, int64_t _offset, uint32_t _origin) { RTM_UNUSED_2(_offset, _origin); return 0; }
+int32_t		noopWriteWrite(FileWriter*, void* _dest, uint32_t _size) { RTM_UNUSED_2(_dest, _size); return 0; }
 
 void fileReaderSetNoop(FileReader* _reader)
 {
 	_reader->construct	= noopReadClose;	// same fn declaration
 	_reader->destruct	= noopReadClose;	// same fn declaration
 	_reader->open		= noopReadOpen;
+	_reader->dldone		= noopReadDlDone;
 	_reader->close		= noopReadClose;
 	_reader->seek		= noopReadSeek;
 	_reader->read		= noopReadRead;
@@ -80,6 +85,7 @@ void fileWriterSetNoop(FileWriter* _writer)
 	_writer->construct	= noopWriteClose;	// same fn declaration
 	_writer->destruct	= noopWriteClose;	// same fn declaration
 	_writer->open		= noopWriteOpen;
+	_writer->uldone		= noopWriteUlDone;
 	_writer->close		= noopWriteClose;
 	_writer->seek		= noopWriteSeek;
 	_writer->write		= noopWriteWrite;
@@ -101,16 +107,21 @@ void localReadConstruct(FileReader* _file)
 	LOCAL(_file).m_file = 0;
 }
 
-bool localReadOpen(FileReader* _file, const char* _path)
+File::Open localReadOpen(FileReader* _file, const char* _path)
 {
 	LOCAL(_file).m_file = fopen(_path, "rb");
 	if (LOCAL(_file).m_file)
 	{
 		if (_file->m_callBacks.m_doneCb)
 			_file->m_callBacks.m_doneCb(_path);
-		return 0;
+		return File::OK;
 	}
 
+	return File::Fail;
+}
+
+bool localReadIsDlDone(FileReader* _file)
+{
 	return LOCAL(_file).m_file != 0;
 }
 
@@ -158,9 +169,16 @@ void localWriteConstruct(FileWriter* _file)
 	LOCAL(_file).m_file = 0;
 }
 
-bool localWriteOpen(FileWriter* _file, const char* _path)
+File::Open localWriteOpen(FileWriter* _file, const char* _path)
 {
 	LOCAL(_file).m_file = fopen(_path, "wb");
+	if (LOCAL(_file).m_file != 0)
+		return File::OK;
+	return File::Fail;
+}
+
+bool localWriteIsUlDone(FileWriter* _file)
+{
 	return LOCAL(_file).m_file != 0;
 }
 
@@ -208,6 +226,7 @@ void fileReaderSetLocal(FileReader* _reader)
 	_reader->construct	= localReadConstruct;
 	_reader->destruct	= localReadDestruct;
 	_reader->open		= localReadOpen;
+	_reader->dldone		= localReadIsDlDone;
 	_reader->close		= localReadClose;
 	_reader->seek		= localReadSeek;
 	_reader->read		= localReadRead;
@@ -218,6 +237,7 @@ void fileWriterSetLocal(FileWriter* _writer)
 	_writer->construct	= localWriteConstruct;
 	_writer->destruct	= localWriteDestruct;
 	_writer->open		= localWriteOpen;
+	_writer->uldone		= localWriteIsUlDone;
 	_writer->close		= localWriteClose;
 	_writer->seek		= localWriteSeek;
 	_writer->write		= localWriteWrite;
@@ -263,7 +283,6 @@ public:
     {
 		if (m_reader->m_callBacks.m_progCb)
 			m_reader->m_callBacks.m_progCb((float)ulProgress/(float)ulProgressMax);
-
         return S_OK;
     }
 };
@@ -297,7 +316,7 @@ struct DownloadThread
 		delete[] HTTP(file).m_url;
 		HTTP(file).m_url = 0;
 
-		return HTTP(file).m_file != 0 ? 1 : 0;
+		return HTTP(file).m_file != 0 ? File::OK : File::Fail;
 	}
 };
 
@@ -306,14 +325,18 @@ void httpReadConstruct(FileReader* _file)
 	HTTP(_file).m_file = 0;
 }
 
-bool httpReadOpen(FileReader* _file, const char* _path)
+File::Open httpReadOpen(FileReader* _file, const char* _path)
 {
 	uint32_t len = rtm::strLen(_path);
 	HTTP(_file).m_url = new char[len+1];
 	rtm::strlCpy(HTTP(_file).m_url, len+1, _path);
 	HTTP(_file).m_thread.start(DownloadThread::threadFunc, _file);
+	return File::Download;
+}
 
-	return HTTP(_file).m_file != 0;
+bool httpReadIsDlDone(FileReader* _file)
+{
+	return File::OK == HTTP(_file).m_thread.getExitCode();
 }
 
 void httpReadClose(FileReader* _file)
@@ -409,7 +432,7 @@ void httpReadConstruct(FileReader* _file)
 	HTTP(_file).m_file			= 0;
 }
 
-bool httpReadOpen(FileReader* _file, const char* _path)
+File::Open httpReadOpen(FileReader* _file, const char* _path)
 {
 	uint8_t digest[16];
 	char	hash[33];
@@ -420,7 +443,15 @@ bool httpReadOpen(FileReader* _file, const char* _path)
 	if (!HTTP(_file).m_file)
 		HTTP(_file).m_reqHandle = emscripten_async_wget2(_path, hash, "GET", 0, _file, onLoad, onError, onProgress);
 
-	return HTTP(_file).m_reqHandle != 0;
+	if (HTTP(_file).m_reqHandle != 0)
+		return File::Download;
+
+	return File::Fail;
+}
+
+bool httpReadIsDlDone(FileReader* _file)
+{
+	return (HTTP(_file).m_file != 0);
 }
 
 void httpReadClose(FileReader* _file)
@@ -479,9 +510,14 @@ void httpWriteConstruct(FileWriter* _file)
 	RTM_UNUSED(_file);
 }
 
-bool httpWriteOpen(FileWriter* _file, const char* _path)
+File::Open httpWriteOpen(FileWriter* _file, const char* _path)
 {
 	RTM_UNUSED_2(_file, _path);
+	return File::Fail;
+}
+
+bool httpWriteIsUlDone(FileWriter*)
+{
 	return false;
 }
 
@@ -512,6 +548,7 @@ void fileReaderSetHTTP(FileReader* _reader)
 	_reader->construct	= httpReadConstruct;
 	_reader->destruct	= httpReadDestruct;
 	_reader->open		= httpReadOpen;
+	_reader->dldone		= httpReadIsDlDone;
 	_reader->close		= httpReadClose;
 	_reader->seek		= httpReadSeek;
 	_reader->read		= httpReadRead;
@@ -522,6 +559,7 @@ void fileWriterSetHTTP(FileWriter* _writer)
 	_writer->construct	= httpWriteConstruct;
 	_writer->destruct	= httpWriteDestruct;
 	_writer->open		= httpWriteOpen;
+	_writer->uldone		= httpWriteIsUlDone;
 	_writer->close		= httpWriteClose;
 	_writer->seek		= httpWriteSeek;
 	_writer->write		= httpWriteWrite;
@@ -567,13 +605,22 @@ void fileReaderDestroy(FileReaderHandle _handle)
 	s_readers.free(_handle.idx);
 }
 
-bool fileReaderOpen(FileReaderHandle _handle, const char* _path)
+File::Open fileReaderOpen(FileReaderHandle _handle, const char* _path)
+{
+	if (!s_readers.isValid(_handle.idx))
+		return File::Fail;
+
+	FileReader* reader = s_readers.getDataPtr(_handle.idx);
+	return reader->open(reader, _path);
+}
+
+bool fileReaderIsDownloadDone(FileReaderHandle _handle)
 {
 	if (!s_readers.isValid(_handle.idx))
 		return false;
 
 	FileReader* reader = s_readers.getDataPtr(_handle.idx);
-	return reader->open(reader, _path);
+	return reader->dldone(reader);
 }
 
 void fileReaderClose(FileReaderHandle _handle)
@@ -639,13 +686,22 @@ void fileWriterDestroy(FileWriterHandle _handle)
 	s_writers.free(_handle.idx);
 }
 
-bool fileWriterOpen(FileWriterHandle _handle, const char* _path)
+File::Open fileWriterOpen(FileWriterHandle _handle, const char* _path)
+{
+	if (!s_writers.isValid(_handle.idx))
+		return File::Fail;
+
+	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
+	return writer->open(writer, _path);
+}
+
+bool fileWriterIsUploadDone(FileReaderHandle _handle)
 {
 	if (!s_writers.isValid(_handle.idx))
 		return false;
 
 	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
-	return writer->open(writer, _path);
+	return writer->uldone(writer);
 }
 
 void fileWriterClose(FileWriterHandle _handle)
