@@ -8,6 +8,7 @@
 #include <rbase/inc/datastore.h>
 #include <rbase/inc/stringfn.h>
 #include <rbase/inc/hash.h>
+#include <rbase/inc/thread.h>
 #include <rbase/inc/console.h>
 #include <rbase/inc/uint32_t.h>
 
@@ -226,7 +227,133 @@ void fileWriterSetLocal(FileWriter* _writer)
 /// HTTP reader/writer
 // ------------------------------------------------
 
-#if RTM_PLATFORM_EMSCRIPTEN
+#if RTM_PLATFORM_WINDOWS
+
+#pragma comment(lib, "urlmon.lib")
+
+#include <urlmon.h>
+
+struct membersHTTP
+{
+	FILE*		m_file;
+	rtm::Thread m_thread;
+	char*		m_url;
+};
+
+#define HTTP(_file) (*(membersHTTP*)_file->m_data)
+
+class DownloadProgress : public IBindStatusCallback {
+public:
+	FileReader* m_reader;
+
+    HRESULT __stdcall QueryInterface(const IID &,void **) { 
+        return E_NOINTERFACE;
+    }
+    ULONG STDMETHODCALLTYPE AddRef(void) { return 1; }
+    ULONG STDMETHODCALLTYPE Release(void) { return 1; }
+    HRESULT STDMETHODCALLTYPE OnStartBinding(DWORD /*dwReserved*/, IBinding* /*pib*/) { return E_NOTIMPL; }
+    virtual HRESULT STDMETHODCALLTYPE GetPriority(LONG* /*pnPriority*/) { return E_NOTIMPL; }
+    virtual HRESULT STDMETHODCALLTYPE OnLowResource(DWORD /*reserved*/) { return S_OK; }
+    virtual HRESULT STDMETHODCALLTYPE OnStopBinding(HRESULT /*hresult*/, LPCWSTR /*szError*/) { return E_NOTIMPL; }
+    virtual HRESULT STDMETHODCALLTYPE GetBindInfo(DWORD* /*grfBINDF*/, BINDINFO* /*pbindinfo*/) { return E_NOTIMPL; }
+    virtual HRESULT STDMETHODCALLTYPE OnDataAvailable(DWORD /*grfBSCF*/, DWORD /*dwSize*/, FORMATETC* /*pformatetc*/, STGMEDIUM* /*pstgmed*/) { return E_NOTIMPL; }        
+    virtual HRESULT STDMETHODCALLTYPE OnObjectAvailable(REFIID /*riid*/, IUnknown* /*punk*/) { return E_NOTIMPL; }
+
+    virtual HRESULT __stdcall OnProgress(ULONG ulProgress, ULONG ulProgressMax, ULONG /*ulStatusCode*/, LPCWSTR /*szStatusText*/)
+    {
+		if (m_reader->m_callBacks.m_progCb)
+			m_reader->m_callBacks.m_progCb((float)ulProgress/(float)ulProgressMax);
+
+        return S_OK;
+    }
+};
+
+struct DownloadThread
+{
+	static int32_t threadFunc(void* _userData)
+	{
+		FileReader* file = (FileReader*)_userData;
+
+		uint8_t digest[16];
+		char	hash[33];
+		rtm::md5_calculate(HTTP(file).m_url, rtm::strLen(HTTP(file).m_url), digest);
+		rtm::md5_to_string(digest, hash);
+		RTM_LOG("Downloading %s to %s\n", _path, hash);
+
+		DownloadProgress progress;
+		progress.m_reader = file;
+		if (S_OK == URLDownloadToFile(0, HTTP(file).m_url, hash, 0, static_cast<IBindStatusCallback*>(&progress)))
+		{
+			HTTP(file).m_file = fopen(hash, "rb");
+			if (file->m_callBacks.m_doneCb)
+				file->m_callBacks.m_doneCb(hash);
+		}
+		else
+		{
+			if (file->m_callBacks.m_failCb)
+				file->m_callBacks.m_failCb("Download failed!");
+		}
+
+		delete[] HTTP(file).m_url;
+		HTTP(file).m_url = 0;
+
+		return HTTP(file).m_file != 0 ? 1 : 0;
+	}
+};
+
+void httpReadConstruct(FileReader* _file)
+{
+	HTTP(_file).m_file = 0;
+}
+
+bool httpReadOpen(FileReader* _file, const char* _path)
+{
+	uint32_t len = rtm::strLen(_path);
+	HTTP(_file).m_url = new char[len+1];
+	rtm::strlCpy(HTTP(_file).m_url, len+1, _path);
+	HTTP(_file).m_thread.start(DownloadThread::threadFunc, _file);
+
+	return HTTP(_file).m_file != 0;
+}
+
+void httpReadClose(FileReader* _file)
+{
+	if (HTTP(_file).m_file)
+	{
+		fclose(HTTP(_file).m_file);
+		HTTP(_file).m_file = 0;
+	}
+}
+
+void httpReadDestruct(FileReader* _file)
+{
+	httpReadClose(_file);
+}
+
+int64_t	httpReadSeek(FileReader* _file, int64_t _offset, uint32_t _origin)
+{
+	RTM_ASSERT(HTTP(_file).m_file != 0, "");
+	if (!HTTP(_file).m_file)
+	{
+		if (_file->m_callBacks.m_failCb)
+			_file->m_callBacks.m_failCb("Cannot seek. File is not open!");
+		return 0;
+	}
+	fseek(HTTP(_file).m_file, (long)_offset, _origin);
+	return ftell(HTTP(_file).m_file);
+}
+
+int32_t	httpReadRead(FileReader* _file, void* _dest, uint32_t _size)
+{
+	if (!HTTP(_file).m_file)
+	{
+		if (_file->m_callBacks.m_failCb)
+			_file->m_callBacks.m_failCb("Cannot read. File is not open!");
+		return 0;
+	}
+	return fread(_dest, 1, _size, HTTP(_file).m_file);
+}
+#elif RTM_PLATFORM_EMSCRIPTEN
 
 struct membersHTTP
 {
