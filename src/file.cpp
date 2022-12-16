@@ -15,8 +15,6 @@
 #include <emscripten/wget.h>
 #endif // RTM_PLATFORM_EMSCRIPTEN
 
-#define HTTP_LOCAL_CACHE 1
-
 #include <stdio.h>
 
 namespace rtm {
@@ -290,15 +288,12 @@ bool httpReadOpen(FileReader* _file, const char* _path)
 	char	hash[33];
 	rtm::md5_calculate(_path, rtm::strLen(_path), digest);
 	rtm::md5_to_string(digest, hash);
-	rtm::Console::debug("Downloading %s to %s\n", _path, hash);
+	RTM_LOG("Downloading %s to %s\n", _path, hash);
 
-#if HTTP_LOCAL_CACHE
-	HTTP(_file).m_file = fopen(_path, "rb");
-#endif // HTTP_LOCAL_CACHE
 	if (!HTTP(_file).m_file)
 		HTTP(_file).m_reqHandle = emscripten_async_wget2(_path, hash, "GET", 0, _file, onLoad, onError, onProgress);
 
-	return ((HTTP(_file).m_file != 0) || (HTTP(_file).m_reqHandle != 0));
+	return HTTP(_file).m_reqHandle != 0;
 }
 
 void httpReadClose(FileReader* _file)

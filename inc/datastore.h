@@ -54,13 +54,6 @@ namespace rtm {
 	{
 		HandlePool<NUM_ELEMENTS>	m_handles;
 
-		uint32_t dataIndexToHandle(uint32_t _index) const
-		{
-			const uint32_t gen = m_handles.generationFromIndex(_index);
-			Handle<> handle(_index, gen);
-			return handle;
-		}
-
 		uint32_t size() const
 		{
 			return m_handles.size();
@@ -189,11 +182,6 @@ namespace rtm {
 		bool isValid(uint32_t _handle) const
 		{
 			return m_allocator.isValid(_handle);
-		}
-
-		uint32_t dataIndexToHandle(uint32_t _index) const
-		{
-			return m_allocator.dataIndexToHandle(_index);
 		}
 	};
 
