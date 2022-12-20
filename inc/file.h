@@ -19,11 +19,12 @@ namespace rtm {
 			Seek_SET	= 0
 		};
 
-		enum Open
+		enum Status
 		{
-			OK			= 1,
+			Open		= 1,
+			Closed,
 			Fail,
-			Download
+			Downloading
 		};
 
 		enum Enum
@@ -64,13 +65,13 @@ namespace rtm {
 	void fileReaderDestroy(FileReaderHandle _handle);
 
 	///
-	File::Open fileReaderOpen(FileReaderHandle _handle, const char* _path);
-
-	///
-	bool fileReaderIsDownloadDone(FileReaderHandle _handle);
+	File::Status fileReaderOpen(FileReaderHandle _handle, const char* _path);
 
 	///
 	void fileReaderClose(FileReaderHandle _handle);
+
+	///
+	File::Status fileReaderGetStatus(FileReaderHandle _handle);
 
 	///
 	int64_t	fileReaderSeek(FileReaderHandle _handle, int64_t _offset, uint32_t _origin = File::Seek_CUR);
@@ -89,13 +90,13 @@ namespace rtm {
 	void fileWriterDestroy(FileWriterHandle _handle);
 
 	///
-	File::Open fileWriterOpen(FileWriterHandle _handle, const char* _path);
-
-	///
-	bool fileWriterIsUploadDone(FileReaderHandle _handle);
+	File::Status fileWriterOpen(FileWriterHandle _handle, const char* _path);
 
 	///
 	void fileWriterClose(FileWriterHandle _handle);
+
+	///
+	File::Status fileWriterGetStatus(FileReaderHandle _handle);
 
 	///
 	int64_t	fileWriterSeek(FileWriterHandle _handle, int64_t _offset, uint32_t _origin = File::Seek_CUR);
