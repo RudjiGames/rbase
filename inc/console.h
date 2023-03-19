@@ -60,8 +60,11 @@ namespace rtm {
 			return _buffer;
 #else
 			RTM_ASSERT(_buffSize >= 32, "");
-			rtm::strlCat(_buffer, _buffSize, "\x1b[38;2;");
-			char* b = itoaf(&_buffer[7], _r);
+			// 256 color ANSI mode
+			// "\x1b[38;2;" r;g;bm
+			const char* ANSI_256 = "\x1b[38;2;";
+			rtm::strlCat(_buffer, _buffSize, ANSI_256);
+			char* b = itoaf(&_buffer[rtm::strLen(_buffer)], _r);
 			b = itoaf(b, _g);
 			b = itoaf(b, _b);
 			b[-1] = 'm';
@@ -180,7 +183,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			rgb(255, 0, 0, "ERROR ", _format, args);
+			rgbInternal(255, 0, 0, "ERROR ", _format, args);
 			va_end(args);
 		}
 	};
