@@ -12,6 +12,8 @@
 	extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char* _str);
 #elif RTM_PLATFORM_ANDROID
 	#include <android/log.h>
+#elif RTM_PLATFORM_EMSCRIPTEN
+	#include <emscripten/emscripten.h>
 #else
 	#include <stdio.h>
 #endif
@@ -20,7 +22,14 @@ namespace rtm {
 
 	static inline void debugBreak()
 	{
+#if RTM_PLATFORM_EMSCRIPTEN
+		emscripten_log(EM_LOG_CONSOLE | EM_LOG_ERROR | EM_LOG_C_STACK | EM_LOG_JS_STACK | EM_LOG_DEMANGLE, "debugBreak!");
+		// Doing emscripten_debugger() disables asm.js validation due to an emscripten bug
+		//emscripten_debugger();
+		EM_ASM({ debugger; });
+#else
 		RTM_BREAK;
+#endif
 	}
 
 	static inline void debugOutput(const char* _out)
@@ -29,6 +38,8 @@ namespace rtm {
 		OutputDebugStringA(_out);
 #elif RTM_PLATFORM_ANDROID
 		__android_log_write(ANDROID_LOG_DEBUG, "", _out);
+#elif RTM_PLATFORM_EMSCRIPTEN
+		emscripten_log(EM_LOG_CONSOLE, "%s", _out);
 #else
 		fputs(_out, stderr);
 		fflush(stderr);

@@ -43,7 +43,7 @@ class MD5
 	public:
 		MD5();
 
-		void process(void* _input, uint32_t _inputLength);
+		void process(const void* _input, uint32_t _inputLength);
 		void processString(const char* _input);
 		void finalize();
 		void getHash(uint8_t outDigest[16]);

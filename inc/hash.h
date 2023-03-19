@@ -95,9 +95,42 @@ namespace rtm {
 	   return h;
 	}
 
-	void md5_calculate(void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
+	void md5_calculate(const void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
 	void md5_to_string(uint8_t _digest[16], char _out_hash[33]);
 
+	namespace hash_private {
+
+		template <typename S> struct fnv_internal;
+		template <typename S> struct fnv1;
+		template <typename S> struct fnv1a;
+
+		template <> struct fnv_internal<uint32_t>
+		{
+			constexpr static uint32_t FNV1_OFFSET_BASIS	= 0x811C9DC5;
+			constexpr static uint32_t FNV1_PRIME		= 0x01000193;
+		};
+
+	} // namespace hash
+
+	template <> struct hash_private::fnv1<uint32_t> : public hash_private::fnv_internal<uint32_t>
+	{
+		constexpr static inline uint32_t hash(char const* _str, const uint32_t _val = FNV1_OFFSET_BASIS)
+		{
+			return (_str[0] == '\0') ? _val : hash(&_str[1], (_val * FNV1_PRIME) ^ uint32_t(_str[0]));
+		}
+	};
+
+	template <> struct hash_private::fnv1a<uint32_t> : public hash_private::fnv_internal<uint32_t>
+	{
+		constexpr static inline uint32_t hash(char const* _str, const uint32_t _val = FNV1_OFFSET_BASIS)
+		{
+			return (_str[0] == '\0') ? _val : hash(&_str[1], (_val ^ uint32_t(_str[0])) * FNV1_PRIME);
+		}
+	};
+
 } // namespace rtm
+
+/// compile time string hash
+#define RTM_COMPILE_TIME_STRING_HASH(_string)	rtm::hash_private::fnv1<uint32_t>::hash(_string)
 
 #endif // RTM_RBASE_HASH_H

@@ -240,7 +240,7 @@
 #if RTM_COMPILER_MSVC
 #define RTM_BREAK	__debugbreak()
 #elif RTM_CPU_ARM && !RTM_PLATFORM_SWITCH
-#define RTM_BREAK	asm("bkpt 0")
+#define RTM_BREAK	__builtin_trap()
 #elif RTM_CPU_X86 && (RTM_COMPILER_GCC || RTM_COMPILER_CLANG)
 #define RTM_BREAK	__asm__ ("int $3")
 #else

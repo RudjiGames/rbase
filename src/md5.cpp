@@ -11,9 +11,8 @@
 //--------------------------------------------------------------------------//
 
 #include <rbase_pch.h>
+#include <rbase/inc/stringfn.h>
 #include <rbase/src/md5.h>
-
-#include <string.h>
 
 namespace rtm {
 
@@ -25,7 +24,7 @@ static char chrToHex(const char _char)
 		return ((char)'A' - (char)10) + _char;
 }
 
-void md5_calculate(void* _data, uint32_t _dataSize, uint8_t _digest[16])
+void md5_calculate(const void* _data, uint32_t _dataSize, uint8_t _digest[16])
 {
 	MD5 md5;
 	md5.process(_data, _dataSize);
@@ -33,7 +32,7 @@ void md5_calculate(void* _data, uint32_t _dataSize, uint8_t _digest[16])
 	md5.getHash(_digest);
 }
 
-void md5_toString(uint8_t _digest[16], char _hash[33])
+void md5_to_string(uint8_t _digest[16], char _hash[33])
 {
 
 	for (uint32_t h=0; h<16; h++)
@@ -49,7 +48,7 @@ MD5::MD5()
 	init();
 }
 
-void MD5::process(void* _input, uint32_t _inputLength)
+void MD5::process(const void* _input, uint32_t _inputLength)
 {
 	uint8_t* input = (uint8_t*)_input;
 
@@ -83,7 +82,7 @@ void MD5::process(void* _input, uint32_t _inputLength)
 
 void MD5::processString(const char* _input)
 {
-	uint32_t len = (uint32_t)strlen(_input);
+	uint32_t len = (uint32_t)rtm::strLen(_input);
 	process((void*)_input, len * sizeof(char));
 }
 

@@ -127,7 +127,7 @@ namespace rtm {
 			char* append = buffer;
 			buffer[0] = '\0';
 			if (len > 0)
-				Console::printTime(buffer);
+				append = Console::printTime(buffer);
 			uint32_t remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - uint32_t(append - buffer);
 			append = setColor(append, remainder, _r, _g, _b);
 			remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - uint32_t(append - buffer);
@@ -159,7 +159,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			rgbInternal(0, 192, 0, "INFO  ", _format, args);
+			rgbInternal(0, 192, 0, "", _format, args);
 			va_end(args);
 		}
 
