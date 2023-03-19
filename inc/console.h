@@ -159,7 +159,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			rgbInternal(0, 192, 0, "", _format, args);
+			rgbInternal(0, 192, 0, "INFO ", _format, args);
 			va_end(args);
 		}
 
