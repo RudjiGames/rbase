@@ -20,8 +20,6 @@ install:
   - git clone --depth 1 https://github.com/milostosic/rapp  ../rapp
   - git clone --depth 1 https://github.com/milostosic/enkiTS  ../enkiTS
   - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git ../unittest-cpp
-  - cmd: ..\build\tools\bin\windows\genie --file=genie\genie.lua %TOOLSET%
-  - sh:  ../build/tools/bin/linux/genie --file=genie/genie.lua -gcc=linux-gcc-9
 
 matrix:
   fast_finish: true
@@ -39,7 +37,7 @@ for:
     - job_name: Windows
 
   init:
-  - echo "Init for Windows"
+  - ..\build\tools\bin\windows\genie --file=genie\genie.lua %TOOLSET%
 
   #build_script:
   #- echo "Build for Windows"
@@ -57,7 +55,7 @@ for:
     - job_name: Linux
 
   init:
-  - echo "Init for Linux"
+  - ../build/tools/bin/linux/genie --file=genie/genie.lua -gcc=linux-gcc-9
 
   #build_script:
   #- echo "Build for Linux"
@@ -76,7 +74,7 @@ for:
     - job_name: OSX
 
   init:
-  - echo "Init for OSX"
+  - ../build/tools/bin/darwin/genie --file=genie/genie.lua -gcc=osx
 
 #  build_script:
 #  - echo "Build for OSX"
