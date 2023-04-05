@@ -73,14 +73,14 @@ for:
 -
   matrix:
     only:
-    - job_name: macOS
+    - job_name: OSX
 
   init:
-  - echo "Init for macOS"
+  - echo "Init for OSX"
 
 #  build_script:
-#  - echo "Build for macOS"
+#  - echo "Build for OSX"
 
-  project: ../.build/linux/linux/gcc-9/rbase/projects/rbase.make
+  project: ../.build/osx/clang/rbase/projects/rbase.make
 
   test: off
