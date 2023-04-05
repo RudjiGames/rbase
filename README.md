@@ -1,6 +1,5 @@
 <img src="https://github.com/milostosic/milostosic.github.io/raw/master/logo_libs/rbase.png"/>
 
-[![Build Status](https://travis-ci.org/milostosic/rbase.svg?branch=master)](https://travis-ci.org/milostosic/rbase)
 [![Build status](https://ci.appveyor.com/api/projects/status/u0c3l72vgi86f72l?svg=true)](https://ci.appveyor.com/project/milostosic/rbase)
 [![License](https://img.shields.io/badge/license-BSD--2%20clause-blue.svg)](https://github.com/milostosic/rbase/blob/master/LICENSE)
 

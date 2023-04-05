@@ -1,12 +1,14 @@
-shallow_clone: true
-
-os:
-  - Visual Studio 2017
-
 environment:
   matrix:
-  - TOOLSET: vs2015
-  - TOOLSET: vs2017
+    - job_name: Windows
+#      QTDIR: C:\Qt\5.10.1\msvc2017_64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+    - job_name: Linux
+      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+
+    - job_name: OSX
+      APPVEYOR_BUILD_WORKER_IMAGE: macOS
 
 configuration:
   - Debug
@@ -14,11 +16,71 @@ configuration:
   - Retail
 
 install:
-  - git clone --depth 1 https://github.com/milostosic/build ..\build
-  - git clone --depth 1 https://github.com/milostosic/rapp  ..\rapp
-  - git clone --depth 1 https://github.com/milostosic/enkiTS  ..\enkiTS
-  - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git ..\unittest-cpp
-  - ..\build\tools\bin\windows\genie --file=genie\genie.lua %TOOLSET%
+  - git clone --depth 1 https://github.com/milostosic/build ../build
+  - git clone --depth 1 https://github.com/milostosic/rapp  ../rapp
+  - git clone --depth 1 https://github.com/milostosic/enkiTS  ../enkiTS
+  - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git ../unittest-cpp
+  - cmd: ..\build\tools\bin\windows\genie --file=genie\genie.lua %TOOLSET%
+  - sh:  ../build/tools/bin/linux/genie --file=genie/genie.lua -gcc=linux-gcc-9
 
-build:
+matrix:
+  fast_finish: true
+
+shallow_clone: true
+
+for:
+  
+# ======================================
+#      Windows
+# ======================================
+-
+  matrix:
+    only:
+    - job_name: Windows
+
+  init:
+  - echo "Init for Windows"
+
+  #build_script:
+  #- echo "Build for Windows"
+
   project: ../.build/windows/$(TOOLSET)/rbase/projects/rbase.sln
+  
+  test: off
+
+# ======================================
+#      Linux
+# ======================================
+-
+  matrix:
+    only:
+    - job_name: Linux
+
+  init:
+  - echo "Init for Linux"
+
+  #build_script:
+  #- echo "Build for Linux"
+
+  project: ../.build/linux/linux/gcc-9/rbase/projects/rbase.make
+
+  test: off
+
+# ======================================
+#      macOS
+# ======================================
+
+-
+  matrix:
+    only:
+    - job_name: macOS
+
+  init:
+  - echo "Init for macOS"
+
+#  build_script:
+#  - echo "Build for macOS"
+
+  project: ../.build/linux/linux/gcc-9/rbase/projects/rbase.make
+
+  test: off
