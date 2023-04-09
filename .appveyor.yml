@@ -62,6 +62,7 @@ for:
       - git clone --depth 1 https://github.com/bkaradzic/bimg.git bimg
       - git clone --depth 1 https://github.com/bkaradzic/bgfx.git bgfx
       - git clone --depth 1 https://github.com/dougbinks/enkiTS enkiTS
+      - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
      
     install:
       - build\tools\bin\windows\genie.exe --file=rbase\genie\genie.lua vs2019
@@ -87,6 +88,7 @@ for:
       - git clone --depth 1 https://github.com/glfw/glfw glfw
       - git clone --depth 1 https://github.com/dougbinks/enkiTS enkiTS
       - git clone --depth 1 https://github.com/bkaradzic/GENie GENie		# build GENie from source: `GLIBC_2.29' not found
+      - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
       - cd GENie && make && cd ..
       - mkdir glfwbuild && cd glfwbuild && cmake ../glfw -DGLFW_BUILD_TESTS=OFF && make -j4 && sudo make install && cd ..
 
@@ -114,6 +116,7 @@ for:
       - git clone --depth 1 https://github.com/bkaradzic/bimg.git bimg
       - git clone --depth 1 https://github.com/bkaradzic/bgfx.git bgfx
       - git clone --depth 1 https://github.com/dougbinks/enkiTS enkiTS
+      - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
     
     install:
       - ./build/tools/bin/darwin/genie --file=rbase/genie/genie.lua --gcc=osx gmake
