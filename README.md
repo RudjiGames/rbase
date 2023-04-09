@@ -1,4 +1,4 @@
-<img src="http://rudji.com/images/lib/rbase.png"/>
+<img src="https://rudji.com/images/lib/rbase.png"/>
 
 [![Build status](https://ci.appveyor.com/api/projects/status/u0c3l72vgi86f72l?svg=true)](https://ci.appveyor.com/project/milostosic/rbase)
 [![License](https://img.shields.io/badge/license-BSD--2%20clause-blue.svg)](https://github.com/milostosic/rbase/blob/master/LICENSE)
