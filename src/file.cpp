@@ -163,7 +163,7 @@ int32_t	localReadRead(FileReader* _file, void* _dest, uint32_t _size)
 		return 0;
 	}
 
-	return fread(_dest, 1, _size, LOCAL(_file).m_file);
+	return (int32_t)fread(_dest, 1, _size, LOCAL(_file).m_file);
 }
 
 void localWriteConstruct(FileWriter* _file)
@@ -222,7 +222,7 @@ int32_t	localWriteWrite(FileWriter* _file, void* _dest, uint32_t _size)
 		return 0;
 	}
 
-	return fwrite(_dest, 1, _size, LOCAL(_file).m_file);
+	return (int32_t)fwrite(_dest, 1, _size, LOCAL(_file).m_file);
 }
 
 void fileReaderSetLocal(FileReader* _reader)
@@ -389,7 +389,7 @@ int32_t	httpReadRead(FileReader* _file, void* _dest, uint32_t _size)
 			_file->m_callBacks.m_failCb("Cannot read. File is not open!");
 		return 0;
 	}
-	return fread(_dest, 1, _size, HTTP(_file).m_file);
+	return (int32_t)fread(_dest, 1, _size, HTTP(_file).m_file);
 }
 #elif RTM_PLATFORM_EMSCRIPTEN
 

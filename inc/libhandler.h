@@ -39,6 +39,8 @@ namespace RBASE_NAMESPACE {
 
 namespace RBASE_NAMESPACE {
 
+	constexpr int MSG_BUFF_SIZE = 8192;
+
 	rtm::MemoryManager*		g_allocator 		= 0;
 	rtm::ErrorHandler*		g_errorHandler		= 0;
 
@@ -46,10 +48,10 @@ namespace RBASE_NAMESPACE {
 	{
 		if (g_errorHandler)
 		{
-			char message[8192];
+			char message[MSG_BUFF_SIZE];
 			va_list args;
 			va_start(args, _format);
-			vsprintf(message, _format, args);
+			vsnprintf(message, MSG_BUFF_SIZE, _format, args);
 			g_errorHandler->fatal(_file, _line, message);
 			va_end(args);
 			return;
@@ -60,10 +62,10 @@ namespace RBASE_NAMESPACE {
 	{
 		if (g_errorHandler)
 		{
-			char message[8192];
+			char message[MSG_BUFF_SIZE];
 			va_list args;
 			va_start(args, _format);
-			vsprintf(message, _format, args);
+			vsnprintf(message, MSG_BUFF_SIZE, _format, args);
 			g_errorHandler->warning(_file, _line, message);
 			va_end(args);
 			return;
@@ -74,10 +76,10 @@ namespace RBASE_NAMESPACE {
 	{
 		if (g_errorHandler)
 		{
-			char message[8192];
+			char message[MSG_BUFF_SIZE];
 			va_list args;
 			va_start(args, _format);
-			vsprintf(message, _format, args);
+			vsnprintf(message, MSG_BUFF_SIZE, _format, args);
 			g_errorHandler->debug(_file, _line, message);
 			va_end(args);
 			return;

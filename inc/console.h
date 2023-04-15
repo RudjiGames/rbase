@@ -106,7 +106,7 @@ namespace rtm {
 		static inline void vprintf(const char* _format, va_list& _args)
 		{
 			char buffer[8192];
-			vsprintf(buffer, _format, _args);
+			vsnprintf(buffer, 8192, _format, _args);
 			Console::printf(buffer);
 		}
 
