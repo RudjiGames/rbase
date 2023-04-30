@@ -298,6 +298,9 @@ namespace rtm {
 		virtual void debug(const char* _file, int _line, const char* _message) = 0;
 	};
 
+	struct MemoryManager* rbaseGetMemoryManager();
+	struct ErrorHandler*  rbaseGetErrorHandler();
+
 } // namespace rtm
 
 typedef struct _rtmLibInterface

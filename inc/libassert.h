@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef RTM_RBASE_LIBASSERT_H
-#define RTM_RBASE_LIBASSERT_H
+//#ifndef RTM_RBASE_LIBASSERT_H
+//#define RTM_RBASE_LIBASSERT_H
 
 #ifndef RBASE_NAMESPACE
 #error "Must define RBASE_NAMESPACE!"
@@ -27,7 +27,7 @@ namespace RBASE_NAMESPACE {
 					RTM_DISABLE_CONST_EXPR_WARNING																	\
 					if (!(_condition))																				\
 					{																								\
-						RBASE_NAMESPACE::ErrorHandler_fatal(__FILE__, __LINE__, _format, ##__VA_ARGS__);	\
+						RBASE_NAMESPACE::ErrorHandler_fatal(__FILE__, __LINE__, _format, ##__VA_ARGS__);			\
 						RTM_BREAK;																					\
 					}																								\
 					break;																							\
@@ -43,7 +43,7 @@ namespace RBASE_NAMESPACE {
 					RTM_DISABLE_CONST_EXPR_WARNING																	\
 					if (!(_condition))																				\
 					{																								\
-						RBASE_NAMESPACE::ErrorHandler_warning(__FILE__, __LINE__, _format, ##__VA_ARGS__);	\
+						RBASE_NAMESPACE::ErrorHandler_warning(__FILE__, __LINE__, _format, ##__VA_ARGS__);			\
 					}																								\
 					break;																							\
 					RTM_ENABLE_CONST_EXPR_WARNING																	\
@@ -55,11 +55,11 @@ namespace RBASE_NAMESPACE {
 
 #define RTM_LOG(_format, ...)																						\
 				for(;;) {																							\
-					RBASE_NAMESPACE::ErrorHandler_log(__FILE__, __LINE__, _format, ##__VA_ARGS__);			\
+					RBASE_NAMESPACE::ErrorHandler_log(__FILE__, __LINE__, _format, ##__VA_ARGS__);					\
 					break;																							\
 				}
 
+
 #endif // !RTM_RETAIL
 
-#endif // RTM_RBASE_LIBASSERT_H
-
+//#endif // RTM_RBASE_LIBASSERT_H
