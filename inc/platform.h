@@ -200,6 +200,8 @@
 //--------------------------------------------------------------------------
 /// Alignment macros
 //--------------------------------------------------------------------------
+#define RTM_DEFAULT_ALIGNMENT 8
+
 #if RTM_COMPILER_MSVC
 #define RTM_ALIGN(_x)	__declspec(align(_x))
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
@@ -288,7 +290,7 @@ namespace rtm {
 	{
 		virtual void* alloc(size_t _size, size_t _alignment) = 0;
 		virtual void* realloc(void* _ptr, size_t _size, size_t _alignment) = 0;
-		virtual void  free(void* _ptr) = 0;
+		virtual void  free(void* _ptr, size_t _alignment) = 0;
 	};
 
 	struct ErrorHandler

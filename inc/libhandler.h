@@ -17,8 +17,6 @@
 #include <stdlib.h>
 #include <stdarg.h> // va_start...
 
-#define RTM_DEFAULT_ALIGNMENT 8
-
 #ifndef RTM_LIBHANDLER_DECLARE
 #define RTM_LIBHANDLER_DECLARE
 
@@ -29,7 +27,7 @@ namespace RBASE_NAMESPACE {
 
 	extern void* rtm_alloc(size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT);
 	extern void* rtm_realloc(void* _ptr, size_t _size, size_t _alignment = RTM_DEFAULT_ALIGNMENT);
-	extern void  rtm_free(void* _ptr);
+	extern void  rtm_free(void* _ptr, size_t _alignment = RTM_DEFAULT_ALIGNMENT);
 
 } // namespace RBASE_NAMESPACE
 
@@ -108,11 +106,11 @@ namespace RBASE_NAMESPACE {
 		return ptr;
 	}
 
-	void rtm_free(void* _ptr)
+	void rtm_free(void* _ptr, size_t _alignment)
 	{
 		if (g_allocator)
 		{
-			g_allocator->free(_ptr);
+			g_allocator->free(_ptr, _alignment);
 			return;
 		}
 		free(_ptr);
@@ -371,7 +369,7 @@ namespace RBASE_NAMESPACE {
 
 			RTM_ASSERT(_memory.m_data != 0, "Invalid pointer!");
 			if (RBASE_NAMESPACE::g_allocator)
-				RBASE_NAMESPACE::g_allocator->free(_memory.m_data);
+				RBASE_NAMESPACE::g_allocator->free(_memory.m_data, RTM_DEFAULT_ALIGNMENT);
 			else
 				delete[] (uint8_t*)_memory.m_data;
 		}
