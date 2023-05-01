@@ -84,7 +84,7 @@ struct MemoryManagerCrt : public MemoryManager
 #if RTM_COMPILER_MSVC
 		return _aligned_malloc(_size, _alignment);
 #else
-		return alignedAlloc(this, _size, _align);
+		return alignedAlloc(this, _size, _alignment);
 #endif
 	}
 
@@ -96,7 +96,7 @@ struct MemoryManagerCrt : public MemoryManager
 #if RTM_COMPILER_MSVC
 		return _aligned_realloc(_ptr, _size, _alignment);
 #else
-		return alignedRealloc(this, _ptr, _size, _align);
+		return alignedRealloc(this, _ptr, _size, _alignment);
 #endif
 	}
 
@@ -114,7 +114,7 @@ struct MemoryManagerCrt : public MemoryManager
 #if RTM_COMPILER_MSVC
 		_aligned_free(_ptr);
 #else
-		alignedFree(this, _ptr, _align);
+		alignedFree(this, _ptr, _alignment);
 #endif // RTM_COMPILER_MSVC
 	}
 
