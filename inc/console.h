@@ -110,24 +110,11 @@ namespace rtm {
 			Console::printf(buffer);
 		}
 
-		static char* printTime(char* buffer)
-		{
-			time_t t = time(NULL);
-			struct tm *lt = localtime(&t);
-			size_t len = strftime(buffer, RTM_CONSOLE_TEMP_BUFFER_SIZE, "%H:%M:%S", lt);
-			buffer[len + 0] = ' ';
-			buffer[len + 1] = '\0';
-			return &buffer[len + 1];
-		}
-
 		static void	rgbInternal(uint8_t _r, uint8_t _g, uint8_t _b, const char* _prepend, const char* _format, va_list& _args)
 		{
 			char buffer[RTM_CONSOLE_TEMP_BUFFER_SIZE];
-			uint32_t len = rtm::strLen(_prepend);
 			char* append = buffer;
 			buffer[0] = '\0';
-			if (len > 0)
-				append = Console::printTime(buffer);
 			uint32_t remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - uint32_t(append - buffer);
 			append = setColor(append, remainder, _r, _g, _b);
 			remainder = RTM_CONSOLE_TEMP_BUFFER_SIZE - uint32_t(append - buffer);
