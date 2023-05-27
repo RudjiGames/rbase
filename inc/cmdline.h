@@ -41,6 +41,11 @@ namespace rtm {
 			return getArgString(_optionName) != 0;
 		}
 
+		bool hasArg(char _optionLetter, const char* _optionName) const
+		{
+			return hasArg(_optionLetter) || hasArg(_optionName);
+		}
+
 		const char* getArg(int _argIndex) const
 		{
 			if (_argIndex >= m_argc)
