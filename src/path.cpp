@@ -48,7 +48,10 @@ const char* pathGetFileName(const char* _path)
 {
 	size_t len = strLen(_path);
 	while ((_path[len] != '/') && (_path[len] != '\\') && (len>0)) --len;
-	return &_path[len + 1];
+	if (isSlash(_path[len]))
+		return &_path[len + 1];
+	else
+		return &_path[len];
 }
 
 bool pathGetFileName(const char* _path, char* _buffer, uint32_t _bufferSize)
