@@ -16,35 +16,22 @@ namespace rtm {
 /// Stack allocator template for fixed number of items
 //--------------------------------------------------------------------------
 template <typename T>
-class Chunk
+struct Chunk
 {
-	private:
-		enum { MAX_ITEMS = ((1<<14) - 52) / sizeof(T) }; // 16Kb - book keeping
+		enum { MAX_ITEMS = ((4<<20) / sizeof(T)) - 1 }; // 4 MB
 
-		uint32_t	m_NumItems;
-		T*			m_Data;
+		uint64_t	m_numItems;
+		T			m_data[MAX_ITEMS];
 
-	public:
-		Chunk() : m_NumItems(0)
+		Chunk() : m_numItems(0) {}
+		~Chunk() {}
+
+		inline T*	alloc()
 		{
-			m_Data = rtm_new_array<T>(MAX_ITEMS);
-			memset(m_Data, 0, sizeof(T)*MAX_ITEMS);
-		}
-
-		~Chunk()
-		{
-			rtm_delete_array<T>(MAX_ITEMS, m_Data);
-		}
-
-		T*	alloc()
-		{
-			if (m_NumItems < MAX_ITEMS)
-			{
-				T* ret = &m_Data[m_NumItems];
-				++m_NumItems;
-				return ret;
-			}
-			return 0;
+			if (m_numItems < MAX_ITEMS)
+				return &m_data[m_numItems++];
+			else
+				return 0;
 		}
 };
 
@@ -57,12 +44,14 @@ template <typename T>
 class ChunkAllocator
 {
 	private:
-		std::vector<Chunk<T>*>	m_Chunks;
+		std::vector<Chunk<T>*>	m_chunks;
+		uint32_t				m_size;
 
 	public:
 		ChunkAllocator()
 		{
-			m_Chunks.reserve(1024);
+			m_chunks.reserve(1024);
+			m_size = 0;
 		}
 
 		~ChunkAllocator()
@@ -70,13 +59,14 @@ class ChunkAllocator
 			reset();
 		}
 
-		T* alloc()
+		inline T* alloc()
 		{
-			size_t numChunks = m_Chunks.size();
+			m_size++;
+			size_t numChunks = m_chunks.size();
 			T* ret = 0;
 			if (numChunks)
 			{
-				Chunk<T>* lastChunk = m_Chunks[numChunks-1];
+				Chunk<T>* lastChunk = m_chunks[numChunks-1];
 				ret = lastChunk->alloc();
 				if (ret)
 					return ret;
@@ -84,16 +74,28 @@ class ChunkAllocator
 
 			Chunk<T>* c = rtm_new<Chunk<T> >();
 			ret = c->alloc();
-			m_Chunks.push_back(c);
+			m_chunks.push_back(c);
 			return ret;
 		}
 
 		void reset()
 		{
-			size_t numChunks = m_Chunks.size();
+			size_t numChunks = m_chunks.size();
 			for (size_t i=0; i<numChunks; i++)
-				rtm_delete<Chunk<T> >(m_Chunks[i]);
-			m_Chunks.clear();
+				rtm_delete<Chunk<T> >(m_chunks[i]);
+			m_chunks.clear();
+		}
+
+		inline uint32_t size()
+		{
+			return m_size;
+		}
+
+		inline T* getItem(uint32_t _index)
+		{
+			uint32_t chunkIdx = _index / Chunk<T>::MAX_ITEMS;
+			uint32_t  itemIdx = _index % Chunk<T>::MAX_ITEMS;
+			return &m_chunks[chunkIdx]->m_data[itemIdx];
 		}
 };
 
@@ -106,20 +108,20 @@ class StackAlloc
 	private:
 		enum { MAX_SIZE = 64*1024 };
 
-		uint8_t		m_Data[MAX_SIZE];
+		uint8_t		m_data[MAX_SIZE];
 		uint32_t	m_size;
 
 	public:
 		StackAlloc() : m_size(0)
 		{
-			memset(m_Data, 0, MAX_SIZE);
+			memset(m_data, 0, MAX_SIZE);
 		}
 
 		void* alloc( uint32_t _size )
 		{
 			if (m_size + _size <= MAX_SIZE)
 			{
-				void* ret = &m_Data[m_size];
+				void* ret = &m_data[m_size];
 				m_size += _size;
 				return ret;
 			}
@@ -131,12 +133,12 @@ class StackAlloc
 class StackAllocator
 {
 	private:
-		rtm_vector<StackAlloc*>	m_Chunks;
+		rtm_vector<StackAlloc*>	m_chunks;
 
 	public:
 		StackAllocator()
 		{
-			m_Chunks.reserve(1024);
+			m_chunks.reserve(1024);
 		}
 
 		~StackAllocator()
@@ -146,11 +148,11 @@ class StackAllocator
 
 		void* alloc(uint32_t _size)
 		{
-			size_t numChunks = m_Chunks.size();
+			size_t numChunks = m_chunks.size();
 			void* ret = 0;
 			if (numChunks)
 			{
-				StackAlloc* lastChunk = m_Chunks[numChunks-1];
+				StackAlloc* lastChunk = m_chunks[numChunks-1];
 				ret = lastChunk->alloc(_size);
 				if (ret)
 					return ret;
@@ -158,16 +160,16 @@ class StackAllocator
 
 			StackAlloc* c = rtm_new<StackAlloc>();
 			ret = c->alloc(_size);
-			m_Chunks.push_back(c);
+			m_chunks.push_back(c);
 			return ret;
 		}
 
 		void reset()
 		{
-			size_t numChunks = m_Chunks.size();
+			size_t numChunks = m_chunks.size();
 			for (size_t i=0; i<numChunks; i++)
-				rtm_delete<StackAlloc>(m_Chunks[i]);
-			m_Chunks.clear();
+				rtm_delete<StackAlloc>(m_chunks[i]);
+			m_chunks.clear();
 		}
 };
 
