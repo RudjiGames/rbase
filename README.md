@@ -1,7 +1,6 @@
 <img src="https://rudji.com/images/lib/rbase.png"/>
 
-[![Build status](https://ci.appveyor.com/api/projects/status/u0c3l72vgi86f72l?svg=true)](https://ci.appveyor.com/project/milostosic/rbase)
-[![License](https://img.shields.io/badge/license-BSD--2%20clause-blue.svg)](https://github.com/milostosic/rbase/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-BSD--2%20clause-blue.svg)](https://github.com/RudjiGames/rbase/blob/master/LICENSE)
 
 rbase is a platform abstraction and utility library used as foundation for a number of projects.
 
@@ -10,14 +9,14 @@ Source Code
 
 You can get the latest source code by cloning it from github:
 
-      git clone https://github.com/milostosic/rbase.git 
+      git clone https://github.com/RudjiGames/rbase.git 
 
 Dependencies
 ======
 
-rtm build system scirpts (https://github.com/milostosic/build):
+rtm build system scirpts (https://github.com/RudjiGames/build):
 
-	git clone https://github.com/milostosic/build.git
+	git clone https://github.com/RudjiGames/build.git
 
 Author
 ======
@@ -29,12 +28,12 @@ License (BSD 2-clause)
 ======
 
 <a href="http://opensource.org/licenses/BSD-2-Clause" target="_blank">
-<img align="right" src="http://opensource.org/trademarks/opensource/OSI-Approved-License-100x137.png">
+<img align="right" src="https://opensource.org/wp-content/uploads/2022/10/osi-badge-dark.svg" width="100" height="137">
 </a>
 
-	Copyright (c) 2018 Milos Tosic. All rights reserved.
+	Copyright 2023 Milos Tosic. All rights reserved.
 	
-	https://github.com/milostosic/rbase
+	https://github.com/RudjiGames/rbase
 	
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
