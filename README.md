@@ -18,12 +18,6 @@ rtm build system scirpts (https://github.com/RudjiGames/build):
 
 	git clone https://github.com/RudjiGames/build.git
 
-Author
-======
-
-The author of **rbase** is Milos Tosic  
-[ <img src="https://github.com/milostosic/build/raw/gh-pages/images/twitter.png">](https://twitter.com/milostosic)[ <img src="https://github.com/milostosic/build/raw/gh-pages/images/mail.png">](mailto:milostosic77@gmail.com)  
-
 License (BSD 2-clause)
 ======
 
