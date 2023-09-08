@@ -14,7 +14,9 @@ You can get the latest source code by cloning it from github:
 Build
 ======
 
-The provided, optional, [GENie](https://github.com/bkaradzic/GENie) scripts are part of the [build](https://github.com/RudjiGames/build) scrpt system and can be used to generate project files/solution. For more information please see [build](https://github.com/RudjiGames/build) documentation.
+There are no dependencies and source files can be just dropped into the existing project or one can be manually created.
+
+Project files can also be generated using the provided [GENie](https://github.com/bkaradzic/GENie) scripts. The scripts are written for the [build](https://github.com/RudjiGames/build) scrpt system. For more information please see [build](https://github.com/RudjiGames/build) documentation.
 
 License (BSD 2-clause)
 ======
