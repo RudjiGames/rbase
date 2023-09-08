@@ -11,12 +11,15 @@ You can get the latest source code by cloning it from github:
 
       git clone https://github.com/RudjiGames/rbase.git 
 
-Dependencies and building
+Build
+======
+
+The provided, optional, [GENie](https://github.com/bkaradzic/GENie) scripts are part of the [build](https://github.com/RudjiGames/build) scrpt system and can be used to generate project files/solution. For more information please see [build](https://github.com/RudjiGames/build) documentation.
+
+Dependencies
 ======
 
 There are no dependencies and source files can be just added to an existing project.
-
-The provided, optional, [GENie](https://github.com/bkaradzic/GENie) scripts are part of the [build](https://github.com/RudjiGames/build) scrpt system and can be used to generate project files/solution. For more information please see [build](https://github.com/RudjiGames/build) documentation.
 
 License (BSD 2-clause)
 ======
