@@ -16,11 +16,6 @@ Build
 
 The provided, optional, [GENie](https://github.com/bkaradzic/GENie) scripts are part of the [build](https://github.com/RudjiGames/build) scrpt system and can be used to generate project files/solution. For more information please see [build](https://github.com/RudjiGames/build) documentation.
 
-Dependencies
-======
-
-There are no dependencies and source files can be just added to an existing project.
-
 License (BSD 2-clause)
 ======
 
