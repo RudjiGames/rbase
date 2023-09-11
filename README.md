@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-BSD--2%20clause-blue.svg)](https://github.com/RudjiGames/rbase/blob/master/LICENSE)
 
-rbase is a platform abstraction and utility library used as foundation for a number of projects.
+**rbase** is a platform abstraction and utility library used as foundation for a number of projects.
 
 Source Code
 ======
@@ -16,7 +16,7 @@ Build
 
 There are no dependencies and source files can be just dropped into the existing project or one can be manually created.
 
-Project files can also be generated using the provided [GENie](https://github.com/bkaradzic/GENie) scripts. The scripts are written for the [build](https://github.com/RudjiGames/build) scrpt system. For more information please see [build](https://github.com/RudjiGames/build) documentation.
+Project files can also be generated using the provided [**GENie**](https://github.com/bkaradzic/GENie) scripts. The scripts are written for the [**build**](https://github.com/RudjiGames/build) script system. For more information please see [**build**](https://github.com/RudjiGames/build) documentation.
 
 License (BSD 2-clause)
 ======
