@@ -1,5 +1,6 @@
 <img src="https://rudji.com/images/lib/rbase.png"/>
 
+[![Build status](https://ci.appveyor.com/api/projects/status/6ppf83gsti47kdsl?svg=true)](https://ci.appveyor.com/project/milostosic/rbase-h6y42)
 [![License](https://img.shields.io/badge/license-BSD--2%20clause-blue.svg)](https://github.com/RudjiGames/rbase/blob/master/LICENSE)
 
 **rbase** is a platform abstraction and utility library used as foundation for a number of projects.
