@@ -81,7 +81,6 @@ for:
       - git clone --depth 1 https://github.com/bkaradzic/GENie GENie		# build GENie from source: `GLIBC_2.29' not found
       - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
       - cd GENie && make && cd ..
-      - mkdir glfwbuild && cd glfwbuild && cmake ../glfw -DGLFW_BUILD_TESTS=OFF && make -j4 && sudo make install && cd ..
 
     install:
       - ./GENie/bin/linux/genie --file=rbase/genie/genie.lua --gcc=linux-gcc-9 gmake
