@@ -1,40 +1,34 @@
 <img src="https://rudji.com/images/lib/rbase.png"/>
 
-[![Build status](https://ci.appveyor.com/api/projects/status/u0c3l72vgi86f72l?svg=true)](https://ci.appveyor.com/project/milostosic/rbase)
-[![License](https://img.shields.io/badge/license-BSD--2%20clause-blue.svg)](https://github.com/milostosic/rbase/blob/master/LICENSE)
+[![Build status](https://ci.appveyor.com/api/projects/status/6ppf83gsti47kdsl?svg=true)](https://ci.appveyor.com/project/milostosic/rbase-h6y42)
+[![License](https://img.shields.io/badge/license-BSD--2%20clause-blue.svg)](https://github.com/RudjiGames/rbase/blob/master/LICENSE)
 
-rbase is a platform abstraction and utility library used as foundation for a number of projects.
+**rbase** is a platform abstraction and utility library used as foundation for a number of projects.
 
 Source Code
 ======
 
 You can get the latest source code by cloning it from github:
 
-      git clone https://github.com/milostosic/rbase.git 
+      git clone https://github.com/RudjiGames/rbase.git 
 
-Dependencies
+Build
 ======
 
-rtm build system scirpts (https://github.com/milostosic/build):
+There are no dependencies and source files can be just dropped into the existing project or one can be manually created.
 
-	git clone https://github.com/milostosic/build.git
-
-Author
-======
-
-The author of **rbase** is Milos Tosic  
-[ <img src="https://github.com/milostosic/build/raw/gh-pages/images/twitter.png">](https://twitter.com/milostosic)[ <img src="https://github.com/milostosic/build/raw/gh-pages/images/mail.png">](mailto:milostosic77@gmail.com)  
+Project files can also be generated using the provided [**GENie**](https://github.com/bkaradzic/GENie) scripts. The scripts are written for the [**build**](https://github.com/RudjiGames/build) script system. For more information please see [**build**](https://github.com/RudjiGames/build) documentation.
 
 License (BSD 2-clause)
 ======
 
 <a href="http://opensource.org/licenses/BSD-2-Clause" target="_blank">
-<img align="right" src="http://opensource.org/trademarks/opensource/OSI-Approved-License-100x137.png">
+<img align="right" src="https://opensource.org/wp-content/uploads/2022/10/osi-badge-dark.svg" width="100" height="137">
 </a>
 
-	Copyright (c) 2018 Milos Tosic. All rights reserved.
+	Copyright 2023 Milos Tosic. All rights reserved.
 	
-	https://github.com/milostosic/rbase
+	https://github.com/RudjiGames/rbase
 	
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
