@@ -3,7 +3,6 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#include <rapp/inc/rapp.h>
 #include <rbase/inc/platform.h>
 #include <rbase/inc/console.h>
 
