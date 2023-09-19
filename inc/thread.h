@@ -7,7 +7,7 @@
 #define RTM_RBASE_THREAD_H
 
 #include <rbase/inc/platform.h>
-#include <rbase/inc/semaphore.h>
+#include <rbase/inc/sem.h>
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 	#include <immintrin.h>
