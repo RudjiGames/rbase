@@ -39,10 +39,6 @@ environment:
     
 shallow_clone: true
 
-install:
-- git submodule init
-- git submodule update
-
 for:
   
 # ======================================
@@ -57,7 +53,6 @@ for:
     init:
       - git clone --depth 1 https://github.com/RudjiGames/build build
       - git clone --depth 1 https://github.com/RudjiGames/rbase rbase
-      - git clone --depth 1 https://github.com/dougbinks/enkiTS enkiTS
       - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
      
     install:
@@ -77,7 +72,6 @@ for:
       - sudo apt update -y && sudo apt install -y xorg libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libegl1-mesa-dev
       - git clone --depth 1 https://github.com/RudjiGames/build build
       - git clone --depth 1 https://github.com/RudjiGames/rbase rbase
-      - git clone --depth 1 https://github.com/dougbinks/enkiTS enkiTS
       - git clone --depth 1 https://github.com/bkaradzic/GENie GENie		# build GENie from source: `GLIBC_2.29' not found
       - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
       - cd GENie && make && cd ..
@@ -101,7 +95,6 @@ for:
     init:
       - git clone --depth 1 https://github.com/RudjiGames/build build
       - git clone --depth 1 https://github.com/RudjiGames/rbase rbase
-      - git clone --depth 1 https://github.com/dougbinks/enkiTS enkiTS
       - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
     
     install:
