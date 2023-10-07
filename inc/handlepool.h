@@ -116,10 +116,10 @@ namespace rtm {
 			if (_handle == INVALID_HANDLE)
 				return false;
 
+			const HandleType h(_handle);
 			if (h.index() >= m_generation.size())
 				return false;
 
-			const HandleType h(_handle);
 			return m_generation[h.index()] == h.generation();
 		}
 
