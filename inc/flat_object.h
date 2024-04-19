@@ -28,6 +28,29 @@ namespace rtm {
 		{
 			m_offset = (int32_t)((intptr_t)_ptr - (intptr_t)this);
 		}
+
+		inline uint32_t get() const
+		{
+			return m_offset;
+		}
+
+		inline void advance(uint32_t _numObjects)
+		{
+			m_offset += _numObjects * sizeof(T);
+		}
+
+		inline FlatPtr<T> operator - (const FlatPtr<T> _other)
+		{
+			RTM_ASSERT(m_offset > _other.m_offset, "Provided ptr must be greater than comparand!");
+			uint32_t offset = m_offset - _other.m_offset;
+		}
+
+		inline uint32_t elementsFrom(const FlatPtr<T> _other)
+		{
+			RTM_ASSERT(m_offset > _other.m_offset, "Provided ptr must be greater than comparand!");
+			uint32_t offset = m_offset - _other.m_offset;
+			return offset / sizeof(T);
+		}
 	};
 
 	template <typename T>
