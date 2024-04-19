@@ -54,6 +54,9 @@ namespace rtm {
 	struct FileReaderHandle { uint32_t idx; };
 	struct FileWriterHandle { uint32_t idx; };
 
+	inline bool isValid(FileReaderHandle _handle) { return _handle.idx != UINT32_MAX; }
+	inline bool isValid(FileWriterHandle _handle) { return _handle.idx != UINT32_MAX; }
+
 	// ------------------------------------------------
 	/// File reader functions
 	// ------------------------------------------------
@@ -102,7 +105,7 @@ namespace rtm {
 	int64_t	fileWriterSeek(FileWriterHandle _handle, int64_t _offset, uint32_t _origin = File::Seek_CUR);
 
 	///
-	int32_t	fileWriterRead(FileWriterHandle _handle, void* _dest, uint32_t _size);
+	int32_t	fileWriterWrite(FileWriterHandle _handle, void* _src, uint32_t _size);
 
 } // namespace rtm
 

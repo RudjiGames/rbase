@@ -70,7 +70,7 @@ namespace rtm {
 			return (uint32_t)((uintptr_t)_memory - (uintptr_t)m_memory);
 		}
 
-		inline void* allocateMemory(uint32_t _sizeInBytes)
+		inline uint32_t allocateMemory(uint32_t _sizeInBytes)
 		{
 			if (_sizeInBytes + m_size > m_capacity)
 			{
@@ -79,18 +79,16 @@ namespace rtm {
 				m_capacity = newCapacity;
 			}
 
-			void* ret = m_memory + m_size;
+			uint32_t oldSize = m_size;
 			m_size += _sizeInBytes;
-			return ret;
+			return oldSize;
 		}
 
 		template <typename Y>
 		inline FlatPtr<Y> allocateObjects(uint32_t _numObjects)
 		{
 			uint32_t memsize = _numObjects * sizeof(Y);
-			uint32_t offset = m_size;
-			allocateMemory(memsize);
-			return FlatPtr<Y>(offset);
+			return FlatPtr<Y>(allocateMemory(memsize));
 		}
 
 		template <typename Y>

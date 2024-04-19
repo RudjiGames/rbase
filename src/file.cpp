@@ -109,7 +109,7 @@ void localReadConstruct(FileReader* _file)
 
 File::Status localReadOpen(FileReader* _file, const char* _path)
 {
-	LOCAL(_file).m_file = fopen(_path, "rb");
+	LOCAL(_file).m_file = ::fopen(_path, "rb");
 	if (LOCAL(_file).m_file)
 	{
 		if (_file->m_callBacks.m_doneCb)
@@ -131,7 +131,7 @@ void localReadClose(FileReader* _file)
 {
 	if (LOCAL(_file).m_file)
 	{
-		fclose(LOCAL(_file).m_file);
+		::fclose(LOCAL(_file).m_file);
 		LOCAL(_file).m_file = 0;
 	}
 }
@@ -150,8 +150,8 @@ int64_t	localReadSeek(FileReader* _file, int64_t _offset, uint32_t _origin)
 		return 0;
 	}
 
-	fseek(LOCAL(_file).m_file, (long)_offset, _origin);
-	return ftell(LOCAL(_file).m_file);
+	::fseek(LOCAL(_file).m_file, (long)_offset, _origin);
+	return ::ftell(LOCAL(_file).m_file);
 }
 
 int32_t	localReadRead(FileReader* _file, void* _dest, uint32_t _size)
@@ -163,7 +163,7 @@ int32_t	localReadRead(FileReader* _file, void* _dest, uint32_t _size)
 		return 0;
 	}
 
-	return (int32_t)fread(_dest, 1, _size, LOCAL(_file).m_file);
+	return (int32_t)::fread(_dest, 1, _size, LOCAL(_file).m_file);
 }
 
 void localWriteConstruct(FileWriter* _file)
@@ -173,7 +173,7 @@ void localWriteConstruct(FileWriter* _file)
 
 File::Status localWriteOpen(FileWriter* _file, const char* _path)
 {
-	LOCAL(_file).m_file = fopen(_path, "wb");
+	LOCAL(_file).m_file = ::fopen(_path, "wb");
 	if (LOCAL(_file).m_file != 0)
 		return File::Open;
 	return File::Fail;
@@ -190,7 +190,7 @@ void localWriteClose(FileWriter* _file)
 {
 	if (LOCAL(_file).m_file)
 	{
-		fclose(LOCAL(_file).m_file);
+		::fclose(LOCAL(_file).m_file);
 		LOCAL(_file).m_file = 0;
 	}
 }
@@ -209,8 +209,8 @@ int64_t	localWriteSeek(FileWriter* _file, int64_t _offset, uint32_t _origin)
 		return 0;
 	}
 
-	fseek(LOCAL(_file).m_file, (long)_offset, _origin);
-	return ftell(LOCAL(_file).m_file);
+	::fseek(LOCAL(_file).m_file, (long)_offset, _origin);
+	return ::ftell(LOCAL(_file).m_file);
 }
 
 int32_t	localWriteWrite(FileWriter* _file, void* _dest, uint32_t _size)
@@ -356,7 +356,7 @@ void httpReadClose(FileReader* _file)
 {
 	if (HTTP(_file).m_file)
 	{
-		fclose(HTTP(_file).m_file);
+		::fclose(HTTP(_file).m_file);
 		HTTP(_file).m_file = 0;
 		delete[] HTTP(_file).m_url;
 		HTTP(_file).m_url = 0;
@@ -377,8 +377,8 @@ int64_t	httpReadSeek(FileReader* _file, int64_t _offset, uint32_t _origin)
 			_file->m_callBacks.m_failCb("Cannot seek. File is not open!");
 		return 0;
 	}
-	fseek(HTTP(_file).m_file, (long)_offset, _origin);
-	return ftell(HTTP(_file).m_file);
+	::fseek(HTTP(_file).m_file, (long)_offset, _origin);
+	return ::ftell(HTTP(_file).m_file);
 }
 
 int32_t	httpReadRead(FileReader* _file, void* _dest, uint32_t _size)
@@ -389,7 +389,7 @@ int32_t	httpReadRead(FileReader* _file, void* _dest, uint32_t _size)
 			_file->m_callBacks.m_failCb("Cannot read. File is not open!");
 		return 0;
 	}
-	return (int32_t)fread(_dest, 1, _size, HTTP(_file).m_file);
+	return (int32_t)::fread(_dest, 1, _size, HTTP(_file).m_file);
 }
 #elif RTM_PLATFORM_EMSCRIPTEN
 
@@ -744,13 +744,13 @@ int64_t	fileWriterSeek(FileWriterHandle _handle, int64_t _offset, uint32_t _orig
 	return writer->seek(writer, _offset, _origin);
 }
 
-int32_t	fileWriterRead(FileWriterHandle _handle, void* _dest, uint32_t _size)
+int32_t	fileWriterWrite(FileWriterHandle _handle, void* _src, uint32_t _size)
 {
 	if (!s_writers.isValid(_handle.idx))
 		return 0;
 
 	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
-	return writer->write(writer, _dest, _size);
+	return writer->write(writer, _src, _size);
 }
 
 } // namespace rtm
