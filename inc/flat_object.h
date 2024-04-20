@@ -5,31 +5,42 @@
 
 #ifndef RTM_FLAT_OBJECT_H
 #define RTM_FLAT_OBJECT_H
-
+#include <windows.h>
 #include <rbase/inc/platform.h>
 
 namespace rtm {
 
+	class FlatObjectAllocator;
+
+	//--------------------------------------------------------------------------
+	// 'Pointer' which is a relative offset coupled to FlatObjectAllocator
+	//--------------------------------------------------------------------------
 	template <typename T>
 	class FlatPtr
 	{
 		int32_t		m_offset;
 
 	public:
-		FlatPtr(int32_t _offset = 0)
+		explicit FlatPtr(int32_t _offset)
 			: m_offset(_offset) {}
 
-		inline T* operator -> ()
+		FlatPtr(FlatPtr& _other)
 		{
-			return (T*)((intptr_t)this + (intptr_t)m_offset);
+			m_offset = _other.m_offset;
 		}
 
-		inline void set(void* _ptr)
+		template <typename Y>
+		explicit FlatPtr(const FlatPtr<Y>& _other)
 		{
-			m_offset = (int32_t)((intptr_t)_ptr - (intptr_t)this);
+			m_offset = _other.getOffset();
 		}
 
-		inline uint32_t get() const
+		inline T* get(FlatObjectAllocator& _alloc)
+		{
+			return (T*)(_alloc.getMemory() + m_offset);
+		}
+
+		inline uint32_t getOffset() const
 		{
 			return m_offset;
 		}
@@ -37,12 +48,6 @@ namespace rtm {
 		inline void advance(uint32_t _numObjects)
 		{
 			m_offset += _numObjects * sizeof(T);
-		}
-
-		inline FlatPtr<T> operator - (const FlatPtr<T> _other)
-		{
-			RTM_ASSERT(m_offset > _other.m_offset, "Provided ptr must be greater than comparand!");
-			uint32_t offset = m_offset - _other.m_offset;
 		}
 
 		inline uint32_t elementsFrom(const FlatPtr<T> _other)
@@ -53,29 +58,39 @@ namespace rtm {
 		}
 	};
 
-	template <typename T>
+	//--------------------------------------------------------------------------
+	// Linear allocator using offsets to allocate
+	//--------------------------------------------------------------------------
 	class FlatObjectAllocator
 	{
 		uint8_t*	m_memory;
 		uint32_t	m_size;
 		uint32_t	m_capacity;
+		bool		m_isStatic;
+
+		static const int INITIAL_SIZE = 1024;
 
 	public:
-		inline FlatObjectAllocator()
+		FlatObjectAllocator(void* _memory, uint32_t _size)
 		{
-			m_memory	= (uint8_t*)malloc(sizeof(T) * 2);
-			m_size		= sizeof(T);
-			m_capacity	= sizeof(T) * 2;
+			m_memory	= (uint8_t*)_memory;
+			m_size		= 0;
+			m_capacity	= _size;
+			m_isStatic	= true;
 		}
 
-		inline ~FlatObjectAllocator()
+		FlatObjectAllocator()
 		{
-			free(m_memory);
+			m_memory	= (uint8_t*)malloc(INITIAL_SIZE);
+			m_size		= 0;
+			m_capacity	= INITIAL_SIZE;
+			m_isStatic	= false;
 		}
 
-		inline T* getObject()
+		~FlatObjectAllocator()
 		{
-			return (T*)m_memory;
+			if (!m_isStatic)
+				free(m_memory);
 		}
 
 		inline uint32_t getSize() const
@@ -83,17 +98,12 @@ namespace rtm {
 			return m_size;
 		}
 
-		inline void* getMemory(uint32_t _offset = 0)
+		inline uint8_t* getMemory() const
 		{
-			return (m_memory + _offset);
+			return m_memory;
 		}
 
-		inline uint32_t getOffset(void* _memory)
-		{
-			return (uint32_t)((uintptr_t)_memory - (uintptr_t)m_memory);
-		}
-
-		inline uint32_t allocateMemory(uint32_t _sizeInBytes)
+		inline FlatPtr<void> allocateMemory(uint32_t _sizeInBytes)
 		{
 			if (_sizeInBytes + m_size > m_capacity)
 			{
@@ -104,20 +114,28 @@ namespace rtm {
 
 			uint32_t oldSize = m_size;
 			m_size += _sizeInBytes;
-			return oldSize;
+			return FlatPtr<void>(oldSize);
 		}
 
-		template <typename Y>
-		inline FlatPtr<Y> allocateObjects(uint32_t _numObjects)
+		template <typename T>
+		inline FlatPtr<T> allocateObjectsSized(uint32_t _sizeInBytes)
 		{
-			uint32_t memsize = _numObjects * sizeof(Y);
-			return FlatPtr<Y>(allocateMemory(memsize));
+			FlatPtr<void> memoryOffset = allocateMemory(_sizeInBytes);
+			FlatPtr<T> ptr(memoryOffset);
+			return ptr;
 		}
 
-		template <typename Y>
-		inline FlatPtr<Y> allocateObject()
+		template <typename T>
+		inline FlatPtr<T> allocateObjects(uint32_t _numObjects)
 		{
-			return allocateObjects(1);
+			uint32_t memsize = _numObjects * sizeof(T);
+			return allocateObjectsSized<T>(memsize);
+		}
+
+		template <typename T>
+		inline FlatPtr<T> allocateObject()
+		{
+			return allocateObjects<T>(1);
 		}
 	};
 
