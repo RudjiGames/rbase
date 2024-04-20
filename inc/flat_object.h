@@ -5,7 +5,7 @@
 
 #ifndef RTM_FLAT_OBJECT_H
 #define RTM_FLAT_OBJECT_H
-#include <windows.h>
+
 #include <rbase/inc/platform.h>
 
 namespace rtm {
