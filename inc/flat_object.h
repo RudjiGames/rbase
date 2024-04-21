@@ -10,10 +10,8 @@
 
 namespace rtm {
 
-	class FlatObjectAllocator;
-
 	//--------------------------------------------------------------------------
-	// 'Pointer' which is a relative offset coupled to FlatObjectAllocator
+	// 'Pointer' which is a relative offset in a buffer
 	//--------------------------------------------------------------------------
 	template <typename T>
 	class FlatPtr
@@ -35,11 +33,6 @@ namespace rtm {
 			m_offset = _other.getOffset();
 		}
 
-		inline T* get(FlatObjectAllocator& _alloc)
-		{
-			return (T*)(_alloc.getMemory() + m_offset);
-		}
-
 		inline uint32_t getOffset() const
 		{
 			return m_offset;
@@ -50,10 +43,15 @@ namespace rtm {
 			m_offset += _numObjects * sizeof(T);
 		}
 
-		inline uint32_t elementsFrom(const FlatPtr<T> _other)
+		inline FlatPtr<T>& operator ++ ()
 		{
-			RTM_ASSERT(m_offset > _other.m_offset, "Provided ptr must be greater than comparand!");
-			uint32_t offset = m_offset - _other.m_offset;
+			m_offset += sizeof(T);
+			return *this;
+		}
+
+		inline int32_t elementsFrom(const FlatPtr<T> _other)
+		{
+			int32_t offset = m_offset - _other.m_offset;
 			return offset / sizeof(T);
 		}
 	};
@@ -101,6 +99,12 @@ namespace rtm {
 		inline uint8_t* getMemory() const
 		{
 			return m_memory;
+		}
+
+		template <typename T>
+		inline T* get(FlatPtr<T> _ptr)
+		{
+			return (T*)(m_memory + _ptr.getOffset());
 		}
 
 		inline FlatPtr<void> allocateMemory(uint32_t _sizeInBytes)
