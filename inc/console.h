@@ -138,7 +138,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			rgbInternal(224, 224, 224, "", _format, args);
+			rgbInternal(192, 192, 192, "", _format, args);
 			va_end(args);
 		}
 
@@ -162,7 +162,7 @@ namespace rtm {
 		{
 			va_list args;
 			va_start(args, _format);
-			rgbInternal(224, 224, 0, "", _format, args);
+			rgbInternal(192, 192, 0, "", _format, args);
 			va_end(args);
 		}
 
