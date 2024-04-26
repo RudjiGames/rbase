@@ -672,6 +672,18 @@ int32_t	fileReaderRead(FileReaderHandle _handle, void* _dest, uint32_t _size)
 	return reader->read(reader, _dest, _size);
 }
 
+int64_t	fileReaderGetSize(FileReaderHandle _handle)
+{
+	if (!s_readers.isValid(_handle.idx))
+		return 0;
+
+	FileReader* reader = s_readers.getDataPtr(_handle.idx);
+	int64_t pos = reader->seek(reader, 0, File::Seek_CUR);
+	int64_t end = reader->seek(reader, 0, File::Seek_END);
+	reader->seek(reader, pos, File::Seek_SET);
+	return end;
+}
+
 FileWriterHandle fileWriterCreate(File::Enum _type, FileCallBacks* _callBacks)
 {
 	FileWriter* writer = 0;
@@ -751,6 +763,18 @@ int32_t	fileWriterWrite(FileWriterHandle _handle, void* _src, uint32_t _size)
 
 	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
 	return writer->write(writer, _src, _size);
+}
+
+int64_t	fileWriterGetSize(FileWriterHandle _handle)
+{
+	if (!s_writers.isValid(_handle.idx))
+		return 0;
+
+	FileWriter* writer = s_writers.getDataPtr(_handle.idx);
+	int64_t pos = writer->seek(writer, 0, File::Seek_CUR);
+	int64_t end = writer->seek(writer, 0, File::Seek_END);
+	writer->seek(writer, pos, File::Seek_SET);
+	return end;
 }
 
 } // namespace rtm

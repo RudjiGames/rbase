@@ -82,6 +82,9 @@ namespace rtm {
 	///
 	int32_t	fileReaderRead(FileReaderHandle _handle, void* _dest, uint32_t _size);
 
+	///
+	int64_t	fileReaderGetSize(FileReaderHandle _handle);
+
 	// ------------------------------------------------
 	/// File writer functions
 	// ------------------------------------------------
@@ -106,6 +109,9 @@ namespace rtm {
 
 	///
 	int32_t	fileWriterWrite(FileWriterHandle _handle, void* _src, uint32_t _size);
+
+	/// <summary>
+	int64_t	fileWriterGetSize(FileWriterHandle _handle);
 
 } // namespace rtm
 
