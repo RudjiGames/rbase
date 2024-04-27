@@ -77,10 +77,10 @@ namespace rtm {
 	File::Status fileReaderGetStatus(FileReaderHandle _handle);
 
 	///
-	int64_t	fileReaderSeek(FileReaderHandle _handle, int64_t _offset, uint32_t _origin = File::Seek_CUR);
+	int64_t	fileReaderSeek(FileReaderHandle _handle, int64_t _offset, uint64_t _origin = File::Seek_CUR);
 
 	///
-	int32_t	fileReaderRead(FileReaderHandle _handle, void* _dest, uint32_t _size);
+	int32_t	fileReaderRead(FileReaderHandle _handle, void* _dest, int64_t _size);
 
 	///
 	int64_t	fileReaderGetSize(FileReaderHandle _handle);
@@ -105,10 +105,10 @@ namespace rtm {
 	File::Status fileWriterGetStatus(FileReaderHandle _handle);
 
 	///
-	int64_t	fileWriterSeek(FileWriterHandle _handle, int64_t _offset, uint32_t _origin = File::Seek_CUR);
+	int64_t	fileWriterSeek(FileWriterHandle _handle, int64_t _offset, uint64_t _origin = File::Seek_CUR);
 
 	///
-	int32_t	fileWriterWrite(FileWriterHandle _handle, void* _src, uint32_t _size);
+	int32_t	fileWriterWrite(FileWriterHandle _handle, void* _src, int64_t _size);
 
 	/// <summary>
 	int64_t	fileWriterGetSize(FileWriterHandle _handle);
