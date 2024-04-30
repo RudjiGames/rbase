@@ -19,7 +19,7 @@ namespace rtm {
 		int32_t		m_offset;
 
 	public:
-		explicit FlatPtr(int32_t _offset)
+		FlatPtr(int32_t _offset = 0)
 			: m_offset(_offset) {}
 
 		FlatPtr(FlatPtr& _other)
