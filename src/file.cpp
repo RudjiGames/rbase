@@ -293,7 +293,7 @@ public:
 
 struct DownloadThread
 {
-	static int64_t threadFunc(void* _userData)
+	static int32_t threadFunc(void* _userData)
 	{
 		FileReader* file = (FileReader*)_userData;
 
@@ -331,7 +331,7 @@ void httpReadConstruct(FileReader* _file)
 
 File::Status httpReadOpen(FileReader* _file, const char* _path)
 {
-	uint64_t len = rtm::strLen(_path);
+	uint32_t len = rtm::strLen(_path);
 	HTTP(_file).m_url = new char[len+1];
 	rtm::strlCpy(HTTP(_file).m_url, len+1, _path);
 	HTTP(_file).m_thread.start(DownloadThread::threadFunc, _file);
@@ -594,7 +594,7 @@ void fileWriterSetHTTP(FileWriter* _writer)
 FileReaderHandle fileReaderCreate(File::Enum _type, FileCallBacks* _callBacks)
 {
 	FileReader* reader = 0;
-	uint64_t idx = s_readers.allocate(reader);
+	uint32_t idx = s_readers.allocate(reader);
 
 	if (s_readers.isValid(idx))
 	{
@@ -687,7 +687,7 @@ int64_t	fileReaderGetSize(FileReaderHandle _handle)
 FileWriterHandle fileWriterCreate(File::Enum _type, FileCallBacks* _callBacks)
 {
 	FileWriter* writer = 0;
-	uint64_t idx = s_writers.allocate(writer);
+	uint32_t idx = s_writers.allocate(writer);
 
 	if (s_writers.isValid(idx))
 	{
