@@ -85,6 +85,9 @@ namespace rtm {
 	///
 	int64_t	fileReaderGetSize(FileReaderHandle _handle);
 
+	/// 
+	int64_t	fileRead(File::Enum _type, const char* _path, void* _data, int64_t _size);
+
 	// ------------------------------------------------
 	/// File writer functions
 	// ------------------------------------------------
@@ -110,8 +113,11 @@ namespace rtm {
 	///
 	int64_t	fileWriterWrite(FileWriterHandle _handle, void* _src, int64_t _size);
 
-	/// <summary>
+	/// 
 	int64_t	fileWriterGetSize(FileWriterHandle _handle);
+
+	/// 
+	int64_t	fileWrite(File::Enum _type, const char* _path, void* _data, int64_t _size);
 
 } // namespace rtm
 

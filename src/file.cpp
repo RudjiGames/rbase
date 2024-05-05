@@ -684,6 +684,25 @@ int64_t	fileReaderGetSize(FileReaderHandle _handle)
 	return end;
 }
 
+int64_t	fileRead(File::Enum _type, const char* _path, void* _data, int64_t _size)
+{
+	int64_t ret = -1;
+	rtm::FileReaderHandle frh = fileReaderCreate(_type);
+	if (rtm::isValid(frh))
+	{
+		if (rtm::File::Fail != rtm::fileReaderOpen(frh, _path))
+		{
+			int64_t size = fileReaderGetSize(frh);
+			ret = rtm::fileReaderRead(frh, _data, size > _size ? _size : size);
+			rtm::fileReaderClose(frh);
+		}
+
+		rtm::fileReaderDestroy(frh);
+	}
+
+	return ret;
+}
+
 FileWriterHandle fileWriterCreate(File::Enum _type, FileCallBacks* _callBacks)
 {
 	FileWriter* writer = 0;
@@ -775,6 +794,24 @@ int64_t	fileWriterGetSize(FileWriterHandle _handle)
 	int64_t end = writer->seek(writer, 0, File::Seek_END);
 	writer->seek(writer, pos, File::Seek_SET);
 	return end;
+}
+
+int64_t	fileWrite(File::Enum _type, const char* _path, void* _data, int64_t _size)
+{
+	int64_t ret = -1;
+	rtm::FileWriterHandle fwh = fileWriterCreate(_type);
+	if (rtm::isValid(fwh))
+	{
+		if (rtm::File::Fail != rtm::fileWriterOpen(fwh, _path))
+		{
+			ret = rtm::fileWriterWrite(fwh, _data, _size);
+			rtm::fileWriterClose(fwh);
+		}
+
+		rtm::fileWriterDestroy(fwh);
+	}
+
+	return ret;
 }
 
 } // namespace rtm
