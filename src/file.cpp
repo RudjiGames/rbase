@@ -47,7 +47,7 @@ struct FileWriter
 	File::Status	(*getstatus)(FileWriter*);
 	void			(*close)(FileWriter*);
 	int64_t			(*seek)(FileWriter*, int64_t _offset, uint64_t _origin);
-	int64_t			(*write)(FileWriter*, void* _dest, int64_t _size);
+	int64_t			(*write)(FileWriter*, const void* _src, int64_t _size);
 };
 
 rtm::Data<FileReader, RTM_MAX_FILES, rtm::Storage::Dense>	s_readers;
@@ -67,7 +67,7 @@ File::Status	noopWriteOpen(FileWriter*, const char* _path) { RTM_UNUSED(_path); 
 void			noopWriteClose(FileWriter*) {}
 File::Status	noopWriteGetStatus(FileWriter*) { return File::Closed; }
 int64_t			noopWriteSeek(FileWriter*, int64_t _offset, uint64_t _origin) { RTM_UNUSED_2(_offset, _origin); return 0; }
-int64_t			noopWriteWrite(FileWriter*, void* _dest, int64_t _size) { RTM_UNUSED_2(_dest, _size); return 0; }
+int64_t			noopWriteWrite(FileWriter*, const void* _src, int64_t _size) { RTM_UNUSED_2(_src, _size); return 0; }
 
 void fileReaderSetNoop(FileReader* _reader)
 {
@@ -213,7 +213,7 @@ int64_t	localWriteSeek(FileWriter* _file, int64_t _offset, uint64_t _origin)
 	return ::ftell(LOCAL(_file).m_file);
 }
 
-int64_t	localWriteWrite(FileWriter* _file, void* _dest, int64_t _size)
+int64_t	localWriteWrite(FileWriter* _file, const void* _src, int64_t _size)
 {
 	if (!LOCAL(_file).m_file)
 	{
@@ -222,7 +222,7 @@ int64_t	localWriteWrite(FileWriter* _file, void* _dest, int64_t _size)
 		return 0;
 	}
 
-	return (int64_t)fwrite(_dest, 1, _size, LOCAL(_file).m_file);
+	return (int64_t)fwrite(_src, 1, _size, LOCAL(_file).m_file);
 }
 
 void fileReaderSetLocal(FileReader* _reader)
@@ -559,9 +559,9 @@ int64_t	httpWriteSeek(FileWriter* _file, int64_t _offset, uint64_t _origin)
 	return 0;
 }
 
-int64_t	httpWriteWrite(FileWriter* _file, void* _dest, int64_t _size)
+int64_t	httpWriteWrite(FileWriter* _file, const void* _src, int64_t _size)
 {
-	RTM_UNUSED_3(_file, _dest, _size);
+	RTM_UNUSED_3(_file, _src, _size);
 	return 0;
 }
 
@@ -684,25 +684,6 @@ int64_t	fileReaderGetSize(FileReaderHandle _handle)
 	return end;
 }
 
-int64_t	fileRead(File::Enum _type, const char* _path, void* _data, int64_t _size)
-{
-	int64_t ret = -1;
-	rtm::FileReaderHandle frh = fileReaderCreate(_type);
-	if (rtm::isValid(frh))
-	{
-		if (rtm::File::Fail != rtm::fileReaderOpen(frh, _path))
-		{
-			int64_t size = fileReaderGetSize(frh);
-			ret = rtm::fileReaderRead(frh, _data, size > _size ? _size : size);
-			rtm::fileReaderClose(frh);
-		}
-
-		rtm::fileReaderDestroy(frh);
-	}
-
-	return ret;
-}
-
 FileWriterHandle fileWriterCreate(File::Enum _type, FileCallBacks* _callBacks)
 {
 	FileWriter* writer = 0;
@@ -775,7 +756,7 @@ int64_t	fileWriterSeek(FileWriterHandle _handle, int64_t _offset, uint64_t _orig
 	return writer->seek(writer, _offset, _origin);
 }
 
-int64_t	fileWriterWrite(FileWriterHandle _handle, void* _src, int64_t _size)
+int64_t	fileWriterWrite(FileWriterHandle _handle, const void* _src, int64_t _size)
 {
 	if (!s_writers.isValid(_handle.idx))
 		return 0;
@@ -796,22 +777,89 @@ int64_t	fileWriterGetSize(FileWriterHandle _handle)
 	return end;
 }
 
-int64_t	fileWrite(File::Enum _type, const char* _path, void* _data, int64_t _size)
+int64_t	fileGetSize(File::Enum _type, const char* _path)
 {
 	int64_t ret = -1;
-	rtm::FileWriterHandle fwh = fileWriterCreate(_type);
-	if (rtm::isValid(fwh))
+	FileReaderHandle frh = fileReaderCreate(_type);
+	if (isValid(frh))
 	{
-		if (rtm::File::Fail != rtm::fileWriterOpen(fwh, _path))
+		if (File::Fail != fileReaderOpen(frh, _path))
 		{
-			ret = rtm::fileWriterWrite(fwh, _data, _size);
-			rtm::fileWriterClose(fwh);
+			ret = fileReaderGetSize(frh);
+			fileReaderClose(frh);
+		}
+		fileReaderDestroy(frh);
+	}
+	return ret;
+}
+
+int64_t	fileRead(File::Enum _type, const char* _path, void* _data, int64_t _size)
+{
+	int64_t ret = -1;
+	FileReaderHandle frh = fileReaderCreate(_type);
+	if (isValid(frh))
+	{
+		if (File::Fail != fileReaderOpen(frh, _path))
+		{
+			int64_t size = fileReaderGetSize(frh);
+			ret = fileReaderRead(frh, _data, size > _size ? _size : size);
+			fileReaderClose(frh);
 		}
 
-		rtm::fileWriterDestroy(fwh);
+		fileReaderDestroy(frh);
 	}
 
 	return ret;
+}
+
+int64_t	fileWrite(File::Enum _type, const char* _path, const void* _data, int64_t _size)
+{
+	int64_t ret = -1;
+	FileWriterHandle fwh = fileWriterCreate(_type);
+	if (isValid(fwh))
+	{
+		if (File::Fail != fileWriterOpen(fwh, _path))
+		{
+			ret = fileWriterWrite(fwh, _data, _size);
+			fileWriterClose(fwh);
+		}
+
+		fileWriterDestroy(fwh);
+	}
+
+	return ret;
+}
+
+int64_t fileWriteIfDifferent(File::Enum _type, const char* _path, const void* _data, size_t _dataSize, bool* _written)
+{
+	// if exists, check if contents are the same, if not - replace
+	bool writeFile = true;
+	FileReaderHandle frh = fileReaderCreate(_type);
+	if (isValid(frh))
+	{
+		if (File::Fail != fileReaderOpen(frh, _path))
+		{
+			int64_t size = fileReaderGetSize(frh);
+			if (size == (int64_t)_dataSize)
+			{
+				uint8_t* tempBuffer = new uint8_t[size];
+				fileReaderRead(frh, tempBuffer, size);
+				if (memcmp(_data, tempBuffer, size) == 0)
+					writeFile = false;
+				delete[] tempBuffer;
+			}
+			fileReaderClose(frh);
+		}
+		fileReaderDestroy(frh);
+	}
+
+	if (writeFile)
+		return fileWrite(_type, _path, _data, _dataSize);
+
+	if (_written)
+		*_written = writeFile;
+
+	return (int64_t)_dataSize;
 }
 
 } // namespace rtm

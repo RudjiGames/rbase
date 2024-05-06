@@ -85,9 +85,6 @@ namespace rtm {
 	///
 	int64_t	fileReaderGetSize(FileReaderHandle _handle);
 
-	/// 
-	int64_t	fileRead(File::Enum _type, const char* _path, void* _data, int64_t _size);
-
 	// ------------------------------------------------
 	/// File writer functions
 	// ------------------------------------------------
@@ -111,13 +108,26 @@ namespace rtm {
 	int64_t	fileWriterSeek(FileWriterHandle _handle, int64_t _offset, uint64_t _origin = File::Seek_CUR);
 
 	///
-	int64_t	fileWriterWrite(FileWriterHandle _handle, void* _src, int64_t _size);
+	int64_t	fileWriterWrite(FileWriterHandle _handle, const void* _src, int64_t _size);
 
 	/// 
 	int64_t	fileWriterGetSize(FileWriterHandle _handle);
 
+	// ------------------------------------------------
+	/// Utility functions
+	// ------------------------------------------------
+
 	/// 
-	int64_t	fileWrite(File::Enum _type, const char* _path, void* _data, int64_t _size);
+	int64_t	fileGetSize(File::Enum _type, const char* _path);
+
+	/// 
+	int64_t	fileRead(File::Enum _type, const char* _path, void* _data, int64_t _size);
+
+	/// 
+	int64_t	fileWrite(File::Enum _type, const char* _path, const void* _data, int64_t _size);
+
+	///
+	int64_t	fileWriteIfDifferent(File::Enum _type, const char* _path, const void* _data, size_t _dataSize, bool* _written = 0);
 
 } // namespace rtm
 
