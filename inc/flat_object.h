@@ -145,4 +145,6 @@ namespace rtm {
 
 } // namespace rtm
 
+#define FLAT_PTR(x) rtm::FlatPtr<x>
+
 #endif // RTM_FLAT_OBJECT_H
