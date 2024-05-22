@@ -63,6 +63,8 @@ namespace rtm {
 	{
 #if RTM_COMPILER_MSVC
 		_ReadBarrier();
+#elif RTM_PLATFORM_CHEERP
+		__sync_synchronize();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		asm volatile("":::"memory");
 #else
@@ -74,6 +76,8 @@ namespace rtm {
 	{
 #if RTM_COMPILER_MSVC
 		_WriteBarrier();
+#elif RTM_PLATFORM_CHEERP
+		__sync_synchronize();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		asm volatile("":::"memory");
 #else
@@ -85,6 +89,8 @@ namespace rtm {
 	{
 #if RTM_COMPILER_MSVC
 		_ReadWriteBarrier();
+#elif RTM_PLATFORM_CHEERP
+		__sync_synchronize();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		asm volatile("":::"memory");
 #else
