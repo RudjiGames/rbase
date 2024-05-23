@@ -64,7 +64,7 @@ namespace rtm {
 #if RTM_COMPILER_MSVC
 		_ReadBarrier();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		asm volatile("":::"memory");
+		__atomic_thread_fence(__ATOMIC_RELEASE);
 #else
 		#error "Unsupported compiler!"
 #endif
@@ -75,7 +75,7 @@ namespace rtm {
 #if RTM_COMPILER_MSVC
 		_WriteBarrier();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		asm volatile("":::"memory");
+		__atomic_thread_fence(__ATOMIC_ACQUIRE);
 #else
 		#error "Unsupported compiler!"
 #endif
@@ -86,7 +86,7 @@ namespace rtm {
 #if RTM_COMPILER_MSVC
 		_ReadWriteBarrier();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		asm volatile("":::"memory");
+		__atomic_thread_fence(__ATOMIC_ACQ_REL);
 #else
 		#error "Unsupported compiler!"
 #endif
