@@ -9,6 +9,7 @@
 #include <rbase/inc/platform.h>
 #include <rbase/inc/stringfn.h>
 #include <stdio.h> /* vsnprintf */
+#include <stdarg.h>
 
 #if RTM_PLATFORM_WINDOWS
 	#define WIN32_LEAN_AND_MEAN
