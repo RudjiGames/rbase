@@ -11,9 +11,9 @@
 #endif
 
 #include <rbase/inc/platform.h>
+#include <rbase/inc/stringfn.h>
 
 #include <stdio.h>	// vsprintf
-#include <string.h>	// memcpy
 #include <stdlib.h>
 #include <stdarg.h> // va_start...
 
@@ -344,7 +344,7 @@ namespace RBASE_NAMESPACE {
 			mem.m_size = _size;
 			mem.m_type = Memory::Internal;
 			mem.m_data = RBASE_NAMESPACE::rtm_alloc(_size, RTM_DEFAULT_ALIGNMENT);
-			memcpy(mem.m_data, _ptr, _size);
+			rtm::memCopy(mem.m_data, _ptr, _size);
 			return mem;
 		}
 

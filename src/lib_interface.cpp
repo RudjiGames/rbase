@@ -6,8 +6,6 @@
 #include <rbase_pch.h>
 #include <rbase/inc/console.h>
 #include <rbase/inc/uint32_t.h>
-#include <stdlib.h>
-#include <malloc.h>
 
 namespace rtm {
 

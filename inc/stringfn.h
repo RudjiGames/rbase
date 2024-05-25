@@ -7,9 +7,14 @@
 #define RTM_RBASE_STRINGFN_H
 
 #include <rbase/inc/platform.h>
-#include <string.h> // memcpy
 
 namespace rtm {
+
+	void memSet(void* _dst, uint8_t _val, size_t _numBytes);
+
+	void memCopy(void* _dst, const void* _src, size_t _numBytes);
+
+	int32_t memCompare(void* _dst, const void* _src, size_t _numBytes);
 
 	typedef char (*fnChar)(char _ch);
 
@@ -64,6 +69,37 @@ namespace rtm {
 	inline static const char* striStr(const char* _str, const char* _find, uint32_t _max = UINT32_MAX);
 
 	//--------------------------------------------------------------------------
+
+	inline void memSet(void* _dst, uint8_t _val, size_t _numBytes)
+	{
+		uint8_t* dst = (uint8_t*)_dst;
+		while (_numBytes--)
+			*dst++ = _val;
+	}
+
+	inline void memCopy(void* _dst, const void* _src, size_t _numBytes)
+	{
+		uint8_t* dst = (uint8_t*)_dst;
+		const uint8_t* end = dst + _numBytes;
+		const uint8_t* src = (const uint8_t*)_src;
+		while (dst != end)
+		{
+			*dst++ = *src++;
+		}
+	}
+
+	inline int32_t memCompare(void* _tgt, const void* _src, size_t _numBytes)
+	{
+		uint8_t* tgt = (uint8_t*)_tgt;
+		uint8_t* src = (uint8_t*)_src;
+		while (*tgt == *src)
+		{
+			++tgt;
+			++src;
+			--_numBytes;
+		}
+		return _numBytes == 0 ? 0 : *tgt - *src;
+	}
 
 	inline bool isInRange(char _ch, int _from, int _to)
 	{
@@ -259,7 +295,7 @@ namespace rtm {
 		const uint32_t len = strLen(_src, _num);
 		const uint32_t max = _dstSize-1;
 		const uint32_t num = (len < max ? len : max);
-		memcpy(_dst, _src, num);
+		memCopy(_dst, _src, num);
 		_dst[num] = '\0';
 
 		return num;

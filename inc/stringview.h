@@ -8,7 +8,6 @@
 
 #include <rbase/inc/platform.h>
 #include <rbase/inc/stringfn.h>
-#include <string.h> // memcpy
 
 #ifndef RBASE_NAMESPACE
 	#define RTM_STRING_ALLOC	malloc

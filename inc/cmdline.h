@@ -9,7 +9,7 @@
 #define RTM_RBASE_CMDLINE_H
 
 #include <rbase/inc/platform.h>
-#include <string.h>	// strlen
+#include <rbase/inc/stringfn.h>
 #include <stdlib.h>	// atoi
 
 namespace rtm {
@@ -112,7 +112,7 @@ namespace rtm {
 			const char* arg = getArgString(_optionLetter);
 			if (!arg)
 				return false;
-			_value = (strcmp(arg, "true") == 0) || (strcmp(arg, "1") == 0);
+			_value = (rtm::strCmp(arg, "true") == 0) || (rtm::strCmp(arg, "1") == 0);
 			return true;
 		}
 
@@ -121,7 +121,7 @@ namespace rtm {
 			const char* arg = getArgString(_optionName);
 			if (!arg)
 				return false;
-			_value = (strcmp(arg, "true") == 0) || (strcmp(arg, "1") == 0);
+			_value = (rtm::strCmp(arg, "true") == 0) || (rtm::strCmp(arg, "1") == 0);
 			return true;
 		}
 
@@ -146,18 +146,18 @@ namespace rtm {
 
 		const char* getArgString(const char* _optionName) const
 		{
-			const size_t optionLen = strlen(_optionName);
+			const size_t optionLen = rtm::strLen(_optionName);
 			for (int i=0; i<m_argc; ++i)
 			{
 				const char* argv = m_argv[i];
 				if (argv[0] == '-')
 				{
-					size_t len = strlen(&argv[1]);
+					size_t len = rtm::strLen(&argv[1]);
 					if (len != optionLen)
 						continue;
 
 					while ((argv[len] == ' ') || (argv[len] == '\t')) --len;
-					bool match = strncmp(&argv[1], _optionName, (int32_t)len) == 0;
+					bool match = rtm::strCmp(&argv[1], _optionName, (int32_t)len) == 0;
 					if (!match)
 						continue;
 

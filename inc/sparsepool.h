@@ -7,8 +7,7 @@
 #define RTM_RBASE_SPARSEPOOL_H
 
 #include <rbase/inc/platform.h>
-#include <malloc.h> // memalign
-#include <memory.h> // memset, memcpy
+#include <rbase/inc/stringfn.h>
 
 namespace rtm {
 
@@ -37,7 +36,7 @@ namespace rtm {
 	public:
 		SparsePool()
 		{
-			memset(this, 0, sizeof(SparsePool));
+			rtm::memSet(this, 0, sizeof(SparsePool));
 		}
 
 		~SparsePool()
@@ -111,7 +110,7 @@ namespace rtm {
 			--m_elementsTotal;
 
 #if RTM_DEBUG
-			memset(chunk.m_data + (elementIdx * m_elementSize), 0xcd, m_elementSize);
+			rtm::memSet(chunk.m_data + (elementIdx * m_elementSize), 0xcd, m_elementSize);
 #endif
 			if (chunk.m_size == 0)
 				freeChunk(chunk);
@@ -160,7 +159,7 @@ namespace rtm {
 			}
 
 			if (_newSize > _oldSize)
-				memset(ptr + _oldSize, 0, _newSize - _oldSize);
+				rtm::memSet(ptr + _oldSize, 0, _newSize - _oldSize);
 			return ptr;
 		}
 
@@ -183,7 +182,7 @@ namespace rtm {
 				
 			}
 #if RTM_DEBUG
-			memset(_c.m_data, 0xcd, block_size);
+			rtm::memSet(_c.m_data, 0xcd, block_size);
 #endif
 		}
 
@@ -191,7 +190,7 @@ namespace rtm {
 		{
 			RTM_ASSERT(_c.m_data != 0, "Chunk must be null to be freed!");
 			if (m_memoryManager)
-				m_memoryManager->free(_c.m_data);
+				m_memoryManager->free(_c.m_data, m_alignment);
 			else
 			{
 #if RTM_COMPILER_MSVC
@@ -202,7 +201,7 @@ namespace rtm {
 	#error "Unsupported compiler!"
 #endif
 			}
-			memset(&_c, 0, sizeof(Chunk));
+			rtm::memSet(&_c, 0, sizeof(Chunk));
 		}
 	};
 

@@ -24,7 +24,6 @@
 #include <rbase/inc/platform.h>
 
 #if RTM_PLATFORM_WINDOWS && RTM_COMPILER_MSVC
-#include <math.h>
 #include <intrin.h>
 #pragma intrinsic(_BitScanForward)
 #pragma intrinsic(_BitScanReverse)
