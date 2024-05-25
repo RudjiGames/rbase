@@ -66,7 +66,7 @@ namespace rtm {
 #elif RTM_PLATFORM_CHEERP
 		__sync_synchronize();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		asm volatile("":::"memory");
+		__atomic_thread_fence(__ATOMIC_RELEASE);
 #else
 		#error "Unsupported compiler!"
 #endif
@@ -79,7 +79,7 @@ namespace rtm {
 #elif RTM_PLATFORM_CHEERP
 		__sync_synchronize();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		asm volatile("":::"memory");
+		__atomic_thread_fence(__ATOMIC_ACQUIRE);
 #else
 		#error "Unsupported compiler!"
 #endif
@@ -92,7 +92,7 @@ namespace rtm {
 #elif RTM_PLATFORM_CHEERP
 		__sync_synchronize();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		asm volatile("":::"memory");
+		__atomic_thread_fence(__ATOMIC_ACQ_REL);
 #else
 		#error "Unsupported compiler!"
 #endif
