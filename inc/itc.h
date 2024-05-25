@@ -7,7 +7,6 @@
 #define RTM_RBASE_ITC_H
 
 #include <rbase/inc/thread.h>
-#include <string.h> // memcpy
 #include <math.h>
 
 namespace rtm {

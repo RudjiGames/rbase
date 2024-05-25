@@ -7,7 +7,6 @@
 #define RTM_RBASE_QUEUE_H
 
 #include <atomic>
-#include <math.h>
 #include <rbase/inc/libhandler.h>
 
 namespace rtm {

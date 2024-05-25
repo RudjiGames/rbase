@@ -8,13 +8,11 @@
 
 #include <rbase/inc/platform.h>
 #include <rbase/inc/stringfn.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <time.h>
+#include <stdio.h> /* vsnprintf */
 
 #if RTM_PLATFORM_WINDOWS
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+	#define WIN32_LEAN_AND_MEAN
+	#include <Windows.h>
 #endif
 
 #define RTM_CONSOLE_TEMP_BUFFER_SIZE	8192+128

@@ -14,7 +14,6 @@
 #include <rbase/inc/stringfn.h>
 
 #include <stdio.h>	// vsprintf
-#include <stdlib.h>
 #include <stdarg.h> // va_start...
 
 #ifndef RTM_LIBHANDLER_DECLARE

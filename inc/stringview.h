@@ -10,9 +10,9 @@
 #include <rbase/inc/stringfn.h>
 
 #ifndef RBASE_NAMESPACE
-	#define RTM_STRING_ALLOC	malloc
-	#define RTM_STRING_REALLOC	realloc
-	#define RTM_STRING_FREE		free
+	#define RTM_STRING_ALLOC	::malloc
+	#define RTM_STRING_REALLOC	::realloc
+	#define RTM_STRING_FREE		::free
 #else
 	#define RTM_STRING_ALLOC	::RBASE_NAMESPACE::rtm_alloc
 	#define RTM_STRING_REALLOC	::RBASE_NAMESPACE::rtm_realloc

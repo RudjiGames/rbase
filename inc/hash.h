@@ -14,7 +14,6 @@
 //-----------------------------------------------------------------------------
 
 #if RTM_COMPILER_MSVC
-	#include <stdlib.h>
 	#define ROTL32(x,y)	_rotl(x,y)
 #else
 	inline static uint32_t rotl32( uint32_t x, int8_t r )

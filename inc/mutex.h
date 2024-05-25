@@ -9,6 +9,7 @@
 #include <rbase/inc/platform.h>
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 #endif // RTM_PLATFORM_WINDOWS
 
