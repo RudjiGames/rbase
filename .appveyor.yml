@@ -77,7 +77,7 @@ for:
       - cd GENie && make && cd ..
 
     install:
-      - ./GENie/bin/linux/genie --file=rbase/genie/genie.lua --gcc=linux-gcc-9 gmake
+      - ./GENie/bin/linux/genie --file=rbase/genie/genie.lua --gcc=linux-gcc gmake
   
     build_script:
       - cd ./.build/linux/gcc-9/rbase/projects/
