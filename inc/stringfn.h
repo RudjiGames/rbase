@@ -88,7 +88,7 @@ namespace rtm {
 		}
 	}
 
-	inline int32_t memCompare(void* _tgt, const void* _src, size_t _numBytes)
+	inline int32_t memCompare(const void* _tgt, const void* _src, size_t _numBytes)
 	{
 		uint8_t* tgt = (uint8_t*)_tgt;
 		uint8_t* src = (uint8_t*)_src;
