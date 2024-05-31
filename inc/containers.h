@@ -3,8 +3,8 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-#ifndef RTM_RBASE_FREE_LIST_H
-#define RTM_RBASE_FREE_LIST_H
+#ifndef RTM_RBASE_CONTAINERS_H
+#define RTM_RBASE_CONTAINERS_H
 
 #include <rbase/inc/platform.h>
 
@@ -164,5 +164,5 @@ namespace rtm {
 
 } // namespace rtm
 
-#endif // RTM_RBASE_FREE_LIST_H
+#endif // RTM_RBASE_CONTAINERS_H
 
