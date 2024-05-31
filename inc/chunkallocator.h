@@ -133,7 +133,7 @@ class StackAlloc
 class StackAllocator
 {
 	private:
-		rtm_vector<StackAlloc*>	m_chunks;
+		std::vector<StackAlloc*>	m_chunks;
 
 	public:
 		StackAllocator()
