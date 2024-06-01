@@ -8,6 +8,7 @@
 
 #include <rbase/inc/platform.h>
 #include <rbase/inc/handlepool.h>
+#include <rbase/inc/stringfn.h>
 
 namespace rtm {
 
