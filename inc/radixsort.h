@@ -26,7 +26,7 @@ namespace rtm {
 		uint16_t shift = 0;
 		for (uint32_t pass=0; pass<3; ++pass)
 		{
-			memset(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+			rtm::memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint32_t key = _keys[i];
@@ -70,7 +70,7 @@ namespace rtm {
 		uint16_t shift = 0;
 		for (uint32_t pass=0; pass<6; ++pass)
 		{
-			memset(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+			rtm::memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint64_t key = _keys[i];

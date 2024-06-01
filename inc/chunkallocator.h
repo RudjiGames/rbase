@@ -114,7 +114,7 @@ class StackAlloc
 	public:
 		StackAlloc() : m_size(0)
 		{
-			memset(m_data, 0, MAX_SIZE);
+			rtm::memSet(m_data, 0, MAX_SIZE);
 		}
 
 		void* alloc( uint32_t _size )

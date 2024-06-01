@@ -196,7 +196,7 @@ namespace rtm {
 		Data(bool _clearData = false)
 		{
 			if (_clearData)
-				memset(m_data, 0, sizeof(T) * NUM_ELEMENTS);
+				rtm::memSet(m_data, 0, sizeof(T) * NUM_ELEMENTS);
 		}
 
 		uint32_t allocate()

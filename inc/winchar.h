@@ -11,7 +11,7 @@
 namespace rtm {
 
 #if RTM_PLATFORM_WINDOWS
-	class MultiToWide
+	class MultiToWide																					   l
 	{
 		static const int S_ON_STACK_SIZE = 1024;
 		wchar_t		m_string[S_ON_STACK_SIZE];
