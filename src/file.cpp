@@ -830,7 +830,7 @@ int64_t	fileWrite(File::Enum _type, const char* _path, const void* _data, int64_
 	return ret;
 }
 
-int64_t fileWriteIfDifferent(File::Enum _type, const char* _path, const void* _data, size_t _dataSize, bool* _written)
+int64_t fileWriteIfDifferent(File::Enum _type, const char* _path, const void* _data, int64_t _dataSize, bool* _written)
 {
 	// if exists, check if contents are the same, if not - replace
 	bool writeFile = true;

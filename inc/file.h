@@ -127,7 +127,7 @@ namespace rtm {
 	int64_t	fileWrite(File::Enum _type, const char* _path, const void* _data, int64_t _size);
 
 	///
-	int64_t	fileWriteIfDifferent(File::Enum _type, const char* _path, const void* _data, size_t _dataSize, bool* _written = 0);
+	int64_t	fileWriteIfDifferent(File::Enum _type, const char* _path, const void* _data, int64_t _dataSize, bool* _written = 0);
 
 } // namespace rtm
 

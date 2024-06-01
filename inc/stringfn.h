@@ -10,11 +10,11 @@
 
 namespace rtm {
 
-	void memSet(void* _dst, uint8_t _val, size_t _numBytes);
+	void memSet(void* _dst, uint8_t _val, int64_t _numBytes);
 
-	void memCopy(void* _dst, const void* _src, size_t _numBytes);
+	void memCopy(void* _dst, const void* _src, int64_t _numBytes);
 
-	int32_t memCompare(void* _dst, const void* _src, size_t _numBytes);
+	int32_t memCompare(void* _dst, const void* _src, int64_t _numBytes);
 
 	typedef char (*fnChar)(char _ch);
 
@@ -70,14 +70,14 @@ namespace rtm {
 
 	//--------------------------------------------------------------------------
 
-	inline void memSet(void* _dst, uint8_t _val, size_t _numBytes)
+	inline void memSet(void* _dst, uint8_t _val, int64_t _numBytes)
 	{
 		uint8_t* dst = (uint8_t*)_dst;
 		while (_numBytes--)
 			*dst++ = _val;
 	}
 
-	inline void memCopy(void* _dst, const void* _src, size_t _numBytes)
+	inline void memCopy(void* _dst, const void* _src, int64_t _numBytes)
 	{
 		uint8_t* dst = (uint8_t*)_dst;
 		const uint8_t* end = dst + _numBytes;
@@ -88,7 +88,7 @@ namespace rtm {
 		}
 	}
 
-	inline int32_t memCompare(const void* _tgt, const void* _src, size_t _numBytes)
+	inline int32_t memCompare(const void* _tgt, const void* _src, int64_t _numBytes)
 	{
 		uint8_t* tgt = (uint8_t*)_tgt;
 		uint8_t* src = (uint8_t*)_src;
