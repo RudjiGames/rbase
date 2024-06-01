@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2023 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -88,7 +88,7 @@ namespace rtm {
 		}
 	}
 
-	inline int32_t memCompare(void* _tgt, const void* _src, size_t _numBytes)
+	inline int32_t memCompare(const void* _tgt, const void* _src, size_t _numBytes)
 	{
 		uint8_t* tgt = (uint8_t*)_tgt;
 		uint8_t* src = (uint8_t*)_src;

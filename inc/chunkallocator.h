@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2023 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -133,7 +133,7 @@ class StackAlloc
 class StackAllocator
 {
 	private:
-		rtm_vector<StackAlloc*>	m_chunks;
+		std::vector<StackAlloc*>	m_chunks;
 
 	public:
 		StackAllocator()

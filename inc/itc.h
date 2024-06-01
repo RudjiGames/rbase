@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2023 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -7,6 +7,7 @@
 #define RTM_RBASE_ITC_H
 
 #include <rbase/inc/thread.h>
+#include <rbase/inc/stringfn.h>
 #include <math.h>
 
 namespace rtm {
@@ -61,7 +62,7 @@ namespace rtm {
 		{
 			RTM_ASSERT(m_size == m_capacity, "Write called outside of start/finish!");
 			RTM_ASSERT(m_pos + _size <= m_size, "Command buffer is full!");
-			memcpy(&m_buffer[m_pos], _data, _size);
+			rtm::memCopy(&m_buffer[m_pos], _data, _size);
 			m_pos += _size;
 		}
 
@@ -79,7 +80,7 @@ namespace rtm {
 		void read(void* _data, uint32_t _size)
 		{
 			RTM_ASSERT(m_pos + _size <= m_size, "Trying to read beyond command buffer end!");
-			memcpy(_data, &m_buffer[m_pos], _size);
+			rtm::memCopy(_data, &m_buffer[m_pos], _size);
 			m_pos += _size;
 		}
 

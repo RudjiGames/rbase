@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2023 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -163,7 +163,7 @@ int64_t	localReadRead(FileReader* _file, void* _dest, int64_t _size)
 		return 0;
 	}
 
-	return (int64_t)::fread(_dest, 1, _size, LOCAL(_file).m_file);
+	return (int64_t)::fread(_dest, 1, (size_t)_size, LOCAL(_file).m_file);
 }
 
 void localWriteConstruct(FileWriter* _file)
@@ -222,7 +222,7 @@ int64_t	localWriteWrite(FileWriter* _file, const void* _src, int64_t _size)
 		return 0;
 	}
 
-	return (int64_t)fwrite(_src, 1, _size, LOCAL(_file).m_file);
+	return (int64_t)fwrite(_src, 1, (size_t)_size, LOCAL(_file).m_file);
 }
 
 void fileReaderSetLocal(FileReader* _reader)
@@ -389,7 +389,7 @@ int64_t	httpReadRead(FileReader* _file, void* _dest, int64_t _size)
 			_file->m_callBacks.m_failCb("Cannot read. File is not open!");
 		return 0;
 	}
-	return (int64_t)::fread(_dest, 1, _size, HTTP(_file).m_file);
+	return (int64_t)::fread(_dest, 1, (size_t)_size, HTTP(_file).m_file);
 }
 #elif RTM_PLATFORM_EMSCRIPTEN
 
@@ -844,7 +844,7 @@ int64_t fileWriteIfDifferent(File::Enum _type, const char* _path, const void* _d
 			{
 				uint8_t* tempBuffer = new uint8_t[size];
 				fileReaderRead(frh, tempBuffer, size);
-				if (memcmp(_data, tempBuffer, size) == 0)
+				if (rtm::memCompare(_data, tempBuffer, size) == 0)
 					writeFile = false;
 				delete[] tempBuffer;
 			}
