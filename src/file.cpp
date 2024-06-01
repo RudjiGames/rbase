@@ -842,7 +842,7 @@ int64_t fileWriteIfDifferent(File::Enum _type, const char* _path, const void* _d
 			int64_t size = fileReaderGetSize(frh);
 			if (size == (int64_t)_dataSize)
 			{
-				uint8_t* tempBuffer = new uint8_t[size];
+				uint8_t* tempBuffer = new uint8_t[(uintptr_t)size];
 				fileReaderRead(frh, tempBuffer, size);
 				if (rtm::memCompare(_data, tempBuffer, size) == 0)
 					writeFile = false;
