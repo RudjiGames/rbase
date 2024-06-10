@@ -66,50 +66,51 @@ namespace rtm {
 		T			m_data[NUM_ELEMENTS];
 		uint32_t	m_size;
 
-		FixedArray()
+		inline FixedArray()
 			: m_size(0)
 		{}
 
-		void push_back(T _e)
+		inline T& push_back(T _e)
 		{
 			RTM_ASSERT(m_size < NUM_ELEMENTS, "Array is full!");
 			m_data[m_size++] = _e;
+			return m_data[m_size - 1];
 		}
 
-		T pop_back()
+		inline T pop_back()
 		{
 			RTM_ASSERT(m_size > 0, "Array is empty!");
 			return m_data[m_size--];
 		}
 
-		const T& operator[] (uint32_t _idx) const
+		inline const T& operator[] (uint32_t _idx) const
 		{
 			RTM_ASSERT(_idx < m_size, "Out of bounds access!");
 			return m_data[_idx];
 		}
 		
-		T& operator[] (uint32_t _idx)
+		inline T& operator[] (uint32_t _idx)
 		{
 			RTM_ASSERT(_idx < m_size, "Out of bounds access!");
 			return m_data[_idx];
 		}
 
-		void clear()
+		inline void clear()
 		{
 			m_size = 0;
 		}
 
-		uint32_t size() const
+		inline uint32_t size() const
 		{
 			return m_size;
 		}
 
-		bool isEmpty() const
+		inline bool isEmpty() const
 		{
 			return m_size == 0;
 		}
 		
-		bool isFull() const
+		inline bool isFull() const
 		{
 			return m_size == NUM_ELEMENTS;
 		}	
