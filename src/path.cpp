@@ -429,6 +429,8 @@ bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer,
 	if (!_pathFrom  || !_pathTo)
 		return false;
 
+	uint32_t srcLen = strLen(_pathFrom);
+
 	int cr=0;
 	int lastSlash = 0;
 	while (isEqualPathChar(_pathFrom[cr], _pathTo[cr]))
@@ -436,6 +438,11 @@ bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer,
 		if (isSlash(_pathFrom[cr]))
 			lastSlash = cr;
 		++cr;
+	}
+
+	if ((!isSlash(_pathFrom[srcLen - 1])) && (isSlash(_pathTo[cr])))
+	{
+		lastSlash = cr - 1;
 	}
 
 	if (lastSlash < 2) // no common root, only slash or nothing
