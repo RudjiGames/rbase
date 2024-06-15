@@ -414,6 +414,11 @@ bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, u
 	return pathCanonicalize(tmpBuffer, _buffer, _bufferSize);
 }
 
+static inline bool isEqualPathChar(char _c1, char _c2)
+{
+	return (toUpper(_c1) == toUpper(_c2)) || (isSlash(_c1) && isSlash(_c2));
+}
+
 bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer, uint32_t _bufferSize)
 {
 	RTM_ASSERT(_pathFrom, "");
@@ -426,7 +431,7 @@ bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer,
 
 	int cr=0;
 	int lastSlash = 0;
-	while (_pathFrom[cr] == _pathTo[cr])
+	while (isEqualPathChar(_pathFrom[cr], _pathTo[cr]))
 	{
 		if (isSlash(_pathFrom[cr]))
 			lastSlash = cr;
