@@ -68,6 +68,8 @@ namespace rtm {
 
 	inline static const char* striStr(const char* _str, const char* _find, uint32_t _max = UINT32_MAX);
 
+	inline static void strReplace(const char* _srcBuffer, char* _dstBuffer, uint32_t _dstSize, const char* _token, const char* _newToken);
+
 	//--------------------------------------------------------------------------
 
 	inline void memSet(void* _dst, uint8_t _val, int64_t _numBytes)
@@ -317,6 +319,19 @@ namespace rtm {
 	inline static const char* striStr(const char* _str, const char* _find, uint32_t _max)
 	{
 		return strStr<toLower>(_str, _max, _find, INT32_MAX);
+	}
+
+	inline static void strReplace(const char* _srcBuffer, char* _dstBuffer, uint32_t _dstSize, const char* _token, const char* _newToken)
+	{
+		const char* srcToken = strStr(_srcBuffer, _token);
+		if (!srcToken)
+		{
+			rtm::strlCpy(_dstBuffer, _dstSize, _srcBuffer);
+			return;
+		}
+		rtm::strlCpy(_dstBuffer, _dstSize, _srcBuffer, (uint32_t)((uintptr_t)srcToken - (uintptr_t)_srcBuffer));
+		rtm::strlCat(_dstBuffer, _dstSize, _newToken);
+		rtm::strlCat(_dstBuffer, _dstSize, srcToken + rtm::strLen(_token));
 	}
 
 	inline static const char* strChr(const char* _str, char _find, uint32_t _max = UINT32_MAX)
