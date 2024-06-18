@@ -56,6 +56,7 @@ namespace rtm {
 		bool		isNull() const;
 		const char*	data() const;
 		uint32_t	length() const;
+		uint32_t	copyTo(char* _buffer, uint32_t _bufferSize) const;
 
 		operator const char* ();
 		char operator[](uint32_t _index) const;
@@ -260,6 +261,11 @@ namespace rtm {
 	inline uint32_t StringView::length() const
 	{
 		return m_len;
+	}
+
+	inline uint32_t StringView::copyTo(char* _buffer, uint32_t _bufferSize) const
+	{
+		rtm::strlCpy(_buffer, _bufferSize, m_str, m_len);
 	}
 
 	inline StringView::operator const char* ()
