@@ -12,7 +12,7 @@ namespace rtm {
 
 	void memSet(void* _dst, uint8_t _val, int64_t _numBytes);
 
-	void memCopy(void* _dst, const void* _src, int64_t _numBytes);
+	void memCopy(void* _dst, uint32_t _dstSize, const void* _src, int64_t _numBytes);
 
 	int32_t memCompare(void* _dst, const void* _src, int64_t _numBytes);
 
@@ -79,8 +79,10 @@ namespace rtm {
 			*dst++ = _val;
 	}
 
-	inline void memCopy(void* _dst, const void* _src, int64_t _numBytes)
+	inline void memCopy(void* _dst, uint32_t _dstSize, const void* _src, int64_t _numBytes)
 	{
+		RTM_ASSERT(_dstSize >= _numBytes, "");
+		_numBytes = _numBytes > _dstSize ? _dstSize : _numBytes;
 		uint8_t* dst = (uint8_t*)_dst;
 		const uint8_t* end = dst + _numBytes;
 		const uint8_t* src = (const uint8_t*)_src;
@@ -297,7 +299,7 @@ namespace rtm {
 		const uint32_t len = strLen(_src, _num);
 		const uint32_t max = _dstSize-1;
 		const uint32_t num = (len < max ? len : max);
-		memCopy(_dst, _src, num);
+		memCopy(_dst, _dstSize, _src, num);
 		_dst[num] = '\0';
 
 		return num;

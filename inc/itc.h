@@ -62,7 +62,7 @@ namespace rtm {
 		{
 			RTM_ASSERT(m_size == m_capacity, "Write called outside of start/finish!");
 			RTM_ASSERT(m_pos + _size <= m_size, "Command buffer is full!");
-			rtm::memCopy(&m_buffer[m_pos], _data, _size);
+			rtm::memCopy(&m_buffer[m_pos], m_capacity, _data, _size);
 			m_pos += _size;
 		}
 
@@ -80,7 +80,7 @@ namespace rtm {
 		void read(void* _data, uint32_t _size)
 		{
 			RTM_ASSERT(m_pos + _size <= m_size, "Trying to read beyond command buffer end!");
-			rtm::memCopy(_data, &m_buffer[m_pos], _size);
+			rtm::memCopy(_data, m_capacity,  &m_buffer[m_pos], _size);
 			m_pos += _size;
 		}
 

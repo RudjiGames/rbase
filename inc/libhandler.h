@@ -278,7 +278,7 @@ namespace RBASE_NAMESPACE {
 			mem.m_size = _size;
 			mem.m_type = Memory::Internal;
 			mem.m_data = RBASE_NAMESPACE::rtm_alloc(_size, RTM_DEFAULT_ALIGNMENT);
-			rtm::memCopy(mem.m_data, _ptr, _size);
+			rtm::memCopy(mem.m_data, (uint32_t)_size, _ptr, _size);
 			return mem;
 		}
 

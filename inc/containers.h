@@ -166,4 +166,3 @@ namespace rtm {
 } // namespace rtm
 
 #endif // RTM_RBASE_CONTAINERS_H
-
