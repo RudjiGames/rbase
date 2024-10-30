@@ -95,10 +95,12 @@ for:
     init:
       - git clone --depth 1 https://github.com/RudjiGames/build build
       - git clone --depth 1 https://github.com/RudjiGames/rbase rbase
+      - git clone --depth 1 https://github.com/bkaradzic/GENie GENie  # build GENie from source: we don't know the target CPU, can't use ARM binary from 'build'
       - git clone --depth 1 https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
+      - cd GENie && make && cd ..
     
     install:
-      - ./build/tools/bin/darwin/genie --file=rbase/genie/genie.lua --gcc=osx gmake
+      - ./GENie/bin/darwin/genie --file=rbase/genie/genie.lua --gcc=osx-x64 gmake
     
     build_script:
       - cd ./.build/osx/clang/rbase/projects/
