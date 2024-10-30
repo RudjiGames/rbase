@@ -80,7 +80,7 @@ for:
       - ./GENie/bin/linux/genie --file=rbase/genie/genie.lua --gcc=linux-gcc gmake
   
     build_script:
-      - cd ./.build/linux/gcc/rbase/projects/
+      - cd ./.build/linux/linux-gcc/rbase/projects/
       - make config=${buildcfg}
 
 # ======================================
