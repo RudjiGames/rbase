@@ -265,7 +265,7 @@ namespace rtm {
 
 	inline uint32_t StringView::copyTo(char* _buffer, uint32_t _bufferSize) const
 	{
-		rtm::strlCpy(_buffer, _bufferSize, m_str, m_len);
+		return rtm::strlCpy(_buffer, _bufferSize, m_str, m_len);
 	}
 
 	inline StringView::operator const char* ()
