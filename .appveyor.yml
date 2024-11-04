@@ -69,7 +69,6 @@ for:
       - job_name: Linux
 
     init:
-      - sudo apt update -y && sudo apt install -y xorg libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libegl1-mesa-dev
       - git clone --depth 1 https://github.com/RudjiGames/build build
       - git clone --depth 1 https://github.com/RudjiGames/rbase rbase
       - git clone --depth 1 https://github.com/bkaradzic/GENie GENie		# build GENie from source: `GLIBC_2.29' not found
