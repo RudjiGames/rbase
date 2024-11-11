@@ -150,7 +150,7 @@ int64_t	localReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
 		return 0;
 	}
 
-	::fseek(LOCAL(_file).m_file, (long)_offset, (long)_origin);
+	::fseek(LOCAL(_file).m_file, (long)_offset, (int)_origin);
 	return ::ftell(LOCAL(_file).m_file);
 }
 
@@ -209,7 +209,7 @@ int64_t	localWriteSeek(FileWriter* _file, int64_t _offset, uint64_t _origin)
 		return 0;
 	}
 
-	::fseek(LOCAL(_file).m_file, (long)_offset, (long)_origin);
+	::fseek(LOCAL(_file).m_file, (long)_offset, (int)_origin);
 	return ::ftell(LOCAL(_file).m_file);
 }
 
