@@ -193,13 +193,18 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 	return rtm::strLen(wb) == rtm::strlCpy(_buffer, (int32_t)_bufferSize, wb);
 
 #elif RTM_PLATFORM_POSIX
+
+#if RTM_PLATFORM_POSIX_NO_SONY
 	if (!(_buffer == getcwd(_buffer, _bufferSize)))
 		return false;
+#endif
 
 	if (!pathIsDirectory(_buffer))
 		strlCat(_buffer, _bufferSize, "/");
 
 	return true;
+#else
+	return false;
 #endif
 }
 
@@ -246,8 +251,11 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 #endif
 
 #elif RTM_PLATFORM_POSIX
+
+#if RTM_PLATFORM_POSIX_NO_SONY
     if (-1 == readlink("/proc/self/exe", _buffer, _bufferSize))
 		return false;
+#endif
 
 	#if RTM_DEBUG || RTM_RELEASE
 
@@ -276,6 +284,10 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/wasm/");
 		#elif RTM_PLATFORM_SWITCH
 			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/switch/");
+		#elif RTM_PLATFORM_PS4
+			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/ps4/");
+		#elif RTM_PLATFORM_PS5
+			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/ps5/");
 		#else
 			#error
 		#endif

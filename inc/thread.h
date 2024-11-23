@@ -17,7 +17,7 @@
 	#include <pthread.h>
 	#include <sched.h>	// sched_yield
 	#include <unistd.h>	// syscall
-	#if ! RTM_PLATFORM_PS4
+	#if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
 	#include <sys/syscall.h>
 	#endif
 	#include <time.h> // nanosleep
@@ -166,7 +166,7 @@ namespace rtm {
 			return (uint64_t)syscall(SYS_gettid);
 #elif RTM_PLATFORM_IOS || RTM_PLATFORM_OSX
 			return (mach_port_t)::pthread_mach_thread_np(pthread_self() );
-#elif RTM_PLATFORM_PS4
+#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
 			return scePthreadGetthreadid();
 #elif RTM_PLATFORM_PS3
 			sys_ppu_thread_t tid;
@@ -198,7 +198,7 @@ namespace rtm {
 			RTM_ERROR("yield not implemented!");
 #elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_WASM  || RTM_PLATFORM_SWITCH
 			::sched_yield();
-#elif RTM_PLATFORM_PS4
+#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
 			scePthreadYield();
 #else
 			#error "Unsupported platform/compiler!"

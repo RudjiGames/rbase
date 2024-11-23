@@ -130,7 +130,7 @@
 #elif defined(__ORBIS__)
 #undef	RTM_PLATFORM_PS4
 #define RTM_PLATFORM_PS4			1
-#elif deined(__PROSPERO__)
+#elif defined(__PROSPERO__)
 #undef	RTM_PLATFORM_PS5
 #define RTM_PLATFORM_PS5			1
 #elif defined(__CHEERP__)
@@ -157,6 +157,7 @@
 							RTM_PLATFORM_ANDROID	|| \
 							RTM_PLATFORM_IOS		|| \
 							RTM_PLATFORM_PS4		|| \
+							RTM_PLATFORM_PS5		|| \
 							RTM_PLATFORM_WASM		|| \
 							RTM_PLATFORM_SWITCH		|| \
 							0)
