@@ -19,6 +19,7 @@
 #define RTM_PLATFORM_OSX		0
 #define RTM_PLATFORM_PS3		0
 #define RTM_PLATFORM_PS4		0
+#define RTM_PLATFORM_PS5		0
 #define RTM_PLATFORM_ANDROID	0
 #define RTM_PLATFORM_XBOXONE	0
 #define RTM_PLATFORM_EMSCRIPTEN	0
@@ -129,6 +130,9 @@
 #elif defined(__ORBIS__)
 #undef	RTM_PLATFORM_PS4
 #define RTM_PLATFORM_PS4			1
+#elif deined(__PROSPERO__)
+#undef	RTM_PLATFORM_PS5
+#define RTM_PLATFORM_PS5			1
 #elif defined(__CHEERP__)
 #undef  RTM_PLATFORM_CHEERP
 #define RTM_PLATFORM_CHEERP			1
