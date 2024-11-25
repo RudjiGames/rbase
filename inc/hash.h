@@ -77,6 +77,10 @@ namespace rtm {
 		return h1;
 	} 
 
+	uint32_t hashCity32(const void* _key, uint32_t _len);
+	uint64_t hashCity64(const void* _key, uint32_t _len);
+	uint64_t hashCity64(const void* _key, uint32_t _len, uint64_t _seed);
+
 	//--------------------------------------------------------------------------
 	/// Calculate a string hash, suitable for short strings
 	//--------------------------------------------------------------------------
