@@ -162,15 +162,6 @@
 							RTM_PLATFORM_SWITCH		|| \
 							0)
 
-#define RTM_PLATFORM_POSIX_NO_SONY (				   \
-							RTM_PLATFORM_LINUX		|| \
-							RTM_PLATFORM_OSX		|| \
-							RTM_PLATFORM_ANDROID	|| \
-							RTM_PLATFORM_IOS		|| \
-							RTM_PLATFORM_WASM		|| \
-							RTM_PLATFORM_SWITCH		|| \
-							0)
-
 //--------------------------------------------------------------------------
 /// Detect CPU
 //--------------------------------------------------------------------------
