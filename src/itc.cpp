@@ -4,7 +4,6 @@
 //--------------------------------------------------------------------------//
 
 #include <rbase_pch.h>
-
 #include <rbase/inc/itc.h>
 
 namespace rtm {

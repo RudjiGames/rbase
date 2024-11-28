@@ -6,7 +6,6 @@
 #include <rbase_pch.h>
 #include <rbase/inc/path.h>
 #include <rbase/inc/winchar.h>
-#include <rbase/inc/stringfn.h>
 
 #if RTM_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -15,7 +14,6 @@
 #elif RTM_PLATFORM_POSIX
 #include <unistd.h>
 #include <limits.h>
-#include <sys/stat.h>
 #include <sys/stat.h>
 #endif
 

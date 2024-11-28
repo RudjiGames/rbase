@@ -1,7 +1,7 @@
-/*--------------------------------------------------------------------------
-  	Copyright 2024 Milos Tosic. All Rights Reserved.
-	License: http://www.opensource.org/licenses/BSD-2-Clause
---------------------------------------------------------------------------*/
+//--------------------------------------------------------------------------//
+/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
+//--------------------------------------------------------------------------//
 
 #ifndef RTM_RBASE_PLUGIN_H
 #define RTM_RBASE_PLUGIN_H
