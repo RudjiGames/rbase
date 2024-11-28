@@ -152,7 +152,7 @@ namespace rtm {
 				ptr = (uint8_t*)_aligned_realloc(_ptr, _newSize, m_alignment);
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 				ptr = (uint8_t*)memalign(m_alignment, _newSize);
-				memcpy(ptr, _ptr, _oldSize);
+				rtm::memCopy(ptr, _oldSize, _ptr, _oldSize);
 #else
 	#error "Unsupported compiler!"
 #endif

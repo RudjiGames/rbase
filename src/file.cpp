@@ -6,11 +6,8 @@
 #include <rbase_pch.h>
 #include <rbase/inc/file.h>
 #include <rbase/inc/datastore.h>
-#include <rbase/inc/stringfn.h>
 #include <rbase/inc/hash.h>
 #include <rbase/inc/thread.h>
-#include <rbase/inc/console.h>
-#include <rbase/inc/uint32_t.h>
 
 #if RTM_PLATFORM_EMSCRIPTEN
 #include <emscripten/wget.h>
