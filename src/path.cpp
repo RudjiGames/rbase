@@ -403,7 +403,7 @@ void pathCanonicalize(char* _path)
 		while ((*prevSlash != '\\') && (*prevSlash != '/')) prevSlash--;
 		const char* nextDir = pos + 3;
 		size_t len = strLen(nextDir) + 1;
-		memmove((void*)(prevSlash+1), nextDir, len*2);
+		rtm::memMove((void*)(prevSlash+1), nextDir, len*2);
 	}
 
 	toUnixSlashes(_path);

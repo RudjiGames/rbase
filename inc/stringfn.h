@@ -14,7 +14,7 @@ namespace rtm {
 
 	void memCopy(void* _dst, uint32_t _dstSize, const void* _src, int64_t _numBytes);
 
-	void memMove(void* _dst, void* _src, int64_t _size);
+	void memMove(void* _dst, const void* _src, int64_t _size);
 
 	int32_t memCompare(void* _dst, const void* _src, int64_t _numBytes);
 
@@ -94,7 +94,7 @@ namespace rtm {
 		}
 	}
 
-	inline void memMove(void* _dst, void* _src, int64_t _size)
+	inline void memMove(void* _dst, const void* _src, int64_t _size)
 	{
 		memCopy(_dst, (uint32_t)_size, _src, _size);
 	}
