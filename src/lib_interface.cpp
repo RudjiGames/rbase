@@ -66,7 +66,7 @@ inline void* alignedRealloc(MemoryManager* _allocator, void* _ptr, size_t _size,
 	}
 
 	aligned = ptr + offset;
-	memmove(newAligned, aligned, _size);
+	rtm::memMove(newAligned, aligned, _size);
 	uint32_t* header = (uint32_t*)newAligned - 1;
 	*header = uint32_t(newAligned - ptr);
 	return newAligned;
