@@ -60,8 +60,8 @@ bool pathGetFileName(const char* _path, char* _buffer, uint32_t _bufferSize)
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = strLen(_path);
-	size_t saveLen = len;
+	uint32_t len = strLen(_path);
+	uint32_t saveLen = len;
 
 	while (--len)
 		if (isSlash(_path[len]))
@@ -90,8 +90,8 @@ bool pathGetFilenameNoExt(const char* _path, char* _buffer, uint32_t _bufferSize
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = rtm::strLen(_path);
-	size_t saveLen = len;
+	uint32_t len = rtm::strLen(_path);
+	uint32_t saveLen = len;
 
 	while (--len)
 		if (isSlash(_path[len]))
@@ -108,7 +108,7 @@ bool pathGetFilenameNoExt(const char* _path, char* _buffer, uint32_t _bufferSize
 	const char* dot = rtm::strStr(fn, ".");
 
 	if (dot)
-		len = dot - fn;
+		len = (uint32_t)(dot - fn);
 	else
 		len = saveLen - len;
 
