@@ -4,8 +4,7 @@
 //--------------------------------------------------------------------------//
 
 #include <rbase_pch.h>
-
-#include <string.h> // memset
+#include <rbase/inc/stringfn.h>
 
 namespace rtm {
 
@@ -19,7 +18,7 @@ void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size)
 	uint16_t shift = 0;
 	for (uint32_t pass=0; pass<3; ++pass)
 	{
-		memset(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+		rtm::memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 		for (uint32_t i=0; i<_size; ++i)
 		{
 			uint32_t key = _keys[i];
@@ -57,7 +56,7 @@ void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, uint32_t _size)
 	uint16_t shift = 0;
 	for (uint32_t pass=0; pass<6; ++pass)
 	{
-		memset(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+		rtm::memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 		for (uint32_t i=0; i<_size; ++i)
 		{
 			uint64_t key = _keys[i];

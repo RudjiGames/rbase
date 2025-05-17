@@ -45,9 +45,15 @@ static uint32_t UNALIGNED_LOAD32(const char* p)
 
 #elif defined(__FreeBSD__)
 
+#if !defined(__ORBIS__) && !defined(__PROSPERO__)
 #include <sys/endian.h>
 #define bswap_32(x) bswap32(x)
 #define bswap_64(x) bswap64(x)
+#else
+#include <machine/endian.h>
+#define bswap_32(x) __bswap32(x)
+#define bswap_64(x) __bswap64(x)
+#endif
 
 #elif defined(__OpenBSD__)
 
@@ -76,14 +82,6 @@ static uint32_t UNALIGNED_LOAD32(const char* p)
 #else
 #define uint32_in_expected_order(x) (x)
 #define uint64_in_expected_order(x) (x)
-#endif
-
-#if !defined(LIKELY)
-#if HAVE_BUILTIN_EXPECT
-#define LIKELY(x) (__builtin_expect(!!(x), 1))
-#else
-#define LIKELY(x) (x)
-#endif
 #endif
 
 static uint64_t Fetch64(const char* p) {

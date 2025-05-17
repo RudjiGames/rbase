@@ -77,7 +77,8 @@ void MD5::process(const void* _input, uint32_t _inputLength)
 	else
 		input_index = 0;
 
-	memCopy( m_buffer+buffer_index, sizeof(m_buffer) - buffer_index, input+input_index, _inputLength-input_index );
+	const uint32_t length = _inputLength - input_index;
+	memCopy(m_buffer+buffer_index, length, input+input_index, length);
 }
 
 void MD5::processString(const char* _input)

@@ -6,7 +6,6 @@
 #include <rbase_pch.h>
 #include <rbase/inc/path.h>
 #include <rbase/inc/winchar.h>
-#include <rbase/inc/stringfn.h>
 
 #if RTM_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -15,7 +14,6 @@
 #elif RTM_PLATFORM_POSIX
 #include <unistd.h>
 #include <limits.h>
-#include <sys/stat.h>
 #include <sys/stat.h>
 #endif
 
@@ -60,8 +58,8 @@ bool pathGetFileName(const char* _path, char* _buffer, uint32_t _bufferSize)
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = strLen(_path);
-	size_t saveLen = len;
+	uint32_t len = strLen(_path);
+	uint32_t saveLen = len;
 
 	while (--len)
 		if (isSlash(_path[len]))
@@ -77,7 +75,7 @@ bool pathGetFileName(const char* _path, char* _buffer, uint32_t _bufferSize)
 		if (len + 1 > _bufferSize)
 			return false;
 
-		strncpy(_buffer, fn, len);
+		rtm::strlCpy(_buffer, _bufferSize, fn, len);
 		_buffer[len] = 0;
 	}
 
@@ -90,8 +88,8 @@ bool pathGetFilenameNoExt(const char* _path, char* _buffer, uint32_t _bufferSize
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = strLen(_path);
-	size_t saveLen = len;
+	uint32_t len = rtm::strLen(_path);
+	uint32_t saveLen = len;
 
 	while (--len)
 		if (isSlash(_path[len]))
@@ -105,17 +103,17 @@ bool pathGetFilenameNoExt(const char* _path, char* _buffer, uint32_t _bufferSize
 	else
 		fn = _path;
 
-	const char* dot = strstr(fn, ".");
+	const char* dot = rtm::strStr(fn, ".");
 
 	if (dot)
-		len = dot - fn;
+		len = (uint32_t)(dot - fn);
 	else
 		len = saveLen - len;
 
 	if (len + 1 > _bufferSize)
 		return false;
 
-	strncpy(_buffer, fn, len);
+	rtm::strlCpy(_buffer, _bufferSize, fn, len);
 	_buffer[len] = 0;
 
 	return true;
@@ -194,8 +192,8 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 
 #elif RTM_PLATFORM_POSIX
 
-#if RTM_PLATFORM_POSIX_NO_SONY
-	if (!(_buffer == getcwd(_buffer, _bufferSize)))
+#if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
+		if (!(_buffer == getcwd(_buffer, _bufferSize)))
 		return false;
 #endif
 
@@ -252,7 +250,7 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 
 #elif RTM_PLATFORM_POSIX
 
-#if RTM_PLATFORM_POSIX_NO_SONY
+#if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
     if (-1 == readlink("/proc/self/exe", _buffer, _bufferSize))
 		return false;
 #endif
@@ -340,8 +338,9 @@ bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, uint3
 
 	strlCpy(_buffer, _bufferSize,_path);
 	if (addLen)
-		strcat(_buffer, "/");
-	strcat(_buffer, _appendPath);
+		rtm::strlCat(_buffer, _bufferSize, "/");
+
+	rtm::strlCat(_buffer, _bufferSize, _appendPath);
 
 	return true;
 }
@@ -397,13 +396,13 @@ void pathCanonicalize(char* _path)
 	RTM_ASSERT(_path, "");
 
 	const char* pos = 0;
-	while ((pos = strStr(_path, "..")) != 0)
+	while ((pos = rtm::strStr(_path, "..")) != 0)
 	{
 		const char* prevSlash = pos - 2;
 		while ((*prevSlash != '\\') && (*prevSlash != '/')) prevSlash--;
 		const char* nextDir = pos + 3;
 		size_t len = strLen(nextDir) + 1;
-		memmove((void*)(prevSlash+1), nextDir, len*2);
+		rtm::memMove((void*)(prevSlash+1), nextDir, len*2);
 	}
 
 	toUnixSlashes(_path);

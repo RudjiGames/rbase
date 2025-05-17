@@ -14,6 +14,8 @@ namespace rtm {
 
 	void memCopy(void* _dst, uint32_t _dstSize, const void* _src, int64_t _numBytes);
 
+	void memMove(void* _dst, const void* _src, int64_t _size);
+
 	int32_t memCompare(void* _dst, const void* _src, int64_t _numBytes);
 
 	typedef char (*fnChar)(char _ch);
@@ -91,6 +93,12 @@ namespace rtm {
 			*dst++ = *src++;
 		}
 	}
+
+	inline void memMove(void* _dst, const void* _src, int64_t _size)
+	{
+		memCopy(_dst, (uint32_t)_size, _src, _size);
+	}
+
 
 	inline int32_t memCompare(const void* _tgt, const void* _src, int64_t _numBytes)
 	{
