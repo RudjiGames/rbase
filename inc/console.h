@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -96,7 +96,7 @@ namespace rtm {
 			}
 			DWORD written = 0;
 			if (INVALID_HANDLE_VALUE != console)
-				WriteFile(console, _str, (DWORD)strlen(_str), &written, NULL);
+				WriteFile(console, _str, (DWORD)rtm::strLen(_str), &written, NULL);
 #else
 			::printf("%s", _str);
 #endif

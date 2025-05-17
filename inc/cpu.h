@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -165,7 +165,7 @@ namespace rtm {
 				return 0;
 
 			if (m_paused)
-				return CPU::time(m_timePaused - m_timeStarted, rtm::CPU::frequency());
+				return CPU::time(m_timePaused - m_timeStarted, CPU::frequency());
 
 			return CPU::time(m_timeStarted);
 		}

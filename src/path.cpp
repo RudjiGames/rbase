@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -189,8 +189,8 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 	if (len == 0)
 		return false;
 
-	rtm::WideToMulti wb(wBuffer);
-	return rtm::strLen(wb) == rtm::strlCpy(_buffer, (int32_t)_bufferSize, wb);
+	WideToMulti wb(wBuffer);
+	return strLen(wb) == strlCpy(_buffer, (int32_t)_bufferSize, wb);
 
 #elif RTM_PLATFORM_POSIX
 

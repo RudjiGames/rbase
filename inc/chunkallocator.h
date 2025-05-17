@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -114,7 +114,7 @@ class StackAlloc
 	public:
 		StackAlloc() : m_size(0)
 		{
-			rtm::memSet(m_data, 0, MAX_SIZE);
+			memSet(m_data, 0, MAX_SIZE);
 		}
 
 		void* alloc( uint32_t _size )

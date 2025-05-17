@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 /// Taken from bx library: https://github.com/bkaradzic/bx                 ///
@@ -26,7 +26,7 @@ namespace rtm {
 		uint16_t shift = 0;
 		for (uint32_t pass=0; pass<3; ++pass)
 		{
-			rtm::memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+			memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint32_t key = _keys[i];
@@ -70,7 +70,7 @@ namespace rtm {
 		uint16_t shift = 0;
 		for (uint32_t pass=0; pass<6; ++pass)
 		{
-			rtm::memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+			memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint64_t key = _keys[i];

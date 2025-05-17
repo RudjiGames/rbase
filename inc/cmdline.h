@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 /// Taken from bx library: https://github.com/bkaradzic/bx                 ///
@@ -112,7 +112,7 @@ namespace rtm {
 			const char* arg = getArgString(_optionLetter);
 			if (!arg)
 				return false;
-			_value = (rtm::strCmp(arg, "true") == 0) || (rtm::strCmp(arg, "1") == 0);
+			_value = (strCmp(arg, "true") == 0) || (strCmp(arg, "1") == 0);
 			return true;
 		}
 
@@ -121,7 +121,7 @@ namespace rtm {
 			const char* arg = getArgString(_optionName);
 			if (!arg)
 				return false;
-			_value = (rtm::strCmp(arg, "true") == 0) || (rtm::strCmp(arg, "1") == 0);
+			_value = (strCmp(arg, "true") == 0) || (strCmp(arg, "1") == 0);
 			return true;
 		}
 
@@ -146,18 +146,18 @@ namespace rtm {
 
 		const char* getArgString(const char* _optionName) const
 		{
-			const size_t optionLen = rtm::strLen(_optionName);
+			const size_t optionLen = strLen(_optionName);
 			for (int i=0; i<m_argc; ++i)
 			{
 				const char* argv = m_argv[i];
 				if (argv[0] == '-')
 				{
-					size_t len = rtm::strLen(&argv[1]);
+					size_t len = strLen(&argv[1]);
 					if (len != optionLen)
 						continue;
 
 					while ((argv[len] == ' ') || (argv[len] == '\t')) --len;
-					bool match = rtm::strCmp(&argv[1], _optionName, (int32_t)len) == 0;
+					bool match = strCmp(&argv[1], _optionName, (int32_t)len) == 0;
 					if (!match)
 						continue;
 

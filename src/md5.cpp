@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------// 
 /// File: MD5.cpp                                                          ///
@@ -66,7 +66,7 @@ void MD5::process(const void* _input, uint32_t _inputLength)
 
 	if (_inputLength >= buffer_space)
 	{	
-		memcpy( m_buffer+buffer_index, input, buffer_space );
+		memCopy( m_buffer+buffer_index, sizeof(m_buffer)-buffer_index, input, buffer_space );
 		transform(m_buffer);
 
 		for (input_index = buffer_space; input_index + 63 < _inputLength; input_index += 64)
@@ -77,7 +77,7 @@ void MD5::process(const void* _input, uint32_t _inputLength)
 	else
 		input_index = 0;
 
-	memcpy( m_buffer+buffer_index, input+input_index, _inputLength-input_index );
+	memCopy( m_buffer+buffer_index, sizeof(m_buffer) - buffer_index, input+input_index, _inputLength-input_index );
 }
 
 void MD5::processString(const char* _input)
@@ -105,12 +105,12 @@ void MD5::finalize()
 	
 	process(bits, 8);
 	encode(m_digest, m_state, 16);
-	memset(m_buffer, 0, sizeof(*m_buffer));
+	memSet(m_buffer, 0, sizeof(*m_buffer));
 }
 
 void MD5::getHash(uint8_t _digest[16])
 {
-	memcpy( _digest, m_digest, 16 );
+	memCopy( _digest, 16, m_digest, 16 );
 }
 
 void MD5::getHex(char _hexRepresentation[33])
@@ -243,7 +243,7 @@ void MD5::transform(uint8_t _block[64])
 	m_state[2] += c;
 	m_state[3] += d;
 
-	memset((uint8_t*)x, 0, sizeof(x));
+	memSet((uint8_t*)x, 0, sizeof(x));
 }
 
 void MD5::encode(uint8_t* _output, uint32_t* _input, uint32_t _length)

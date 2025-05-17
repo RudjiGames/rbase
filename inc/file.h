@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2022 by Milos Tosic. All Rights Reserved.                    ///
+/// Copyright 2025 by Milos Tosic. All Rights Reserved.                    ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 

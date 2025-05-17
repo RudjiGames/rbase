@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -328,12 +328,12 @@ namespace rtm {
 		const char* srcToken = strStr(_srcBuffer, _token);
 		if (!srcToken)
 		{
-			rtm::strlCpy(_dstBuffer, _dstSize, _srcBuffer);
+			strlCpy(_dstBuffer, _dstSize, _srcBuffer);
 			return;
 		}
-		rtm::strlCpy(_dstBuffer, _dstSize, _srcBuffer, (uint32_t)((uintptr_t)srcToken - (uintptr_t)_srcBuffer));
-		rtm::strlCat(_dstBuffer, _dstSize, _newToken);
-		rtm::strlCat(_dstBuffer, _dstSize, srcToken + rtm::strLen(_token));
+		strlCpy(_dstBuffer, _dstSize, _srcBuffer, (uint32_t)((uintptr_t)srcToken - (uintptr_t)_srcBuffer));
+		strlCat(_dstBuffer, _dstSize, _newToken);
+		strlCat(_dstBuffer, _dstSize, srcToken + strLen(_token));
 	}
 
 	inline static const char* strChr(const char* _str, char _find, uint32_t _max = UINT32_MAX)

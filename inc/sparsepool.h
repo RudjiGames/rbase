@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -36,7 +36,7 @@ namespace rtm {
 	public:
 		SparsePool()
 		{
-			rtm::memSet(this, 0, sizeof(SparsePool));
+			memSet(this, 0, sizeof(SparsePool));
 		}
 
 		~SparsePool()
@@ -110,7 +110,7 @@ namespace rtm {
 			--m_elementsTotal;
 
 #if RTM_DEBUG
-			rtm::memSet(chunk.m_data + (elementIdx * m_elementSize), 0xcd, m_elementSize);
+			memSet(chunk.m_data + (elementIdx * m_elementSize), 0xcd, m_elementSize);
 #endif
 			if (chunk.m_size == 0)
 				freeChunk(chunk);
@@ -152,14 +152,14 @@ namespace rtm {
 				ptr = (uint8_t*)_aligned_realloc(_ptr, _newSize, m_alignment);
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 				ptr = (uint8_t*)memalign(m_alignment, _newSize);
-				memcpy(ptr, _ptr, _oldSize);
+				memCopy(ptr, _ptr, _oldSize);
 #else
 	#error "Unsupported compiler!"
 #endif
 			}
 
 			if (_newSize > _oldSize)
-				rtm::memSet(ptr + _oldSize, 0, _newSize - _oldSize);
+				memSet(ptr + _oldSize, 0, _newSize - _oldSize);
 			return ptr;
 		}
 
@@ -182,7 +182,7 @@ namespace rtm {
 				
 			}
 #if RTM_DEBUG
-			rtm::memSet(_c.m_data, 0xcd, block_size);
+			memSet(_c.m_data, 0xcd, block_size);
 #endif
 		}
 
@@ -201,7 +201,7 @@ namespace rtm {
 	#error "Unsupported compiler!"
 #endif
 			}
-			rtm::memSet(&_c, 0, sizeof(Chunk));
+			memSet(&_c, 0, sizeof(Chunk));
 		}
 	};
 

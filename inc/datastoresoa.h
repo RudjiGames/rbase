@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -24,8 +24,8 @@ namespace rtm {
 		{
 			if (_clearData)
 			{
-				rtm::memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
+				memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
+				memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
 			}
 		}
 
@@ -59,9 +59,9 @@ namespace rtm {
 		{
 			if (_clearData)
 			{
-				rtm::memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
+				memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
+				memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
+				memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
 			}
 		}
 
@@ -98,10 +98,10 @@ namespace rtm {
 		{
 			if (_clearData)
 			{
-				rtm::memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
+				memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
+				memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
+				memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
+				memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
 			}
 		}
 
@@ -141,11 +141,11 @@ namespace rtm {
 		{
 			if (_clearData)
 			{
-				rtm::memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT5, 0, sizeof(T5) * NUM_ELEMENTS);
+				memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
+				memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
+				memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
+				memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
+				memSet(m_dataT5, 0, sizeof(T5) * NUM_ELEMENTS);
 			}
 		}
 
@@ -188,12 +188,12 @@ namespace rtm {
 		{
 			if (_clearData)
 			{
-				rtm::memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT5, 0, sizeof(T5) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT6, 0, sizeof(T6) * NUM_ELEMENTS);
+				memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
+				memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
+				memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
+				memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
+				memSet(m_dataT5, 0, sizeof(T5) * NUM_ELEMENTS);
+				memSet(m_dataT6, 0, sizeof(T6) * NUM_ELEMENTS);
 			}
 		}
 
@@ -239,13 +239,13 @@ namespace rtm {
 		{
 			if (_clearData)
 			{
-				rtm::memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT5, 0, sizeof(T5) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT6, 0, sizeof(T6) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT7, 0, sizeof(T7) * NUM_ELEMENTS);
+				memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
+				memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
+				memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
+				memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
+				memSet(m_dataT5, 0, sizeof(T5) * NUM_ELEMENTS);
+				memSet(m_dataT6, 0, sizeof(T6) * NUM_ELEMENTS);
+				memSet(m_dataT7, 0, sizeof(T7) * NUM_ELEMENTS);
 			}
 		}
 
@@ -294,14 +294,14 @@ namespace rtm {
 		{
 			if (_clearData)
 			{
-				rtm::memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT5, 0, sizeof(T5) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT6, 0, sizeof(T6) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT7, 0, sizeof(T7) * NUM_ELEMENTS);
-				rtm::memSet(m_dataT8, 0, sizeof(T8) * NUM_ELEMENTS);
+				memSet(m_dataT1, 0, sizeof(T1) * NUM_ELEMENTS);
+				memSet(m_dataT2, 0, sizeof(T2) * NUM_ELEMENTS);
+				memSet(m_dataT3, 0, sizeof(T3) * NUM_ELEMENTS);
+				memSet(m_dataT4, 0, sizeof(T4) * NUM_ELEMENTS);
+				memSet(m_dataT5, 0, sizeof(T5) * NUM_ELEMENTS);
+				memSet(m_dataT6, 0, sizeof(T6) * NUM_ELEMENTS);
+				memSet(m_dataT7, 0, sizeof(T7) * NUM_ELEMENTS);
+				memSet(m_dataT8, 0, sizeof(T8) * NUM_ELEMENTS);
 			}
 		}
 

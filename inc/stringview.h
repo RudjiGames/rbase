@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -265,7 +265,7 @@ namespace rtm {
 
 	inline uint32_t StringView::copyTo(char* _buffer, uint32_t _bufferSize) const
 	{
-		return rtm::strlCpy(_buffer, _bufferSize, m_str, m_len);
+		return strlCpy(_buffer, _bufferSize, m_str, m_len);
 	}
 
 	inline StringView::operator const char* ()
@@ -632,7 +632,7 @@ namespace rtm {
 	template <uint32_t S>
 	inline void StringTemp<S>::set(const char* _str, uint32_t _len)
 	{
-		uint32_t length = _len == UINT32_MAX ? rtm::strLen(_str) : _len;
+		uint32_t length = _len == UINT32_MAX ? strLen(_str) : _len;
 		set(_str, _str + length);
 	}
 
@@ -654,7 +654,7 @@ namespace rtm {
 			}
 		}
 
-		rtm::strlCpy(m_str, len+1, _start, len);
+		strlCpy(m_str, len+1, _start, len);
 		m_str[len]	= 0;
 		m_len		= len;
 	}
@@ -691,7 +691,7 @@ namespace rtm {
 
 		if (isOnStack() && (newLen < S))
 		{
-			rtm::strlCpy(&m_str[m_len], S, _str, _len);
+			strlCpy(&m_str[m_len], S, _str, _len);
 			m_len = newLen;
 			return;
 		}
@@ -702,8 +702,8 @@ namespace rtm {
 			m_capacity = newLen + 1;
 			char* newStr = (char*)RTM_STRING_ALLOC(m_capacity);
 			if (m_len)
-				rtm::strlCpy(newStr, m_len, m_str);
-			rtm::strlCpy(&newStr[m_len], m_capacity, _str, _len);
+				strlCpy(newStr, m_len, m_str);
+			strlCpy(&newStr[m_len], m_capacity, _str, _len);
 			m_str		= newStr;
 		}
 		else
@@ -711,7 +711,7 @@ namespace rtm {
 			// reallocate, append
 			if (newLen + 1 > m_capacity)
 				expandCapacity(newLen + 1);
-			rtm::strlCpy(&m_str[m_len], m_capacity - m_len, _str, _len);
+			strlCpy(&m_str[m_len], m_capacity - m_len, _str, _len);
 		}
 
 		m_len			= newLen;

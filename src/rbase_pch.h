@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
@@ -7,6 +7,5 @@
 #define RBASE_PCH_H
 
 #include <rbase/inc/platform.h>
-#include <string.h>	// memcpy, strlen
 
 #endif // RBASE_PCH_H

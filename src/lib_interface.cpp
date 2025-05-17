@@ -1,11 +1,10 @@
 //--------------------------------------------------------------------------//
-/// Copyright 2024 Milos Tosic. All Rights Reserved.                       ///
+/// Copyright 2025 Milos Tosic. All Rights Reserved.                       ///
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
 #include <rbase_pch.h>
 #include <rbase/inc/console.h>
-#include <rbase/inc/uint32_t.h>
 
 namespace rtm {
 
