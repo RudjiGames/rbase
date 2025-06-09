@@ -59,7 +59,7 @@ for:
       - build\tools\bin\windows\genie.exe --file=rbase\genie\genie.lua vs2022
       
     build: 
-      project: rbase\.build\windows\vs2022\rbase\projects\rbase.sln
+      project: .build\windows\vs2022\rbase\projects\rbase.sln
 
 # ======================================
 # Linux
