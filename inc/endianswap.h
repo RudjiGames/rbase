@@ -60,7 +60,7 @@ namespace rtm {
 	{
 		/// swaps byte order in little endian encoded value on big endian architectures.
 		template <typename T>
-		inline static T swapLE(T _value)
+		static inline T swapLE(T _value)
 		{
 #if RTM_LITTLE_ENDIAN
 			return _value;
@@ -71,7 +71,7 @@ namespace rtm {
 
 		/// swaps byte order in big endian encoded value on little endian architectures.
 		template <typename T>
-		inline static T swapBE(T _value)
+		static inline T swapBE(T _value)
 		{
 #if RTM_LITTLE_ENDIAN
 			return rtm::endianSwap(_value);

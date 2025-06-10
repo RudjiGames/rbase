@@ -360,60 +360,60 @@ namespace rtm {
 
 	//--------------------------------------------------------------------------
 
-	inline static uint32_t strLen(const StringView& _view)
+	static inline uint32_t strLen(const StringView& _view)
 	{
 		return _view.length();
 	}
 
 	template<fnChar fn>
-	inline static int32_t strCmp(const StringView& _view, const char* _cmp)
+	static inline int32_t strCmp(const StringView& _view, const char* _cmp)
 	{
 		return strCmp<fn>(_view.data(), _cmp, _view.length());;
 	}
 
 	template<fnChar fn>
-	inline static const char* strStr(const StringView& _view, uint32_t _strMax, const char* _find, uint32_t _findMax)
+	static inline const char* strStr(const StringView& _view, uint32_t _strMax, const char* _find, uint32_t _findMax)
 	{
 		_strMax = _strMax > _view.length() ? _view.length() : _strMax;
 		return strStr<fn>(_view.data(), _strMax, _find, _findMax);
 	}
 
-	inline static int32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max)
+	static inline int32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max)
 	{
 		if (!_view.length() && _max) return -1;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return strCmp(_view.data(), _rhs, _max);
 	}
 
-	inline static int32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max)
+	static inline int32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max)
 	{
 		if (!_view.length() && _max) return -1;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return striCmp(_view.data(), _rhs, _max);
 	}
 
-	inline static const char* strStr(const StringView& _view, const char* _find, uint32_t _max)
+	static inline const char* strStr(const StringView& _view, const char* _find, uint32_t _max)
 	{
 		if (!_view.length() && _max) return 0;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return strStr(_view.data(), _find, _max);
 	}
 
-	inline static const char* striStr(const StringView& _view, const char* _find, uint32_t _max)
+	static inline const char* striStr(const StringView& _view, const char* _find, uint32_t _max)
 	{
 		if (!_view.length() && _max) return 0;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return striStr(_view.data(), _find, _max);
 	}
 
-	inline static const char* strChr(const StringView& _view, char _find, uint32_t _max)
+	static inline const char* strChr(const StringView& _view, char _find, uint32_t _max)
 	{
 		if (!_view.length() && _max) return 0;
 		_max = _max > _view.length() ? _view.length() : _max;
 		return strChr(_view.data(), _find, _max);
 	}
 
-	inline static const char* striChr(const StringView& _view, char _find, uint32_t _max)
+	static inline const char* striChr(const StringView& _view, char _find, uint32_t _max)
 	{
 		if (!_view.length() && _max) return 0;
 		_max = _max > _view.length() ? _view.length() : _max;

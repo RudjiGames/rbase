@@ -64,7 +64,7 @@ namespace rtm {
 	}
 
 	template <typename Ty>
-	inline static void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
+	static inline void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
 	{
 		uint16_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 		uint16_t shift = 0;
