@@ -8,27 +8,78 @@
 
 #include <rbase/inc/platform.h>
 
-//-----------------------------------------------------------------------------
-// MurmurHash3 was written by Austin Appleby, and is placed in the public
-// domain. The author hereby disclaims copyright to this source code.
-//-----------------------------------------------------------------------------
-
-#if RTM_COMPILER_MSVC
-	#define ROTL32(x,y)	_rotl(x,y)
-#else
-	inline static uint32_t rotl32( uint32_t x, int8_t r )
-	{
-	  return (x << r) | (x >> (32 - r));
-	}
-	#define	ROTL32(x,y)	rotl32(x,y)
-#endif // !defined(_MSC_VER)
-
 namespace rtm {
+
+	/// Calculates 32bit hash value using MurMur3 algorithm.
+	///
+	/// @param[in] _key: Key buffer to hash
+	/// @param[in] _len: Length of the key buffer
+	/// @param[in] _seed: Seed value
+	///
+	/// @returns the calculated hash value.
+	static inline uint32_t hashMurmur3(const void* _key, uint32_t _len, uint32_t _seed = 0);
+
+	/// Calculates 32bit hash value using City hash algorithm.
+	///
+	/// @param[in] _key: Key buffer to hash
+	/// @param[in] _len: Length of the key buffer
+	///
+	/// @returns the calculated hash value.
+	uint32_t hashCity32(const void* _key, uint32_t _len);
+
+	/// Calculates 64bit hash value using City hash algorithm.
+	///
+	/// @param[in] _key: Key buffer to hash
+	/// @param[in] _len: Length of the key buffer
+	///
+	/// @returns the calculated hash value.
+	uint64_t hashCity64(const void* _key, uint32_t _len);
+
+	/// Calculates 64bit hash value using City hash algorithm.
+	///
+	/// @param[in] _key: Key buffer to hash
+	/// @param[in] _len: Length of the key buffer
+	/// @param[in] _seed: Seed value
+	///
+	/// @returns the calculated hash value.
+	uint64_t hashCity64(const void* _key, uint32_t _len, uint64_t _seed);
+
+	/// Calculates a string hash using a simple hashing algorithm.
+	///
+	/// @param[in] _string: String to hash
+	/// @param[in] _maxChars: Maximum number of characters to use for hashing
+	///
+	/// @returns the calculated hash value.
+	static inline uint32_t hashStr(const char* _string, uint32_t _maxChars = UINT32_MAX);
+
+	/// Calculates an MD5 hash.
+	///
+	/// @param[in] _data: Data to hash
+	/// @param[in] _data_size: Maximum number of characters to use for hashing
+	/// @param[out] _out_digest: Buffer to store calculated MD5 hash
+	void md5_calculate(const void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
+
+	/// Converts an MD5 hash to string representation.
+	///
+	/// @param[in] _digest: Hash digest to convert
+	/// @param[out] _out_hash: Buffer to store string representation of the MD5 hash
+	void md5_to_string(uint8_t _digest[16], char _out_hash[33]);
+
+#if RTM_COMPILER_MSVC || RTM_COMPILER_CLANG
+	#define rotl32(x,y)	_rotl(x,y)
+#elif RTM_COMPILER_GCC
+	#define rotl32(x,y)	__builtin_rotateleft32(x,y)
+#else
+	static inline uint32_t rotl32(uint32_t x, uint32_t n)
+	{
+		return (x << n) | (x >> (32 - n));
+	}
+#endif
 
 	//--------------------------------------------------------------------------
 	/// Murmur3 hashing
 	//--------------------------------------------------------------------------
-	static inline uint32_t hashMurmur3(const void* _key, uint32_t _len, uint32_t _seed = 0)
+	static inline uint32_t hashMurmur3(const void* _key, uint32_t _len, uint32_t _seed)
 	{
 		const uint8_t* data = (const uint8_t*)_key;
 		const int nblocks = _len / 4;
@@ -45,11 +96,11 @@ namespace rtm {
 			uint32_t k1 = blocks[i];
 
 			k1 *= c1;
-			k1 = ROTL32(k1,15);
+			k1 = rotl32(k1,15);
 			k1 *= c2;
     
 			h1 ^= k1;
-			h1 = ROTL32(h1,13); 
+			h1 = rotl32(h1,13); 
 			h1 = h1*5+0xe6546b64;
 		}
 
@@ -64,7 +115,7 @@ namespace rtm {
 		case 2: k1 ^= tail[1] << 8;
 		        /* fall through */
 		case 1: k1 ^= tail[0];
-				k1 *= c1; k1 = ROTL32(k1,15); k1 *= c2; h1 ^= k1;
+				k1 *= c1; k1 = rotl32(k1,15); k1 *= c2; h1 ^= k1;
 		};
 
 		h1 ^= _len;
@@ -84,7 +135,7 @@ namespace rtm {
 	//--------------------------------------------------------------------------
 	/// Calculate a string hash, suitable for short strings
 	//--------------------------------------------------------------------------
-	static inline uint32_t hashStr(const char* _string, uint32_t _maxChars = UINT32_MAX)
+	static inline uint32_t hashStr(const char* _string, uint32_t _maxChars)
 	{
 	   uint32_t	h;
 	   uint8_t*	p = (uint8_t*)_string;

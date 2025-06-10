@@ -8,6 +8,118 @@
 
 #include <rbase/inc/platform.h>
 
+namespace rtm {
+
+	/// Issues a read barrier
+	static inline void readBarrier();
+
+	/// Issues a write barrier
+	static inline void writeBarrier();
+
+	/// Issues a read/write memory barrier
+	static inline void readWriteBarrier();
+
+	/// Issues a full memory barrier
+	static inline void memoryBarrier();
+
+	/// Atomically increments a value.
+	///
+	/// @param[in,out] _value: Pointer to value to increment
+	///
+	/// @returns the resulting incremented value.
+	static inline int32_t interlockedInc(int32_t volatile* _value);
+
+	/// Atomically increments a value.
+	///
+	/// @param[in,out] _value: Pointer to value to increment
+	///
+	/// @returns the resulting incremented value.
+	static inline int64_t interlockedInc(int64_t volatile* _value);
+
+	/// Atomically decrements a value.
+	///
+	/// @param[in,out] _value: Pointer to value to decrement
+	///
+	/// @returns the resulting decremented value.
+	static inline int32_t interlockedDec(int32_t volatile* _value);
+
+	/// Atomically decrements a value.
+	///
+	/// @param[in,out] _value: Pointer to value to decrement
+	///
+	/// @returns the resulting decremented value.
+	static inline int64_t interlockedDec(int64_t volatile* _value);
+
+	/// Adds a value atomically.
+	///
+	/// @param[in,out] _value: Value to add to.
+	/// @param[in] _add: Value to add.
+	///
+	/// @returns the initial value that was added to.
+	///	---------------------------------------------------------------------
+	static inline int32_t interlockedAdd(int32_t volatile* _value, int32_t _add);
+
+	/// Adds a value atomically.
+	///
+	/// @param[in,out] _value: Value to add to.
+	/// @param[in] _add: Value to add.
+	///
+	/// @returns the initial value that was added to.
+	///	---------------------------------------------------------------------
+	static inline int64_t interlockedAdd(int64_t volatile* _value, int64_t _add);
+
+	/// Substracts a value atomically.
+	///
+	/// @param[in,out] _value: Value to substract from.
+	/// @param[in] _sub: Value to substract.
+	///
+	/// @returns the initial value that was substracted from.
+	static inline int32_t interlockedSub(int32_t volatile* _value, int32_t _sub);
+
+	/// Substracts a value atomically.
+	///
+	/// @param[in,out] _value: Value to substract from.
+	/// @param[in] _sub: Value to substract.
+	///
+	/// @returns the initial value that was substracted from.
+	static inline int64_t interlockedSub(int64_t volatile* _value, int64_t _sub);
+
+	/// Sets a value atomically.
+	///
+	/// @param[in,out] _value: Pointer to destination value.
+	/// @param[in] _newValue: The value to set.
+	///
+	/// @returns the initial value before the new one was set.
+	static inline int32_t interlockedSet(int32_t volatile* _value, int32_t _newValue);
+
+	/// Sets a value atomically.
+	///
+	/// @param[in,out] _value: Pointer to destination value.
+	/// @param[in] _newValue: The value to set.
+	///
+	/// @returns the initial value before the new one was set.
+	static inline int64_t interlockedSet(int64_t volatile* _value, int64_t _newValue);
+
+	/// Atomically compare-exchange-swap.
+	///
+	/// @param[in,out] _value: Pointer to value to compare against and set result to.
+	/// @param[in] _oldValue: The expected original value.
+	/// @param[in] _newValue: New value to set.
+	///
+	/// @returns the initial value before the new one was set.
+	static inline int32_t interlockedCAS(int32_t volatile* _value, int32_t _oldValue, int32_t _newValue);
+
+	/// Atomically compare-exchange-swap.
+	///
+	/// @param[in,out] _value: Pointer to value to compare against and set result to.
+	/// @param[in] _oldValue: The expected original value.
+	/// @param[in] _newValue: New value to set.
+	///
+	/// @returns the initial value before the new one was set.
+	static inline int64_t interlockedCAS(int64_t volatile* _value, int64_t _oldValue, int64_t _newValue);
+
+} // namespace rtm
+
 #if RTM_PLATFORM_XBOXONE
 #include <intrin.h>
 #endif

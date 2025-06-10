@@ -18,6 +18,16 @@
 
 namespace rtm {
 
+	/// Gets a stack trace of a calling thread.
+	///
+	/// @param[out] _traces: Destination buffer to store traces
+	/// @param[in] _numFrames: Max number of stack frames to retrieve
+	/// @param[in] _skip: Number of stack frames to skip at the start
+	/// 
+	/// @returns the number of retrieved stack frames
+	static inline uint32_t getStackTrace(void* _traces[], uint32_t _numFrames, uint32_t _skip);
+
+
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 
 #if RTM_COMPILER_MSVC
