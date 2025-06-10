@@ -65,10 +65,8 @@ namespace rtm {
 	/// @param[out] _out_hash: Buffer to store string representation of the MD5 hash
 	void md5_to_string(uint8_t _digest[16], char _out_hash[33]);
 
-#if RTM_COMPILER_MSVC || RTM_COMPILER_CLANG
+#if RTM_COMPILER_MSVC
 	#define rotl32(x,y)	_rotl(x,y)
-#elif RTM_COMPILER_GCC
-	#define rotl32(x,y)	__builtin_rotateleft32(x,y)
 #else
 	static inline uint32_t rotl32(uint32_t x, uint32_t n)
 	{
