@@ -226,7 +226,7 @@ void Uri::setPart(UriPart::Enum _part, const StringView& _str)
 static inline int shouldEncode(char ch)
 {
 	return !(false
-		|| isAlphaNum(ch)
+		|| charIsAlphaNumeric(ch)
 		|| '-' == ch || '_' == ch
 		|| '.' == ch || '!' == ch
 		|| '~' == ch || '*' == ch
@@ -288,8 +288,8 @@ uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32
 			if (dSize < _bufferSize - 3)
 			{
 				_buffer[dSize++] = '%';
-				_buffer[dSize++] = toHexNum(ch >> 4);
-				_buffer[dSize++] = toHexNum(ch);
+				_buffer[dSize++] = charToHexNum(ch >> 4);
+				_buffer[dSize++] = charToHexNum(ch);
 			}
 			else
 			{
@@ -327,7 +327,7 @@ uint32_t uriDecodedSize(const char* _uri, uint32_t _maxUriChars)
 			if (_uri > uriEnd - 2)
 				return UINT32_MAX;
 
-			if (isHexNum(_uri[0]) && isHexNum(_uri[1]))
+			if (charIsHexNum(_uri[0]) && charIsHexNum(_uri[1]))
 			{
 				_uri += 2;
 				dSize++;
@@ -374,10 +374,10 @@ uint32_t uriDecode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32
 				return UINT32_MAX;
 			}
 
-			if (isHexNum(_uri[0]) && isHexNum(_uri[1]))
+			if (charIsHexNum(_uri[0]) && charIsHexNum(_uri[1]))
 			{
-				char c1 = fromHexNum(*_uri++);
-				char c2 = fromHexNum(*_uri++);
+				char c1 = charFromHexNum(*_uri++);
+				char c2 = charFromHexNum(*_uri++);
 				char c = ((c1 << 4) | c2);
 
 				_buffer[dSize++] = c;

@@ -70,40 +70,121 @@ namespace rtm {
 
 	/// Returns size of buffer needed to store encoded version of input URI
 	/// Includes 0 terminator
-
+	///
+	/// @param[in] _str: String view or encoded URI
+	///
+	/// @returns size of buffer needed to store encoded version of input URI
 	uint32_t uriEncodedSize(const StringView& _str);
+
+	/// Returns size of buffer needed to store encoded version of input URI
+	/// Includes 0 terminator
+	///
+	/// @param[in] _str: String view or encoded URI
+	/// @param[in] _maxUriChars: Maximum URI chars to check
+	///
+	/// @returns size of buffer needed to store encoded version of input URI
 	uint32_t uriEncodedSize(const char* _uri, uint32_t _maxUriChars = UINT32_MAX);
 
-	/// URI encoding
 	/// Returns UINT32_MAX if not enough space in destination buffer or
 	/// number of written characters on success.
-
+	///
+	/// @param[in] _str: String view or encoded URI
+	/// @param[out] _bufffer: Destination buffer
+	/// @param[in] _bufferSize: Destination buffer size
+	///
+	/// @returns 
 	uint32_t uriEncode(const StringView& _str, char* _buffer, uint32_t _bufferSize);
+
+	///
+	/// 
+	/// @param[in] _uri: String view or encoded URI
+	/// @param[out] _bufffer: Destination buffer
+	/// @param[in] _bufferSize: Destination buffer size
+	/// @param[in] _maxUriChars: Maximum URI chars to check
+	///
+	/// @returns 
 	uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32_t _maxUriChars = UINT32_MAX);
 
 	/// Returns size of buffer needed to store decoded version of input encoded URI
 	/// Returns UINT32_MAX for invalid URIs
 	/// Includes 0 terminator
-
+	/// 
+	/// @param[in] _str: String view or encoded URI
+	///
+	/// @returns 
 	uint32_t uriDecodedSize(const StringView& _str);
+
+	/// 
+	/// 
+	/// @param[in] _uri:
+	/// @param[in] _maxUriChars: Maximum URI chars to check
+	///
+	/// @returns 
 	uint32_t uriDecodedSize(const char* _uri, uint32_t _maxUriChars = UINT32_MAX);
 
 	/// URI decoding
 	/// Returns UINT32_MAX if not enough space in destination buffer or 0 on error/
 	/// Returns number of written characters on success.
-
+	/// 
+	/// @param[in] _str:
+	/// @param[out] _bufffer: Destination buffer
+	/// @param[in] _bufferSize: Destination buffer size
+	///
+	/// @returns 
 	uint32_t uriDecode(const StringView& _str, char* _buffer, uint32_t _bufferSize);
+
+	///
+	/// 
+	/// @param[in] _str:
+	/// @param[out] _bufffer: Destination buffer
+	/// @param[in] _bufferSize: Destination buffer size
+	/// @param[in] _maxUriChars: Maximum URI chars to check
+	///
+	/// @returns 
 	uint32_t uriDecode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32_t _maxUriChars = UINT32_MAX);
 
 	/// URI nesting
 	/// Stores nested URI in a query component with the form 'vfs=URI'
-
+	/// 
+	/// @param[in] _uri:
+	/// @param[in] _nestedUri:
+	/// @param[out] _buffer: Destination buffer
+	/// @param[in] _bufferSize: Destination buffer size
+	/// @param[in] _neededBufferSize:
+	///
+	/// @returns 
 	uint32_t uriNest(const UriView& _uri, const UriView& _nestedUri, char* _buffer, uint32_t _bufferSize, uint32_t* _neededBufferSize = 0);
+
+	/// URI nesting
+	/// Stores nested URI in a query component with the form 'vfs=URI'
+	/// 
+	/// @param[in] _uris:
+	/// @param[in] _numUris:
+	/// @param[out] _buffer: Destination buffer
+	/// @param[in] _bufferSize: Destination buffer size
+	/// @param[in] _neededBufferSize:
+	///
+	/// @returns 
 	uint32_t uriNestArr(const UriView* _uris, uint32_t _numUris, char* _buffer, uint32_t _bufferSize, uint32_t* _neededBufferSize = 0);
 
 	/// Parse URI query and retrieve key value pairs
-
+	/// 
+	/// @param[in] _uris:
+	/// @param[in] _strs:
+	/// @param[in] _numStrs:
+	/// @param[in] _numStrsNeeded:
+	///
+	/// @returns 
 	uint32_t uriParseQuery(const StringView& _uri, StringView* _strs, uint32_t _numStrs, uint32_t* _numStrsNeeded = 0);
+
+	/// Parse URI query and retrieve key value pairs
+	/// 
+	/// @param[in] _uris:
+	/// @param[in] _strs:
+	/// @param[in] _numStrs:
+	/// @param[in] _numStrsNeeded:
+	///
+	/// @returns 
 	uint32_t uriParseQuery(const UriView& _uri, StringView* _strs, uint32_t _numStrs, uint32_t* _numStrsNeeded = 0);
 
 } // namespace rtm

@@ -9,6 +9,97 @@
 #include <rbase/inc/platform.h>
 #include <rbase/inc/stringfn.h>
 
+namespace rtm {
+
+	class StringView;
+
+	/// Returns length of the string view
+	///
+	/// @param[in] _view: String view to find length of
+	///
+	/// @returns length of the string
+	static uint32_t strLen(const StringView& _view);
+
+	/// Compare string view with a string, case sensitive
+	///
+	/// @param[in] _view: String view to compare
+	/// @param[in] _cmp: String to compare with
+	///
+	/// @returns string difference
+	template<fnChar fn>
+	static int32_t strCmp(const StringView& _view, const char* _cmp);
+
+	/// Searches for a string within a string view
+	///
+	/// @param[in] _view: String view to search in
+	/// @param[in] _strMax: Maximum characters to search in
+	/// @param[in] _find: String to search for
+	/// @param[in] _findMax: Maximum characters to search for
+	///
+	/// @returns pointer to found occurence or nullptr if not found
+	template<fnChar fn>
+	static const char* strStr(const StringView& _view, uint32_t _strMax, const char* _find, uint32_t _findMax = UINT32_MAX);
+
+	/// Compare string view with a string view, case sensitive
+	///
+	/// @param[in] _view: String view to compare
+	/// @param[in] _rhs: String to compare with
+	/// @param[in] _max: Maximum characters to search
+	///
+	/// @returns string difference
+	static int32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
+
+	/// Compare string view with a string view, case insensitive
+	///
+	/// @param[in] _view: String view to compare
+	/// @param[in] _rhs: String to compare with
+	/// @param[in] _max: Maximum characters to search
+	///
+	/// @returns string difference
+	static int32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
+
+	/// Searches for a string within a string view, case sensitive
+	///
+	/// @param[in] _view: String view to search in
+	/// @param[in] _find: String to search for
+	/// @param[in] _mMax: Maximum characters to search for
+	///
+	/// @returns pointer to found occurence or nullptr if not found
+	static const char* strStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
+
+	/// Searches for a string within a string view, case insensitive
+	///
+	/// @param[in] _view: String view to search in
+	/// @param[in] _find: String to search for
+	/// @param[in] _mMax: Maximum characters to search for
+	///
+	/// @returns pointer to found occurence or nullptr if not found
+	static const char* striStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
+
+	/// Searches for a character within a string view, case sensitive
+	///
+	/// @param[in] _view: String view to search in
+	/// @param[in] _find: Character to search for
+	/// @param[in] _max: Maximum characters to search for
+	///
+	/// @returns pointer to found occurence or nullptr if not found
+	static const char* strChr(const StringView& _view, char _find, uint32_t _max = UINT32_MAX);
+
+	/// Searches for a character within a string view, case insensitive
+	///
+	/// @param[in] _view: String view to search in
+	/// @param[in] _find: Character to search for
+	/// @param[in] _max: Maximum characters to search for
+	///
+	/// @returns pointer to found occurence or nullptr if not found
+	static const char* striChr(const StringView& _view, char _find, uint32_t _max = UINT32_MAX);
+
+} // namespace rtm
+
+/// ---------------------------------------------------------------------- ///
+///  Implementation                                                        ///
+/// ---------------------------------------------------------------------- ///
+
 #ifndef RBASE_NAMESPACE
 	#define RTM_STRING_ALLOC	::malloc
 	#define RTM_STRING_REALLOC	::realloc
@@ -61,18 +152,6 @@ namespace rtm {
 		operator const char* ();
 		char operator[](uint32_t _index) const;
 	};
-
-	static uint32_t strLen(const StringView& _view);
-	template<fnChar fn>
-	static int32_t strCmp(const StringView& _view, const char* _cmp);
-	template<fnChar fn>
-	static const char* strStr(const StringView& _view, uint32_t _strMax, const char* _find, uint32_t _findMax = UINT32_MAX);
-	static int32_t strCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
-	static int32_t striCmp(const StringView& _view, const char* _rhs, uint32_t _max = UINT32_MAX);
-	static const char* strStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
-	static const char* striStr(const StringView& _view, const char* _find, uint32_t _max = UINT32_MAX);
-	static const char* strChr(const StringView& _view, char _find, uint32_t _max = UINT32_MAX);
-	static const char* striChr(const StringView& _view, char _find, uint32_t _max = UINT32_MAX);
 
 	// dynamically allocated string
 

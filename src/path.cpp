@@ -428,7 +428,7 @@ bool pathMakeAbsolute(const char* _relative, const char* _base, char* _buffer, u
 
 static inline bool isEqualPathChar(char _c1, char _c2)
 {
-	return (toUpper(_c1) == toUpper(_c2)) || (isSlash(_c1) && isSlash(_c2));
+	return (charToUpper(_c1) == charToUpper(_c2)) || (isSlash(_c1) && isSlash(_c2));
 }
 
 bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer, uint32_t _bufferSize)
