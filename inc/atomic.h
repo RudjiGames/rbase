@@ -11,44 +11,44 @@
 namespace rtm {
 
 	/// Issues a read barrier
-	static inline void readBarrier();
+	static inline void atomicReadBarrier();
 
 	/// Issues a write barrier
-	static inline void writeBarrier();
+	static inline void atomicWriteBarrier();
 
 	/// Issues a read/write memory barrier
-	static inline void readWriteBarrier();
+	static inline void atomicReadWriteBarrier();
 
 	/// Issues a full memory barrier
-	static inline void memoryBarrier();
+	static inline void atomicMemoryBarrier();
 
 	/// Atomically increments a value.
 	///
 	/// @param[in,out] _value: Pointer to value to increment
 	///
 	/// @returns the resulting incremented value.
-	static inline int32_t interlockedInc(int32_t volatile* _value);
+	static inline int32_t atomicInc(int32_t volatile* _value);
 
 	/// Atomically increments a value.
 	///
 	/// @param[in,out] _value: Pointer to value to increment
 	///
 	/// @returns the resulting incremented value.
-	static inline int64_t interlockedInc(int64_t volatile* _value);
+	static inline int64_t atomicInc(int64_t volatile* _value);
 
 	/// Atomically decrements a value.
 	///
 	/// @param[in,out] _value: Pointer to value to decrement
 	///
 	/// @returns the resulting decremented value.
-	static inline int32_t interlockedDec(int32_t volatile* _value);
+	static inline int32_t atomicDec(int32_t volatile* _value);
 
 	/// Atomically decrements a value.
 	///
 	/// @param[in,out] _value: Pointer to value to decrement
 	///
 	/// @returns the resulting decremented value.
-	static inline int64_t interlockedDec(int64_t volatile* _value);
+	static inline int64_t atomicDec(int64_t volatile* _value);
 
 	/// Adds a value atomically.
 	///
@@ -56,7 +56,7 @@ namespace rtm {
 	/// @param[in] _add: Value to add.
 	///
 	/// @returns the initial value that was added to.
-	static inline int32_t interlockedAdd(int32_t volatile* _value, int32_t _add);
+	static inline int32_t atomicAdd(int32_t volatile* _value, int32_t _add);
 
 	/// Adds a value atomically.
 	///
@@ -64,7 +64,7 @@ namespace rtm {
 	/// @param[in] _add: Value to add.
 	///
 	/// @returns the initial value that was added to.
-	static inline int64_t interlockedAdd(int64_t volatile* _value, int64_t _add);
+	static inline int64_t atomicAdd(int64_t volatile* _value, int64_t _add);
 
 	/// Substracts a value atomically.
 	///
@@ -72,7 +72,7 @@ namespace rtm {
 	/// @param[in] _sub: Value to substract.
 	///
 	/// @returns the initial value that was substracted from.
-	static inline int32_t interlockedSub(int32_t volatile* _value, int32_t _sub);
+	static inline int32_t atomicSub(int32_t volatile* _value, int32_t _sub);
 
 	/// Substracts a value atomically.
 	///
@@ -80,7 +80,7 @@ namespace rtm {
 	/// @param[in] _sub: Value to substract.
 	///
 	/// @returns the initial value that was substracted from.
-	static inline int64_t interlockedSub(int64_t volatile* _value, int64_t _sub);
+	static inline int64_t atomicSub(int64_t volatile* _value, int64_t _sub);
 
 	/// Sets a value atomically.
 	///
@@ -88,7 +88,7 @@ namespace rtm {
 	/// @param[in] _newValue: The value to set.
 	///
 	/// @returns the initial value before the new one was set.
-	static inline int32_t interlockedSet(int32_t volatile* _value, int32_t _newValue);
+	static inline int32_t atomicSet(int32_t volatile* _value, int32_t _newValue);
 
 	/// Sets a value atomically.
 	///
@@ -96,7 +96,7 @@ namespace rtm {
 	/// @param[in] _newValue: The value to set.
 	///
 	/// @returns the initial value before the new one was set.
-	static inline int64_t interlockedSet(int64_t volatile* _value, int64_t _newValue);
+	static inline int64_t atomicSet(int64_t volatile* _value, int64_t _newValue);
 
 	/// Atomically compare-exchange-swap.
 	///
@@ -105,7 +105,7 @@ namespace rtm {
 	/// @param[in] _newValue: New value to set.
 	///
 	/// @returns the initial value before the new one was set.
-	static inline int32_t interlockedCAS(int32_t volatile* _value, int32_t _oldValue, int32_t _newValue);
+	static inline int32_t atomicCAS(int32_t volatile* _value, int32_t _oldValue, int32_t _newValue);
 
 	/// Atomically compare-exchange-swap.
 	///
@@ -114,7 +114,7 @@ namespace rtm {
 	/// @param[in] _newValue: New value to set.
 	///
 	/// @returns the initial value before the new one was set.
-	static inline int64_t interlockedCAS(int64_t volatile* _value, int64_t _oldValue, int64_t _newValue);
+	static inline int64_t atomicCAS(int64_t volatile* _value, int64_t _oldValue, int64_t _newValue);
 
 } // namespace rtm
 
@@ -173,7 +173,7 @@ namespace rtm {
 
 namespace rtm {
 
-	static inline void readBarrier()
+	static inline void atomicReadBarrier()
 	{
 #if RTM_COMPILER_MSVC
 		_ReadBarrier();
@@ -186,7 +186,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline void writeBarrier()
+	static inline void atomicWriteBarrier()
 	{
 #if RTM_COMPILER_MSVC
 		_WriteBarrier();
@@ -199,7 +199,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline void readWriteBarrier()
+	static inline void atomicReadWriteBarrier()
 	{
 #if RTM_COMPILER_MSVC
 		_ReadWriteBarrier();
@@ -212,7 +212,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline void memoryBarrier()
+	static inline void atomicMemoryBarrier()
 	{
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 		_mm_mfence();
@@ -225,7 +225,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int32_t interlockedInc(int32_t volatile* _value)
+	static inline int32_t atomicInc(int32_t volatile* _value)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_fetch_and_add(_value, 1);
@@ -236,7 +236,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int64_t interlockedInc(int64_t volatile* _value)
+	static inline int64_t atomicInc(int64_t volatile* _value)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_fetch_and_add(_value, 1);
@@ -247,7 +247,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int32_t interlockedDec(int32_t volatile* _value)
+	static inline int32_t atomicDec(int32_t volatile* _value)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_fetch_and_add(_value, -1);
@@ -258,7 +258,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int64_t interlockedDec(int64_t volatile* _value)
+	static inline int64_t atomicDec(int64_t volatile* _value)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_fetch_and_add(_value, -1);
@@ -269,7 +269,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int32_t interlockedAdd(int32_t volatile* _value, int32_t _add)
+	static inline int32_t atomicAdd(int32_t volatile* _value, int32_t _add)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_fetch_and_add(_value, _add);
@@ -280,7 +280,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int64_t interlockedAdd(int64_t volatile* _value, int64_t _add)
+	static inline int64_t atomicAdd(int64_t volatile* _value, int64_t _add)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_fetch_and_add(_value, _add);
@@ -291,7 +291,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int32_t interlockedSub(int32_t volatile* _value, int32_t _sub)
+	static inline int32_t atomicSub(int32_t volatile* _value, int32_t _sub)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_fetch_and_sub(_value, _sub);
@@ -302,7 +302,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int64_t interlockedSub(int64_t volatile* _value, int64_t _sub)
+	static inline int64_t atomicSub(int64_t volatile* _value, int64_t _sub)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_fetch_and_sub( _value, _sub );
@@ -313,7 +313,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int32_t interlockedSet(int32_t volatile* _value, int32_t _newValue)
+	static inline int32_t atomicSet(int32_t volatile* _value, int32_t _newValue)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		__sync_synchronize();
@@ -325,7 +325,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int64_t interlockedSet(int64_t volatile* _value, int64_t _newValue)
+	static inline int64_t atomicSet(int64_t volatile* _value, int64_t _newValue)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		__sync_synchronize();
@@ -337,7 +337,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int32_t interlockedCAS(int32_t volatile* _value, int32_t _oldValue, int32_t _newValue)
+	static inline int32_t atomicCAS(int32_t volatile* _value, int32_t _oldValue, int32_t _newValue)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_val_compare_and_swap(_value, _oldValue, _newValue);
@@ -348,7 +348,7 @@ namespace rtm {
 #endif
 	}
 
-	static inline int64_t interlockedCAS(int64_t volatile* _value, int64_t _oldValue, int64_t _newValue)
+	static inline int64_t atomicCAS(int64_t volatile* _value, int64_t _oldValue, int64_t _newValue)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 		return __sync_val_compare_and_swap(_value, _oldValue, _newValue);

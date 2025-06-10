@@ -296,8 +296,8 @@ struct DownloadThread
 
 		uint8_t digest[16];
 		char	hash[33];
-		rtm::md5_calculate(HTTP(file).m_url, rtm::strLen(HTTP(file).m_url), digest);
-		rtm::md5_to_string(digest, hash);
+		rtm::hashMD5(HTTP(file).m_url, rtm::strLen(HTTP(file).m_url), digest);
+		rtm::hashMD5toString(digest, hash);
 		RTM_LOG("Downloading %s to %s\n", _path, hash);
 
 		DownloadProgress progress;

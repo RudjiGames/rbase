@@ -57,13 +57,13 @@ namespace rtm {
 	/// @param[in] _data: Data to hash
 	/// @param[in] _data_size: Maximum number of characters to use for hashing
 	/// @param[out] _out_digest: Buffer to store calculated MD5 hash
-	void md5_calculate(const void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
+	void hashMD5(const void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
 
 	/// Converts an MD5 hash to string representation.
 	///
 	/// @param[in] _digest: Hash digest to convert
 	/// @param[out] _out_hash: Buffer to store string representation of the MD5 hash
-	void md5_to_string(uint8_t _digest[16], char _out_hash[33]);
+	void hashMD5toString(uint8_t _digest[16], char _out_hash[33]);
 
 } // namespace rtm
 
@@ -155,8 +155,8 @@ namespace rtm {
 	   return h;
 	}
 
-	void md5_calculate(const void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
-	void md5_to_string(uint8_t _digest[16], char _out_hash[33]);
+	void hashMD5(const void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
+	void hashMD5toString(uint8_t _digest[16], char _out_hash[33]);
 
 	namespace hash_private {
 
