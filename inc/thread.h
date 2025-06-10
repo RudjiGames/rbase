@@ -7,6 +7,28 @@
 #define RTM_RBASE_THREAD_H
 
 #include <rbase/inc/platform.h>
+
+namespace rtm {
+
+	/// Gets current thread ID
+	///
+	/// @returns the current thread ID.
+	static inline uint64_t threadGetID();
+
+	/// Sleeps current thread.
+	///
+	/// @param[in] _ms: Time to sleep in milliseconds/
+	static inline void threadSleep(uint32_t _ms);
+
+	/// Yields thread execution.
+	static inline void threadYield();
+
+} // namespace rtm
+
+/// ---------------------------------------------------------------------- ///
+///  Implementation                                                        ///
+/// ---------------------------------------------------------------------- ///
+
 #include <rbase/inc/sem.h>
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
@@ -157,54 +179,54 @@ namespace rtm {
 #else
 #error "Unsupported platform!"
 #endif
-
-		static inline uint64_t getThreadID()
-		{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
-			return (uint64_t)GetCurrentThreadId();
-#elif RTM_PLATFORM_LINUX
-			return (uint64_t)syscall(SYS_gettid);
-#elif RTM_PLATFORM_IOS || RTM_PLATFORM_OSX
-			return (mach_port_t)::pthread_mach_thread_np(pthread_self() );
-#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-			return scePthreadGetthreadid();
-#elif RTM_PLATFORM_PS3
-			sys_ppu_thread_t tid;
-			sys_ppu_thread_get_id(&tid);
-			return (uint64_t)tid;
-#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_WASM || RTM_PLATFORM_SWITCH
-			return pthread_self();
-#else
-			#error "Undefined platform!"
-#endif
-		}
-
-		static inline void sleep(uint32_t _ms)
-		{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
-			::Sleep(_ms);
-#else
-			timespec req = {(time_t)_ms/1000, (long)((_ms%1000)*1000000)};
-			timespec rem = {0, 0};
-			nanosleep(&req, &rem);
-#endif
-		}
-
-		static inline void yield()
-		{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
-			::SwitchToThread();
-#elif RTM_PLATFORM_WINRT
-			RTM_ERROR("yield not implemented!");
-#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_WASM  || RTM_PLATFORM_SWITCH
-			::sched_yield();
-#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-			scePthreadYield();
-#else
-			#error "Unsupported platform/compiler!"
-#endif
-		}
 	};
+
+	static inline uint64_t threadGetID()
+	{
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+		return (uint64_t)GetCurrentThreadId();
+#elif RTM_PLATFORM_LINUX
+		return (uint64_t)syscall(SYS_gettid);
+#elif RTM_PLATFORM_IOS || RTM_PLATFORM_OSX
+		return (mach_port_t)::pthread_mach_thread_np(pthread_self());
+#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
+		return scePthreadGetthreadid();
+#elif RTM_PLATFORM_PS3
+		sys_ppu_thread_t tid;
+		sys_ppu_thread_get_id(&tid);
+		return (uint64_t)tid;
+#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_WASM || RTM_PLATFORM_SWITCH
+		return pthread_self();
+#else
+#error "Undefined platform!"
+#endif
+	}
+
+	static inline void threadSleep(uint32_t _ms)
+	{
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+		::Sleep(_ms);
+#else
+		timespec req = { (time_t)_ms / 1000, (long)((_ms % 1000) * 1000000) };
+		timespec rem = { 0, 0 };
+		nanosleep(&req, &rem);
+#endif
+	}
+
+	static inline void threadYield()
+	{
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+		::SwitchToThread();
+#elif RTM_PLATFORM_WINRT
+		RTM_ERROR("yield not implemented!");
+#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_WASM  || RTM_PLATFORM_SWITCH
+		::sched_yield();
+#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
+		scePthreadYield();
+#else
+#error "Unsupported platform/compiler!"
+#endif
+	}
 
 } // namespace rtm
 
