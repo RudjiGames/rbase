@@ -6,6 +6,7 @@
 #include <rbase_pch.h>
 #include <rbase/inc/path.h>
 #include <rbase/inc/winchar.h>
+#include <rbase/inc/mutex.h>
 
 #if RTM_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN

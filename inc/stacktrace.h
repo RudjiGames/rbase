@@ -27,6 +27,10 @@ namespace rtm {
 	/// @returns the number of retrieved stack frames
 	static inline uint32_t getStackTrace(void* _traces[], uint32_t _numFrames, uint32_t _skip);
 
+	/// ---------------------------------------------------------------------- ///
+	///  Implementation                                                        ///
+	/// ---------------------------------------------------------------------- ///
+
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
 

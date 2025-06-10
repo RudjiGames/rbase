@@ -56,7 +56,6 @@ namespace rtm {
 	/// @param[in] _add: Value to add.
 	///
 	/// @returns the initial value that was added to.
-	///	---------------------------------------------------------------------
 	static inline int32_t interlockedAdd(int32_t volatile* _value, int32_t _add);
 
 	/// Adds a value atomically.
@@ -65,7 +64,6 @@ namespace rtm {
 	/// @param[in] _add: Value to add.
 	///
 	/// @returns the initial value that was added to.
-	///	---------------------------------------------------------------------
 	static inline int64_t interlockedAdd(int64_t volatile* _value, int64_t _add);
 
 	/// Substracts a value atomically.
@@ -119,6 +117,10 @@ namespace rtm {
 	static inline int64_t interlockedCAS(int64_t volatile* _value, int64_t _oldValue, int64_t _newValue);
 
 } // namespace rtm
+
+/// ---------------------------------------------------------------------- ///
+///  Implementation                                                        ///
+/// ---------------------------------------------------------------------- ///
 
 #if RTM_PLATFORM_XBOXONE
 #include <intrin.h>

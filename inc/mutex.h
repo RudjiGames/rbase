@@ -8,21 +8,66 @@
 
 #include <rbase/inc/platform.h>
 
+namespace rtm {
+
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
-#endif // RTM_PLATFORM_WINDOWS
-
-#if RTM_PLATFORM_POSIX
+	typedef CRITICAL_SECTION rtm_mutex;
+#elif RTM_PLATFORM_POSIX
 	#include <pthread.h>
+	typedef pthread_mutex_t rtm_mutex;
+#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
+	typedef ScePthreadMutex rtm_mutex;
 #endif
+
+	/// Retrieves file name with extension if it is a file path.
+	///
+	/// @param[in] _path: File system path
+	///
+	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	static inline void mutexInit(rtm_mutex* _mutex);
+
+	/// Retrieves file name with extension if it is a file path.
+	///
+	/// @param[in] _path: File system path
+	///
+	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	static inline void mutexDestroy(rtm_mutex* _mutex);
+
+	/// Retrieves file name with extension if it is a file path.
+	///
+	/// @param[in] _path: File system path
+	///
+	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	static inline void mutexLock(rtm_mutex* _mutex);
+
+	/// Retrieves file name with extension if it is a file path.
+	///
+	/// @param[in] _path: File system path
+	///
+	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	static inline int mutexTryLock(rtm_mutex* _mutex);
+
+	/// Retrieves file name with extension if it is a file path.
+	///
+	/// @param[in] _path: File system path
+	///
+	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	static inline void mutexUnlock(rtm_mutex* _mutex);
+
+} // namespace rtm
+
+/// ---------------------------------------------------------------------- ///
+///  Implementation                                                        ///
+/// ---------------------------------------------------------------------- ///
 
 namespace rtm {
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	typedef CRITICAL_SECTION rtm_mutex;
 
-	static inline void rtm_mutex_init(rtm_mutex* _mutex) {
+	static inline void mutexInit(rtm_mutex* _mutex) {
 #if RTM_PLATFORM_WINRT
 		InitializeCriticalSectionEx(_mutex, 4000, 0);
 #else 
@@ -30,49 +75,49 @@ namespace rtm {
 #endif
 	}
 
-	static inline void rtm_mutex_destroy(rtm_mutex* _mutex) {
+	static inline void mutexDestroy(rtm_mutex* _mutex) {
 		DeleteCriticalSection(_mutex);
 	}
 
-	static inline void rtm_mutex_lock(rtm_mutex* _mutex) {
+	static inline void mutexLock(rtm_mutex* _mutex) {
 		EnterCriticalSection(_mutex);
 	}
 
-	static inline int rtm_mutex_trylock(rtm_mutex* _mutex)	{
+	static inline int mutexTryLock(rtm_mutex* _mutex)	{
 		return TryEnterCriticalSection(_mutex) ? 0 : 1;
 	}
 
-	static inline void rtm_mutex_unlock(rtm_mutex* _mutex)	{
+	static inline void mutexUnlock(rtm_mutex* _mutex)	{
 		LeaveCriticalSection(_mutex);
 	}
 
 #elif RTM_PLATFORM_POSIX
 	typedef pthread_mutex_t rtm_mutex;
 
-	static inline void rtm_mutex_init(rtm_mutex* _mutex) {
+	static inline void mutexInit(rtm_mutex* _mutex) {
 		pthread_mutex_init(_mutex, 0);
 	}
 
-	static inline void rtm_mutex_destroy(rtm_mutex* _mutex) {
+	static inline void mutexDestroy(rtm_mutex* _mutex) {
 		pthread_mutex_destroy(_mutex);
 	}
 
-	static inline void rtm_mutex_lock(rtm_mutex* _mutex) {
+	static inline void mutexLock(rtm_mutex* _mutex) {
 		pthread_mutex_lock(_mutex);
 	}
 
-	static inline int rtm_mutex_trylock(rtm_mutex* _mutex) {
+	static inline int mutexTryLock(rtm_mutex* _mutex) {
 		return pthread_mutex_trylock(_mutex);
 	}
 
-	static inline void rtm_mutex_unlock(rtm_mutex* _mutex) {
+	static inline void mutexUnlock(rtm_mutex* _mutex) {
 		pthread_mutex_unlock(_mutex);
 	}
 
-#elif RTM_PLATFORM_PS4
+#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
 	typedef ScePthreadMutex rtm_mutex;
 
-	static inline void rtm_mutex_init(rtm_mutex* _mutex) {
+	static inline void mutexInit(rtm_mutex* _mutex) {
 		ScePthreadMutexattr mutexAttr;
 		scePthreadMutexattrInit(&mutexAttr);
 		scePthreadMutexattrSettype(&mutexAttr, SCE_PTHREAD_MUTEX_RECURSIVE);
@@ -80,19 +125,19 @@ namespace rtm {
 		scePthreadMutexattrDestroy(&mutexAttr);
 	}
 
-	static inline void rtm_mutex_destroy(rtm_mutex* _mutex) {
+	static inline void mutexDestroy(rtm_mutex* _mutex) {
 		scePthreadMutexDestroy(_mutex);
 	}
 
-	static inline void rtm_mutex_lock(rtm_mutex* _mutex) {
+	static inline void mutexLock(rtm_mutex* _mutex) {
 		scePthreadMutexLock(_mutex);
 	}
 
-	static inline int rtm_mutex_trylock(rtm_mutex* _mutex) {
+	static inline int mutexTryLock(rtm_mutex* _mutex) {
 		return (scePthreadMutexTrylock(_mutex) == 0) ? 0 : 1;
 	}
 
-	static inline void rtm_mutex_unlock(rtm_mutex* _mutex) {
+	static inline void mutexUnlock(rtm_mutex* _mutex) {
 		scePthreadMutexUnlock(_mutex);
 	}
 	
@@ -110,27 +155,27 @@ namespace rtm {
 
 		inline Mutex()
 		{
-			rtm_mutex_init(&m_mutex);
+			mutexInit(&m_mutex);
 		}
 
 		inline ~Mutex() 
 		{
-			rtm_mutex_destroy(&m_mutex);
+			mutexDestroy(&m_mutex);
 		}
 
 		inline void lock()
 		{
-			rtm_mutex_lock(&m_mutex);
+			mutexLock(&m_mutex);
 		}
 
 		inline void unlock()
 		{
-			rtm_mutex_unlock(&m_mutex);
+			mutexUnlock(&m_mutex);
 		}
 
 		inline bool tryLock()
 		{
-			return (rtm_mutex_trylock(&m_mutex) == 0);
+			return (mutexTryLock(&m_mutex) == 0);
 		}
 	};
 

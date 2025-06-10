@@ -8,6 +8,22 @@
 
 #include <rbase/inc/platform.h>
 
+namespace rtm {
+
+	/// Break into debugger
+	static inline void debugBreak();
+
+	/// Outputs text to debug console/stderr.
+	///
+	/// @param[in] _out: Text to output
+	static inline void debugOutput(const char* _out);
+
+} // namespace rtm
+
+/// ---------------------------------------------------------------------- ///
+///  Implementation                                                        ///
+/// ---------------------------------------------------------------------- ///
+
 #if RTM_PLATFORM_WINDOWS
 	extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char* _str);
 #elif RTM_PLATFORM_ANDROID

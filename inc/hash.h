@@ -65,6 +65,14 @@ namespace rtm {
 	/// @param[out] _out_hash: Buffer to store string representation of the MD5 hash
 	void md5_to_string(uint8_t _digest[16], char _out_hash[33]);
 
+} // namespace rtm
+
+/// ---------------------------------------------------------------------- ///
+///  Implementation                                                        ///
+/// ---------------------------------------------------------------------- ///
+
+namespace rtm {
+
 #if RTM_COMPILER_MSVC
 	#define rotl32(x,y)	_rotl(x,y)
 #else

@@ -36,7 +36,10 @@ namespace rtm {
 
 } // namespace rtm
 
-///  Implementation
+/// ---------------------------------------------------------------------- ///
+///  Implementation                                                        ///
+/// ---------------------------------------------------------------------- ///
+
 namespace rtm {
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
