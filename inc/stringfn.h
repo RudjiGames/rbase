@@ -39,7 +39,7 @@ namespace rtm {
 	/// @param[in] _to: Range end
 	///
 	/// @returns true if character is in range
-	static inline int32_t memCompare(void* _dst, const void* _src, int64_t _numBytes);
+	static inline int32_t memCompare(const void* _dst, const void* _src, int64_t _numBytes);
 
 	/// Checks if character is in a given range, including endpoints
 	///
