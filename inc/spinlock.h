@@ -23,15 +23,15 @@ namespace rtm {
 
 		inline void	lock()
 		{
-			while (interlockedCAS(&m_Lock, 1, 0) != 0)
+			while (atomicCAS(&m_Lock, 1, 0) != 0)
 			{
-				Thread::yield();
+				threadYield();
 			}
 		}
 
 		inline void	unlock()
 		{
-			interlockedSet(&m_Lock, 0);
+			atomicSet(&m_Lock, 0);
 		}
 	};
 

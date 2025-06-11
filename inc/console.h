@@ -8,6 +8,60 @@
 
 #include <rbase/inc/platform.h>
 #include <rbase/inc/stringfn.h>
+
+namespace rtm {
+
+	/// Prints formatted text to console.
+	///
+	/// @param[in] _format: Text format.
+	static inline void consolePrintf(const char* _format, ...);
+
+	/// Prints formatted text to console.
+	///
+	/// @param[in] _color: Text color, alpha is ignored.
+	/// @param[in] _format: Text format.
+	static inline void consolePrintfRGB(uint32_t _color, const char* _format, ...);
+
+	/// Prints formatted text to console.
+	///
+	/// @param[in] _r: Red component.
+	/// @param[in] _g: Green component.
+	/// @param[in] _b: Blue component.
+	/// @param[in] _format: Text format.
+	static inline void consolePrintfRGB(uint8_t _r, uint8_t _g, uint8_t _b, const char* _format, ...);
+
+	/// Creates color from R,G and B components.
+	///
+	/// @param[in] _r: Red component.
+	/// @param[in] _g: Green component.
+	/// @param[in] _b: Blue component.
+	/// @returns formatted color.
+	static inline uint32_t consoleColor(uint8_t r, uint8_t g, uint8_t b);
+
+	/// Gets Red color component.
+	///
+	/// @param[in] _color: Color to get component from.
+	/// @returns red color component.
+	static inline uint8_t consoleColorGetR(uint32_t _color);
+
+	/// Gets Green color component.
+	///
+	/// @param[in] _color: Color to get component from.
+	/// @returns green color component.
+	static inline uint8_t consoleColorGetG(uint32_t _color);
+
+	/// Gets Blue color component.
+	///
+	/// @param[in] _color: Color to get component from.
+	/// @returns blue color component.
+	static inline uint8_t consoleColorGetB(uint32_t _color);
+
+} // namespace rtm
+
+/// ---------------------------------------------------------------------- ///
+///  Implementation                                                        ///
+/// ---------------------------------------------------------------------- ///
+
 #include <stdio.h> /* vsnprintf */
 #include <stdarg.h>
 
@@ -173,6 +227,63 @@ namespace rtm {
 			va_end(args);
 		}
 	};
+
+	/// Prints formatted text to console.
+	static inline void consolePrintf(const char* _format, ...)
+	{
+		va_list args;
+		va_start(args, _format);
+		rtm::Console::print(_format, args);
+		va_end(args);
+	}
+
+	/// Prints formatted text to console.
+	static inline void consolePrintfRGB(uint32_t _color, const char* _format, ...)
+	{
+		va_list args;
+		va_start(args, _format);
+		rtm::Console::rgb(	consoleColorGetR(_color),
+							consoleColorGetG(_color),
+							consoleColorGetB(_color),
+							_format, args);
+		va_end(args);
+	}
+
+	/// Prints formatted text to console.
+	static inline void consolePrintfRGB(uint8_t _r, uint8_t _g, uint8_t _b, const char* _format, ...)
+	{
+		va_list args;
+		va_start(args, _format);
+		rtm::Console::rgb(_r, _g, _b, _format, args);
+		va_end(args);
+	}
+
+	/// Creates color from R,G and B components.
+	static inline uint32_t consoleColor(uint8_t r, uint8_t g, uint8_t b)
+	{
+		return	(uint32_t(r) << 16)	|
+				(uint32_t(g) <<  8) |
+				(uint32_t(b) <<  0) |
+				0xff000000;
+	}
+
+	/// Gets Red color component.
+	static inline uint8_t consoleColorGetR(uint32_t _color)
+	{
+		return uint8_t((_color >> 16) & 0xff);
+	}
+
+	/// Gets Green color component.
+	static inline uint8_t consoleColorGetG(uint32_t _color)
+	{
+		return uint8_t((_color >> 8) & 0xff);
+	}
+
+	/// Gets Blue color component.
+	static inline uint8_t consoleColorGetB(uint32_t _color)
+	{
+		return uint8_t(_color & 0xff);
+	}
 
 } // namespace rtm
 

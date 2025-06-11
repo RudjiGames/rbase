@@ -12,15 +12,33 @@
 
 namespace rtm {
 
-	#define RTM_RADIXSORT_BITS				11
-	#define RTM_RADIXSORT_HISTOGRAM_SIZE	(1 << RTM_RADIXSORT_BITS)
-	#define RTM_RADIXSORT_BIT_MASK			(RTM_RADIXSORT_HISTOGRAM_SIZE - 1)
+	constexpr uint32_t RTM_RADIXSORT_BITS			= 11;
+	constexpr uint32_t RTM_RADIXSORT_HISTOGRAM_SIZE = (1 << RTM_RADIXSORT_BITS);
+	constexpr uint32_t RTM_RADIXSORT_BIT_MASK		= (RTM_RADIXSORT_HISTOGRAM_SIZE - 1);
 
+	/// Sorts an array using radix sort
+	///
+	/// @param[in,out] _keys	: Keys for sorting
+	/// @param[in] _tempKeys	: Temporary buffer for key sorting
+	/// @param[in] _size		: Number of values to sort
 	void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size);
+
+	/// Sorts an array using radix sort
+	///
+	/// @param[in,out] _keys	: Keys for sorting
+	/// @param[in] _tempKeys	: Temporary buffer for key sorting
+	/// @param[in] _size		: Number of values to sort
 	void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, uint32_t _size);
 
+	/// Sorts a value array using radix sort
+	///
+	/// @param[in,out] _keys	: Keys for sorting
+	/// @param[in] _tempKeys	: Temporary buffer for key sorting
+	/// @param[in,out] _values	: Values to sort
+	/// @param[in] _tempValues	: Temporary buffer for values
+	/// @param[in] _size		: Number of values to sort
 	template <typename Ty>
-	static void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
+	static inline void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
 	{
 		uint16_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 		uint16_t shift = 0;
@@ -63,6 +81,13 @@ namespace rtm {
 		}
 	}
 
+	/// Sorts a value array using radix sort
+	///
+	/// @param[in,out] _keys	: Keys for sorting
+	/// @param[out] _tempKeys	: Temporary buffer for key sorting
+	/// @param[in] _values		: Values to sort
+	/// @param[in] _tempValues	: Temporary buffer for values
+	/// @param[in] _size		: Number of values to sort
 	template <typename Ty>
 	static inline void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
 	{
@@ -106,10 +131,6 @@ namespace rtm {
 			shift += RTM_RADIXSORT_BITS;
 		}
 	}
-
-	#undef RTM_RADIXSORT_BITS
-	#undef RTM_RADIXSORT_HISTOGRAM_SIZE
-	#undef RTM_RADIXSORT_BIT_MASK
 
 } // namespace rtm
 
