@@ -253,7 +253,7 @@ namespace rtm {
 
 namespace rtm {
 
-	inline void memSet(void* _dst, uint8_t _val, int64_t _numBytes)
+	static inline void memSet(void* _dst, uint8_t _val, int64_t _numBytes)
 	{
 		uint8_t* dst = (uint8_t*)_dst;
 		while (_numBytes--)
@@ -262,7 +262,7 @@ namespace rtm {
 		}
 	}
 
-	inline void memCopy(void* _dst, uint32_t _dstSize, const void* _src, int64_t _numBytes)
+	static inline void memCopy(void* _dst, uint32_t _dstSize, const void* _src, int64_t _numBytes)
 	{
 		RTM_ASSERT(_dstSize >= _numBytes, "");
 		_numBytes = _numBytes > _dstSize ? _dstSize : _numBytes;
@@ -275,12 +275,12 @@ namespace rtm {
 		}
 	}
 
-	inline void memMove(void* _dst, const void* _src, int64_t _size)
+	static inline void memMove(void* _dst, const void* _src, int64_t _size)
 	{
 		memCopy(_dst, (uint32_t)_size, _src, _size);
 	}
 
-	inline int32_t memCompare(const void* _tgt, const void* _src, int64_t _numBytes)
+	static inline int32_t memCompare(const void* _tgt, const void* _src, int64_t _numBytes)
 	{
 		uint8_t* tgt = (uint8_t*)_tgt;
 		uint8_t* src = (uint8_t*)_src;
@@ -293,12 +293,12 @@ namespace rtm {
 		return _numBytes == 0 ? 0 : *tgt - *src;
 	}
 
-	inline bool charIsInRange(char _ch, int _from, int _to)
+	static inline bool charIsInRange(char _ch, int _from, int _to)
 	{
 		return unsigned(_ch - _from) <= unsigned(_to-_from);
 	}
 
-	inline bool charIsSpace(char _ch)
+	static inline bool charIsSpace(char _ch)
 	{
 		return	' '  == _ch ||
 				'\t' == _ch ||
@@ -308,57 +308,57 @@ namespace rtm {
 				'\r' == _ch;
 	}
 
-	inline bool charIsAlpha(char _ch)
+	static inline bool charIsAlpha(char _ch)
 	{
 		return charIsLower(_ch) || charIsUpper(_ch);
 	}
 
-	inline bool charIsNumeric(char _ch)
+	static inline bool charIsNumeric(char _ch)
 	{
 		return charIsInRange(_ch, '0', '9');
 	}
 
-	inline bool charIsAlphaNumeric(char _ch)
+	static inline bool charIsAlphaNumeric(char _ch)
 	{
 		return charIsAlpha(_ch) || charIsNumeric(_ch);
 	}
 
-	inline bool charIsHexNum(char _ch)
+	static inline bool charIsHexNum(char _ch)
 	{
 		return charIsInRange(charToLower(_ch), 'a', 'f') || charIsNumeric(_ch);
 	}
 
-	inline char charToHexNum(char _ch)
+	static inline char charToHexNum(char _ch)
 	{
 		return "0123456789ABCDEF"[_ch & 0xf];
 	}
 
-	inline char charFromHexNum(char _ch)
+	static inline char charFromHexNum(char _ch)
 	{
 		return _ch >= 'A' ? 10 + _ch - 'A' : _ch - '0';
 	}
 	
-	inline char charNoop(char _ch)
+	static inline char charNoop(char _ch)
 	{
 		return _ch;
 	}
 
-	inline bool charIsUpper(char _ch)
+	static inline bool charIsUpper(char _ch)
 	{
 		return charIsInRange(_ch, 'A', 'Z');
 	}
 
-	inline bool charIsLower(char _ch)
+	static inline bool charIsLower(char _ch)
 	{
 		return charIsInRange(_ch, 'a', 'z');
 	}
 
-	inline char charToUpper(char _ch)
+	static inline char charToUpper(char _ch)
 	{
 		return _ch - (charIsLower(_ch) ? 0x20 : 0);
 	}
 
-	inline char charToLower(char _ch)
+	static inline char charToLower(char _ch)
 	{
 		return _ch + (charIsUpper(_ch) ? 0x20 : 0);
 	}
