@@ -15,7 +15,6 @@
 #elif RTM_PLATFORM_POSIX
 #include <unistd.h>
 #include <limits.h>
-#include <sys/stat.h>
 #endif
 
 namespace rtm {
