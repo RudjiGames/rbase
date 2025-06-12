@@ -17,6 +17,7 @@
 	#include <semaphore.h>
 	#include <time.h>
 	#include <pthread.h>
+	typedef sem_t semaphore_t;
 #else
 	#error "Unsupported platform/compiler!"
 #endif
