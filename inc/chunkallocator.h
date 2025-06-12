@@ -19,7 +19,7 @@ namespace rtm {
 	{
 		enum
 		{
-			CHUNK_MEMORY = MaxMemory - std::max(sizeof(T), sizeof(uint32_t)),
+			CHUNK_MEMORY = MaxMemory - (sizeof(T) > sizeof(uint32_t) ? sizeof(T) : sizeof(uint32_t)),
 			CHUNK_ITEMS  = CHUNK_MEMORY / sizeof(T)
 		};
 
