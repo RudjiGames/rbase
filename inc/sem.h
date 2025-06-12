@@ -14,7 +14,6 @@
 	#include <winbase.h>
 	typedef HANDLE semaphore_t;
 #elif RTM_PLATFORM_POSIX
-	struct semaphore_t;
 	#include <semaphore.h>
 	#include <time.h>
 	#include <pthread.h>
