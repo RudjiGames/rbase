@@ -17,21 +17,21 @@ namespace rtm {
 
 	/// Allocates a TLS handle.
 	///
-	/// @param[in] _handle: TLS allocation handle
-	/// @param[in] _value: Value to set
+	/// @param[in] _handle : TLS allocation handle
+	/// @param[in] _value  : Value to set
 	static inline void tlsSetValue(uint32_t _handle, void* _value);
 
 	/// Retrieves the value from TLS.
 	///
-	/// @param[in] _handle: TLS allocation handle
-	/// @param[in] _value: Value to set
+	/// @param[in] _handle : TLS allocation handle
+	/// @param[in] _value  : Value to set
 	///
 	/// @returns the value stored in TLS
 	static inline void* tlsGetValue(uint32_t _handle);
 
 	/// Releases TLS handle
 	///
-	/// @param[in] _handle: TLS allocation handle
+	/// @param[in] _handle : TLS allocation handle
 	static inline void tlsFree(uint32_t _handle);
 
 } // namespace rtm

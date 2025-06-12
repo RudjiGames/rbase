@@ -13,46 +13,50 @@ namespace rtm {
 
 	/// Prints formatted text to console.
 	///
-	/// @param[in] _format: Text format.
+	/// @param[in] _format : Text format.
 	static inline void consolePrintf(const char* _format, ...);
 
 	/// Prints formatted text to console.
 	///
-	/// @param[in] _color: Text color, alpha is ignored.
-	/// @param[in] _format: Text format.
+	/// @param[in] _color  : Text color, alpha is ignored.
+	/// @param[in] _format : Text format.
 	static inline void consolePrintfRGB(uint32_t _color, const char* _format, ...);
 
 	/// Prints formatted text to console.
 	///
-	/// @param[in] _r: Red component.
-	/// @param[in] _g: Green component.
-	/// @param[in] _b: Blue component.
-	/// @param[in] _format: Text format.
+	/// @param[in] _r      : Red component.
+	/// @param[in] _g      : Green component.
+	/// @param[in] _b      : Blue component.
+	/// @param[in] _format : Text format.
 	static inline void consolePrintfRGB(uint8_t _r, uint8_t _g, uint8_t _b, const char* _format, ...);
 
 	/// Creates color from R,G and B components.
 	///
-	/// @param[in] _r: Red component.
-	/// @param[in] _g: Green component.
-	/// @param[in] _b: Blue component.
+	/// @param[in] _r      : Red component.
+	/// @param[in] _g      : Green component.
+	/// @param[in] _b      : Blue component.
+	/// 
 	/// @returns formatted color.
 	static inline uint32_t consoleColor(uint8_t r, uint8_t g, uint8_t b);
 
 	/// Gets Red color component.
 	///
-	/// @param[in] _color: Color to get component from.
+	/// @param[in] _color  : Color to get component from.
+	/// 
 	/// @returns red color component.
 	static inline uint8_t consoleColorGetR(uint32_t _color);
 
 	/// Gets Green color component.
 	///
-	/// @param[in] _color: Color to get component from.
+	/// @param[in] _color  : Color to get component from.
+	/// 
 	/// @returns green color component.
 	static inline uint8_t consoleColorGetG(uint32_t _color);
 
 	/// Gets Blue color component.
 	///
-	/// @param[in] _color: Color to get component from.
+	/// @param[in] _color  : Color to get component from.
+	/// 
 	/// @returns blue color component.
 	static inline uint8_t consoleColorGetB(uint32_t _color);
 

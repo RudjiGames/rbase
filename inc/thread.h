@@ -17,7 +17,7 @@ namespace rtm {
 
 	/// Sleeps current thread.
 	///
-	/// @param[in] _ms: Time to sleep in milliseconds/
+	/// @param[in] _ms : Time to sleep in milliseconds/
 	static inline void threadSleep(uint32_t _ms);
 
 	/// Yields thread execution.

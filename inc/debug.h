@@ -15,7 +15,7 @@ namespace rtm {
 
 	/// Outputs text to debug console/stderr.
 	///
-	/// @param[in] _out: Text to output
+	/// @param[in] _out : Text to output
 	static inline void debugOutput(const char* _out);
 
 } // namespace rtm

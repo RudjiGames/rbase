@@ -66,7 +66,7 @@ FileStatus		noopWriteGetStatus(FileWriter*) { return FileStatus::CLOSED; }
 int64_t			noopWriteSeek(FileWriter*, int64_t _offset, uint64_t _origin) { RTM_UNUSED_2(_offset, _origin); return 0; }
 int64_t			noopWriteWrite(FileWriter*, const void* _src, int64_t _size) { RTM_UNUSED_2(_src, _size); return 0; }
 
-void fileReaderSetNoop(FileReader* _reader)
+static void fileReaderSetNoop(FileReader* _reader)
 {
 	_reader->construct	= noopReadClose;	// same fn declaration
 	_reader->destruct	= noopReadClose;	// same fn declaration
@@ -77,7 +77,7 @@ void fileReaderSetNoop(FileReader* _reader)
 	_reader->read		= noopReadRead;
 }
 
-void fileWriterSetNoop(FileWriter* _writer)
+static void fileWriterSetNoop(FileWriter* _writer)
 {
 	_writer->construct	= noopWriteClose;	// same fn declaration
 	_writer->destruct	= noopWriteClose;	// same fn declaration
@@ -99,12 +99,12 @@ struct membersLocal
 
 #define LOCAL(_file) (*(membersLocal*)_file->m_data)
 
-void localReadConstruct(FileReader* _file)
+static void localReadConstruct(FileReader* _file)
 {
 	LOCAL(_file).m_file = 0;
 }
 
-FileStatus localReadOpen(FileReader* _file, const char* _path)
+static FileStatus localReadOpen(FileReader* _file, const char* _path)
 {
 	LOCAL(_file).m_file = ::fopen(_path, "rb");
 	if (LOCAL(_file).m_file)
@@ -117,14 +117,14 @@ FileStatus localReadOpen(FileReader* _file, const char* _path)
 	return FileStatus::FAIL;
 }
 
-FileStatus localReadGetStatus(FileReader* _file)
+static FileStatus localReadGetStatus(FileReader* _file)
 {
 	if (LOCAL(_file).m_file)
 		return FileStatus::OPEN;
 	return FileStatus::CLOSED;
 }
 
-void localReadClose(FileReader* _file)
+static void localReadClose(FileReader* _file)
 {
 	if (LOCAL(_file).m_file)
 	{
@@ -133,12 +133,12 @@ void localReadClose(FileReader* _file)
 	}
 }
 
-void localReadDestruct(FileReader* _file)
+static void localReadDestruct(FileReader* _file)
 {
 	localReadClose(_file);
 }
 
-int64_t	localReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
+static int64_t localReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
 {
 	if (!LOCAL(_file).m_file)
 	{
@@ -151,7 +151,7 @@ int64_t	localReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
 	return ::ftell(LOCAL(_file).m_file);
 }
 
-int64_t	localReadRead(FileReader* _file, void* _dest, int64_t _size)
+static int64_t localReadRead(FileReader* _file, void* _dest, int64_t _size)
 {
 	if (!LOCAL(_file).m_file)
 	{
@@ -163,12 +163,12 @@ int64_t	localReadRead(FileReader* _file, void* _dest, int64_t _size)
 	return (int64_t)::fread(_dest, 1, (size_t)_size, LOCAL(_file).m_file);
 }
 
-void localWriteConstruct(FileWriter* _file)
+static void localWriteConstruct(FileWriter* _file)
 {
 	LOCAL(_file).m_file = 0;
 }
 
-FileStatus localWriteOpen(FileWriter* _file, const char* _path)
+static FileStatus localWriteOpen(FileWriter* _file, const char* _path)
 {
 	LOCAL(_file).m_file = ::fopen(_path, "wb");
 	if (LOCAL(_file).m_file != 0)
@@ -176,14 +176,14 @@ FileStatus localWriteOpen(FileWriter* _file, const char* _path)
 	return FileStatus::FAIL;
 }
 
-FileStatus localWriteGetStatus(FileWriter* _file)
+static FileStatus localWriteGetStatus(FileWriter* _file)
 {
 	if (LOCAL(_file).m_file)
 		return FileStatus::OPEN;
 	return FileStatus::CLOSED;
 }
 
-void localWriteClose(FileWriter* _file)
+static void localWriteClose(FileWriter* _file)
 {
 	if (LOCAL(_file).m_file)
 	{
@@ -192,12 +192,12 @@ void localWriteClose(FileWriter* _file)
 	}
 }
 
-void localWriteDestruct(FileWriter* _file)
+static void localWriteDestruct(FileWriter* _file)
 {
 	localWriteClose(_file);
 }
 
-int64_t	localWriteSeek(FileWriter* _file, int64_t _offset, uint64_t _origin)
+static int64_t localWriteSeek(FileWriter* _file, int64_t _offset, uint64_t _origin)
 {
 	if (!LOCAL(_file).m_file)
 	{
@@ -210,7 +210,7 @@ int64_t	localWriteSeek(FileWriter* _file, int64_t _offset, uint64_t _origin)
 	return ::ftell(LOCAL(_file).m_file);
 }
 
-int64_t	localWriteWrite(FileWriter* _file, const void* _src, int64_t _size)
+static int64_t localWriteWrite(FileWriter* _file, const void* _src, int64_t _size)
 {
 	if (!LOCAL(_file).m_file)
 	{
@@ -222,7 +222,7 @@ int64_t	localWriteWrite(FileWriter* _file, const void* _src, int64_t _size)
 	return (int64_t)fwrite(_src, 1, (size_t)_size, LOCAL(_file).m_file);
 }
 
-void fileReaderSetLocal(FileReader* _reader)
+static void fileReaderSetLocal(FileReader* _reader)
 {
 	_reader->construct	= localReadConstruct;
 	_reader->destruct	= localReadDestruct;
@@ -233,7 +233,7 @@ void fileReaderSetLocal(FileReader* _reader)
 	_reader->read		= localReadRead;
 }
 
-void fileWriterSetLocal(FileWriter* _writer)
+static void fileWriterSetLocal(FileWriter* _writer)
 {
 	_writer->construct	= localWriteConstruct;
 	_writer->destruct	= localWriteDestruct;
@@ -321,12 +321,12 @@ struct DownloadThread
 	}
 };
 
-void httpReadConstruct(FileReader* _file)
+static void httpReadConstruct(FileReader* _file)
 {
 	HTTP(_file).m_file = 0;
 }
 
-FileStatus httpReadOpen(FileReader* _file, const char* _path)
+static FileStatus httpReadOpen(FileReader* _file, const char* _path)
 {
 	uint32_t len = rtm::strLen(_path);
 	HTTP(_file).m_url = new char[len+1];
@@ -335,7 +335,7 @@ FileStatus httpReadOpen(FileReader* _file, const char* _path)
 	return FileStatus::DOWNLOADING;
 }
 
-FileStatus httpReadGetStatus(FileReader* _file)
+static FileStatus httpReadGetStatus(FileReader* _file)
 {
 	if (HTTP(_file).m_file)
 		return FileStatus::OPEN;
@@ -349,7 +349,7 @@ FileStatus httpReadGetStatus(FileReader* _file)
 	return FileStatus::FAIL;
 }
 
-void httpReadClose(FileReader* _file)
+static void httpReadClose(FileReader* _file)
 {
 	if (HTTP(_file).m_file)
 	{
@@ -360,12 +360,12 @@ void httpReadClose(FileReader* _file)
 	}
 }
 
-void httpReadDestruct(FileReader* _file)
+static void httpReadDestruct(FileReader* _file)
 {
 	httpReadClose(_file);
 }
 
-int64_t	httpReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
+static int64_t httpReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
 {
 	RTM_ASSERT(HTTP(_file).m_file != 0, "");
 	if (!HTTP(_file).m_file)
@@ -378,7 +378,7 @@ int64_t	httpReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
 	return ::ftell(HTTP(_file).m_file);
 }
 
-int64_t	httpReadRead(FileReader* _file, void* _dest, int64_t _size)
+static int64_t httpReadRead(FileReader* _file, void* _dest, int64_t _size)
 {
 	if (!HTTP(_file).m_file)
 	{
@@ -438,13 +438,13 @@ static void onProgress(unsigned _handle, void* _userData, int _percent)
 		_file->m_callBacks.m_progCb(progress);
 }
 
-void httpReadConstruct(FileReader* _file)
+static void httpReadConstruct(FileReader* _file)
 {
 	HTTP(_file).m_reqHandle		= 0;
 	HTTP(_file).m_file			= 0;
 }
 
-FileStatus httpReadOpen(FileReader* _file, const char* _path)
+static FileStatus httpReadOpen(FileReader* _file, const char* _path)
 {
 	uint8_t digest[16];
 	char	hash[33];
@@ -461,7 +461,7 @@ FileStatus httpReadOpen(FileReader* _file, const char* _path)
 	return FileStatus::FAIL;
 }
 
-FileStatus httpReadGetStatus(FileReader* _file)
+static FileStatus httpReadGetStatus(FileReader* _file)
 {
 	if (HTTP(_file).m_file)
 		return FileStatus::OPEN;
@@ -472,7 +472,7 @@ FileStatus httpReadGetStatus(FileReader* _file)
 	return FileStatus::FAIL;
 }
 
-void httpReadClose(FileReader* _file)
+static void httpReadClose(FileReader* _file)
 {
 	if (HTTP(_file).m_reqHandle)
 		emscripten_async_wget2_abort(HTTP(_file).m_reqHandle);
@@ -485,12 +485,12 @@ void httpReadClose(FileReader* _file)
 	}
 }
 
-void httpReadDestruct(FileReader* _file)
+static void httpReadDestruct(FileReader* _file)
 {
 	httpReadClose(_file);
 }
 
-int64_t	httpReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
+static int64_t httpReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
 {
 	RTM_ASSERT(HTTP(_file).m_file != 0, "");
 	if (!HTTP(_file).m_file)
@@ -503,7 +503,7 @@ int64_t	httpReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin)
 	return ftell(HTTP(_file).m_file);
 }
 
-int64_t	httpReadRead(FileReader* _file, void* _dest, int64_t _size)
+static int64_t httpReadRead(FileReader* _file, void* _dest, int64_t _size)
 {
 	if (!HTTP(_file).m_file)
 	{
@@ -524,45 +524,45 @@ int64_t	httpReadRead(FileReader* _file, void* _dest, int64_t _size)
 	#define httpReadRead		noopReadRead
 #endif // RTM_PLATFORM_EMSCRIPTEN
 
-void httpWriteConstruct(FileWriter* _file)
+static void httpWriteConstruct(FileWriter* _file)
 {
 	RTM_UNUSED(_file);
 }
 
-FileStatus httpWriteOpen(FileWriter* _file, const char* _path)
+static FileStatus httpWriteOpen(FileWriter* _file, const char* _path)
 {
 	RTM_UNUSED_2(_file, _path);
 	return FileStatus::FAIL;
 }
 
-FileStatus httpWriteIsGetStatus(FileWriter*)
+static FileStatus httpWriteIsGetStatus(FileWriter*)
 {
 	return FileStatus::CLOSED;
 }
 
-void httpWriteClose(FileWriter* _file)
+static void httpWriteClose(FileWriter* _file)
 {
 	RTM_UNUSED(_file);
 }
 
-void httpWriteDestruct(FileWriter* _file)
+static void httpWriteDestruct(FileWriter* _file)
 {
 	httpWriteClose(_file);
 }
 
-int64_t	httpWriteSeek(FileWriter* _file, int64_t _offset, uint64_t _origin)
+static int64_t httpWriteSeek(FileWriter* _file, int64_t _offset, uint64_t _origin)
 {
 	RTM_UNUSED_3(_file, _offset, _origin);
 	return 0;
 }
 
-int64_t	httpWriteWrite(FileWriter* _file, const void* _src, int64_t _size)
+static int64_t httpWriteWrite(FileWriter* _file, const void* _src, int64_t _size)
 {
 	RTM_UNUSED_3(_file, _src, _size);
 	return 0;
 }
 
-void fileReaderSetHTTP(FileReader* _reader)
+static void fileReaderSetHTTP(FileReader* _reader)
 {
 	_reader->construct	= httpReadConstruct;
 	_reader->destruct	= httpReadDestruct;
@@ -573,7 +573,7 @@ void fileReaderSetHTTP(FileReader* _reader)
 	_reader->read		= httpReadRead;
 }
 
-void fileWriterSetHTTP(FileWriter* _writer)
+static void fileWriterSetHTTP(FileWriter* _writer)
 {
 	_writer->construct	= httpWriteConstruct;
 	_writer->destruct	= httpWriteDestruct;

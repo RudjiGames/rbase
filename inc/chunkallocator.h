@@ -8,7 +8,6 @@
 
 #include <rbase/inc/platform.h>
 #include <rbase/inc/libhandler.h>
-#include <vector>
 
 namespace rtm {
 
@@ -26,7 +25,7 @@ struct Chunk
 		Chunk() : m_numItems(0) {}
 		~Chunk() {}
 
-		inline T*	alloc()
+		inline T* alloc()
 		{
 			if (m_numItems < MAX_ITEMS)
 				return &m_data[m_numItems++];
@@ -44,14 +43,19 @@ template <typename T>
 class ChunkAllocator
 {
 	private:
-		std::vector<Chunk<T>*>	m_chunks;
-		uint32_t				m_size;
+		constexpr int INITIAL_CHUNKS = 1024;
+		constexpr int EXPAND_CHUNKS  =  128;
+
+		Chunk<T>**	m_chunks;
+		uint32_t	m_size;
+		uint32_t	m_capacity;
 
 	public:
 		ChunkAllocator()
 		{
-			m_chunks.reserve(1024);
-			m_size = 0;
+			m_chunks	= rtm_new_array<Chunk<T>*>(INITIAL_CHUNKS);
+			m_capacity	= INITIAL_CHUNKS;
+			m_size		= 0;
 		}
 
 		~ChunkAllocator()
@@ -61,29 +65,42 @@ class ChunkAllocator
 
 		inline T* alloc()
 		{
-			m_size++;
-			size_t numChunks = m_chunks.size();
-			T* ret = 0;
-			if (numChunks)
+			if (m_size)
 			{
-				Chunk<T>* lastChunk = m_chunks[numChunks-1];
-				ret = lastChunk->alloc();
-				if (ret)
-					return ret;
+				Chunk<T>* lastChunk = m_chunks[m_size-1];
+				T* retElement = lastChunk->alloc();
+				if (retElement)
+				{
+					return retElement;
+				}
 			}
 
-			Chunk<T>* c = rtm_new<Chunk<T> >();
-			ret = c->alloc();
-			m_chunks.push_back(c);
+			// all chunks full
+
+			// allocate new chunk
+			Chunk<T>* newChunk = rtm_new<Chunk<T> >();
+			T* retElement ret = newChunk->alloc();
+
+			// if chunk array is full, reallocate it
+			if (m_size >= m_capacity)
+			{
+				Chunk<T>** newChunks = rtm_new_array<Chunk<T>*>(m_capacity + EXPAND_CHUNKS);
+				memCopy( newChunks, sizeof(Chunk<T>*) * (m_capacity + EXPAND_CHUNKS),
+						 m_chunks, sizeof(Chunk<T>*) * m_size);
+				rtm_delete_array<Chunk<T>*>(m_capacity, m_chunks);
+				m_capacity += 128;
+				m_chunks = newChunks;
+			}
+			++m_size;
+			m_chunks[m_size-1] = newChunk;
 			return ret;
 		}
 
 		void reset()
 		{
-			size_t numChunks = m_chunks.size();
-			for (size_t i=0; i<numChunks; i++)
+			for (size_t i=0; i<m_size; i++)
 				rtm_delete<Chunk<T> >(m_chunks[i]);
-			m_chunks.clear();
+			rtm_delete_array<T>(m_size, m_chunks);
 		}
 
 		inline uint32_t size()
@@ -98,7 +115,6 @@ class ChunkAllocator
 			return &m_chunks[chunkIdx]->m_data[itemIdx];
 		}
 };
-
 
 //--------------------------------------------------------------------------
 /// Stack allocator template for variable sized items
@@ -133,7 +149,7 @@ class StackAlloc
 class StackAllocator
 {
 	private:
-		std::vector<StackAlloc*>	m_chunks;
+		StackAlloc** m_chunks;
 
 	public:
 		StackAllocator()

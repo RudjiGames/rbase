@@ -27,15 +27,15 @@ namespace rtm {
 
 	/// Returns current time.
 	///
-	/// @param[in] _startClock: Start CPU clock time
+	/// @param[in] _startClock : Start CPU clock time
 	///
 	/// @returns current time, in seconds.
 	static inline float cpuTime(uint64_t _startClock);
 
 	/// Calculates time based on clock and frequency.
 	///
-	/// @param[in] _clock: CPU clock counter
-	/// @param[in] _frequency: CPU frequency
+	/// @param[in] _clock      : CPU clock counter
+	/// @param[in] _frequency  : CPU frequency
 	///
 	/// @returns current time, in seconds.
 	static inline float cpuTime(uint64_t _clock, uint64_t _frequency);

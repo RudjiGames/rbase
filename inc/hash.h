@@ -12,58 +12,58 @@ namespace rtm {
 
 	/// Calculates 32bit hash value using MurMur3 algorithm.
 	///
-	/// @param[in] _key: Key buffer to hash
-	/// @param[in] _len: Length of the key buffer
-	/// @param[in] _seed: Seed value
+	/// @param[in] _key      : Key buffer to hash
+	/// @param[in] _len      : Length of the key buffer
+	/// @param[in] _seed     : Seed value
 	///
 	/// @returns the calculated hash value.
 	static inline uint32_t hashMurmur3(const void* _key, uint32_t _len, uint32_t _seed = 0);
 
 	/// Calculates 32bit hash value using City hash algorithm.
 	///
-	/// @param[in] _key: Key buffer to hash
-	/// @param[in] _len: Length of the key buffer
+	/// @param[in] _key      : Key buffer to hash
+	/// @param[in] _len      : Length of the key buffer
 	///
 	/// @returns the calculated hash value.
 	uint32_t hashCity32(const void* _key, uint32_t _len);
 
 	/// Calculates 64bit hash value using City hash algorithm.
 	///
-	/// @param[in] _key: Key buffer to hash
-	/// @param[in] _len: Length of the key buffer
+	/// @param[in] _key      : Key buffer to hash
+	/// @param[in] _len      : Length of the key buffer
 	///
 	/// @returns the calculated hash value.
 	uint64_t hashCity64(const void* _key, uint32_t _len);
 
 	/// Calculates 64bit hash value using City hash algorithm.
 	///
-	/// @param[in] _key: Key buffer to hash
-	/// @param[in] _len: Length of the key buffer
-	/// @param[in] _seed: Seed value
+	/// @param[in] _key      : Key buffer to hash
+	/// @param[in] _len      : Length of the key buffer
+	/// @param[in] _seed     : Seed value
 	///
 	/// @returns the calculated hash value.
 	uint64_t hashCity64(const void* _key, uint32_t _len, uint64_t _seed);
 
 	/// Calculates a string hash using a simple hashing algorithm.
 	///
-	/// @param[in] _string: String to hash
-	/// @param[in] _maxChars: Maximum number of characters to use for hashing
+	/// @param[in] _string   : String to hash
+	/// @param[in] _maxChars : Maximum number of characters to use for hashing
 	///
 	/// @returns the calculated hash value.
 	static inline uint32_t hashStr(const char* _string, uint32_t _maxChars = UINT32_MAX);
 
 	/// Calculates an MD5 hash.
 	///
-	/// @param[in] _data: Data to hash
-	/// @param[in] _data_size: Maximum number of characters to use for hashing
-	/// @param[out] _out_digest: Buffer to store calculated MD5 hash
-	void hashMD5(const void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
+	/// @param[in] _data     : Data to hash
+	/// @param[in] _dataSize : Maximum number of characters to use for hashing
+	/// @param[out] _digest  : Buffer to store calculated MD5 hash
+	void hashMD5(const void* _data, uint32_t _dataSize, uint8_t _digest[16]);
 
 	/// Converts an MD5 hash to string representation.
 	///
-	/// @param[in] _digest: Hash digest to convert
-	/// @param[out] _out_hash: Buffer to store string representation of the MD5 hash
-	void hashMD5toString(uint8_t _digest[16], char _out_hash[33]);
+	/// @param[in] _digest   : Hash digest to convert
+	/// @param[out] _hash    : Buffer to store string representation of the MD5 hash
+	void hashMD5toString(uint8_t _digest[16], char _hash[33]);
 
 } // namespace rtm
 
@@ -155,8 +155,8 @@ namespace rtm {
 	   return h;
 	}
 
-	void hashMD5(const void* _data, uint32_t _data_size, uint8_t _out_digest[16]);
-	void hashMD5toString(uint8_t _digest[16], char _out_hash[33]);
+	void hashMD5(const void* _data, uint32_t _dataSize, uint8_t _digest[16]);
+	void hashMD5toString(uint8_t _digest[16], char _hash[33]);
 
 	namespace hash_private {
 
