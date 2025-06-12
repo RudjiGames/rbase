@@ -11,13 +11,16 @@
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
-	#include <winbase.h>
 	typedef HANDLE semaphore_t;
 #elif RTM_PLATFORM_POSIX
-	#include <semaphore.h>
+//	#include <semaphore.h>
 	#include <time.h>
 	#include <pthread.h>
-	struct semaphore_t;
+	typedef struct semaphore_t {
+		pthread_mutex_t	m_mutex;
+		pthread_cond_t	m_cv;
+		int32_t			m_count;
+	} semaphore_t;
 #else
 	#error "Unsupported platform/compiler!"
 #endif
@@ -59,8 +62,6 @@ namespace rtm {
 namespace rtm {
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
-	typedef HANDLE semaphore_t;
-
 	static inline bool semaphore_init(semaphore_t* _sem)
 	{
 #if RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
@@ -89,13 +90,6 @@ namespace rtm {
 
 #elif RTM_PLATFORM_POSIX
 
-	struct semaphore_t
-	{
-		pthread_mutex_t	m_mutex;
-		pthread_cond_t	m_cv;
-		int32_t			m_count;
-	};
-	
 	static inline bool semaphore_init(semaphore_t* _sem)
 	{
 	
