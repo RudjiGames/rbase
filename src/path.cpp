@@ -5,7 +5,7 @@
 
 #include <rbase_pch.h>
 #include <rbase/inc/path.h>
-#include <rbase/inc/winchar.h>
+#include <rbase/inc/widechar.h>
 #include <rbase/inc/mutex.h>
 
 #if RTM_PLATFORM_WINDOWS

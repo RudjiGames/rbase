@@ -46,7 +46,7 @@
 #define RTM_PROPERTY_TYPE_MAKE_UNSIGNED(_x)	(_x | RTM_PROPERTY_TYPE_UNSIGNED_MASK)
 #define RTM_PROPERTY_TYPE_IS_UNSIGNED(_x)	(_x & RTM_PROPERTY_TYPE_UNSIGNED_MASK)
 
-/* Returns version of the plugin */
+/* External realloc interface/callback. */
 typedef void* (*rtmPluginRealloc)(void* _ptr, size_t _size);
 
 /* 
@@ -54,19 +54,25 @@ typedef void* (*rtmPluginRealloc)(void* _ptr, size_t _size);
  * These functions are implemented by all plugins.
  */
 
-/* Initializes the plugin. */
+ /* Initializes the plugin. */
+ /* @param[in] _realloc    - profiler data / single frame capture */
+ /* @returns One of RTM_RESULT_(OK/ERROR/...) values. */
 typedef uint32_t		(*rtmPluginInit)(rtmPluginRealloc _realloc);
 
-/* Initializes the plugin. */
+/* Shuts down the plugin. */
+ /* @returns One of RTM_RESULT_(OK/ERROR/...) values. */
 typedef uint32_t		(*rtmPluginShutDown)();
 
 /* Returns name of the plugin */
+ /* @returns Name of the plugin. */
 typedef const char*		(*rtmPluginGetName)();
 
 /* Returns version of the plugin */
+ /* @returns Plugin version, major version in upper 16bits and minor version in lower 16bits. */
 typedef uint32_t		(*rtmPluginGetVersion)();
 
-/* Returns name of the plugin */
+/* Returns name of the plugin author.*/
+ /* @returns Name of the plugin author. */
 typedef const char*		(*rtmPluginGetAuthor)();
 
 /* Returns type of the plugin */
