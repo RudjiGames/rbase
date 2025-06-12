@@ -23,7 +23,7 @@ namespace rtm {
 	/// @param[in] _dstSize    : Size of the destination buffer
 	/// @param[in] _src        : Source buffer
 	/// @param[in] _numBytes   : Size of the source buffer
-	static inline void memCopy(void* _dst, uint32_t _dstSize, const void* _src, int64_t _numBytes);
+	static inline void memCopy(void* _dst, uint64_t _dstSize, const void* _src, uint64_t _numBytes);
 
 	/// Moves a memory buffer
 	///
@@ -141,6 +141,7 @@ namespace rtm {
 	///
 	/// @returns length of the string
 	static inline uint32_t strLen(const char* _str, uint32_t _max = UINT32_MAX);
+	static inline uint32_t strLen(const wchar_t* _str, uint32_t _max = UINT32_MAX);
 
 	/// Converts string to uppercase
 	///
@@ -262,7 +263,7 @@ namespace rtm {
 		}
 	}
 
-	static inline void memCopy(void* _dst, uint32_t _dstSize, const void* _src, int64_t _numBytes)
+	static inline void memCopy(void* _dst, uint64_t _dstSize, const void* _src, uint64_t _numBytes)
 	{
 		RTM_ASSERT(_dstSize >= _numBytes, "");
 		_numBytes = _numBytes > _dstSize ? _dstSize : _numBytes;
@@ -370,6 +371,16 @@ namespace rtm {
 
 		const char* ptr = _str;
 		for (; 0 < _max && *ptr != '\0'; ++ptr, --_max) {};
+		return uint32_t(ptr - _str);
+	}
+
+	static inline uint32_t strLen(const wchar_t* _str, uint32_t _max)
+	{
+		if (0 == _str)
+			return 0;
+
+		const wchar_t* ptr = _str;
+		for (; 0 < _max && *ptr != L'\0'; ++ptr, --_max) {};
 		return uint32_t(ptr - _str);
 	}
 

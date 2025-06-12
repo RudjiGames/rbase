@@ -12,13 +12,45 @@
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <winbase.h>
+	typedef HANDLE semaphore_t;
 #elif RTM_PLATFORM_POSIX
+	struct semaphore_t;
 	#include <semaphore.h>
 	#include <time.h>
 	#include <pthread.h>
 #else
 	#error "Unsupported platform/compiler!"
 #endif
+
+namespace rtm {
+
+	/// Initializes a semaphore.
+	///
+	/// @param[in] _sem   : Semaphore pointer
+	///
+	/// @returns true on success.
+	static inline bool semaphore_init(semaphore_t* _sem);
+
+	/// Destroys a semaphore.
+	///
+	/// @param[in] _sem   : Semaphore pointer
+	static inline void semaphore_destroy(semaphore_t* _sem);
+
+	/// Semaphore post.
+	///
+	/// @param[in] _sem   : Semaphore pointer
+	/// @param[in] _count : Semaphore count
+	static inline void semaphore_post(semaphore_t* _sem, uint32_t _count);
+
+	/// Waits on a semaphore.
+	///
+	/// @param[in] _sem   : Semaphore pointer
+	/// @param[in] _ms    : Milliseconds to wait for
+	///
+	/// @returns true on success.
+	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms = -1);
+
+} // namespace rtm
 
 namespace rtm {
 
@@ -42,7 +74,7 @@ namespace rtm {
 		ReleaseSemaphore(*_sem, _count, NULL);
 	}
 	
-	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms = -1) {
+	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms) {
 		unsigned long ms = (0 > _ms) ? INFINITE : _ms;
 		return WAIT_OBJECT_0 == WaitForSingleObjectEx(*_sem, ms, 0);
 	}
@@ -88,7 +120,7 @@ namespace rtm {
 		pthread_mutex_unlock(&_sem->m_mutex);
 	}
 	
-	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms = -1)
+	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms)
 	{
 		int result = pthread_mutex_lock(&_sem->m_mutex);
 
@@ -119,35 +151,8 @@ namespace rtm {
 		return result == 0;
 	}
 	
-#elif RTM_PLATFORM_POSIX
-	typedef sem_t semaphore_t;
-
-	static inline bool semaphore_init(semaphore_t* _sem) {
-		int32_t result = sem_init(_sem, 0, 0);
-		return result == 0;
-	}
-
-	static inline void semaphore_destroy(semaphore_t* _sem) {
-		sem_destroy(_sem);
-	}
-
-	static inline void semaphore_post(semaphore_t* _sem, uint32_t _count) {
-		for (uint32_t i=0; i<_count; ++i)
-			sem_post(_sem);
-	}
-	
-	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms = -1) {
-	{
-		if (0 > _ms)
-			return (0 == sem_wait(_sem));
-	
-		timespec ts;
-		clock_gettime(CLOCK_REALTIME, &ts);
-		ts.tv_sec += _ms/1000;
-		ts.tv_nsec += (_ms % 1000)*1000;
-		return 0 == semaphore_timedwait(_sem, &ts);
-	}
-
+#else
+	#error "Unsupported platform/compiler!"
 #endif
 
 	class Semaphore

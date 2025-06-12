@@ -68,7 +68,7 @@ namespace rtm {
 		typedef Handle<IDX_BITS, GEN_BITS>	HandleType;
 
 		FixedArray<uint8_t, MAX_ELEMENTS>	m_generation;
-		FixedFifo<uint32_t, MAX_ELEMENTS>	m_freeIndices;
+		FixedFIFO<uint32_t, MAX_ELEMENTS>	m_freeIndices;
 		uint32_t							m_size;
 
 	public:

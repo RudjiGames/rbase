@@ -5,14 +5,15 @@
 
 #include <rbase_pch.h>
 #include <rbase/inc/stringfn.h>
-#include <rbase/inc/winchar.h>
+#include <rbase/inc/widechar.h>
+
+#include <stdlib.h> // mbstowcs, wcstombs
+
+namespace rtm {
 
 #if RTM_PLATFORM_WINDOWS
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
-namespace rtm {
+#define MAX_PATH_LOCAL 260
 
 static const int S_LONG_PATH_LEN = 4; // wcslen(L"\\\\?\\");
 static const int S_LONG_PATH_UNC_LEN = S_LONG_PATH_LEN + 3; // wcslen(L"\\\\?\\UNC");
@@ -61,7 +62,7 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 		strlCat(_outBuff, outBuffSize, _name);
 
 	size_t pathLength = strLen(_outBuff);
-	if (pathLength - additionChars > MAX_PATH)
+	if (pathLength - additionChars > MAX_PATH_LOCAL)
 	{
 		replaceSlashes(_outBuff, '/');
 		return _outBuff;
@@ -72,6 +73,7 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 		return _outBuff + additionChars;
 	}
 }
+#endif // RTM_PLATFORM_WINDOWS
 
 MultiToWide::MultiToWide(const char* _string, bool _path)
 {
@@ -82,26 +84,45 @@ MultiToWide::MultiToWide(const char* _string, bool _path)
 	if (!_string)
 		return;
 
-	size_t sLen = strLen(_string) + S_LONG_PATH_UNC_LEN + 2; // 2: last slash and null term
-	char* tmpBuff = 0;
-
-	const char* pathToConvert = _string;
+	uint32_t len = strLen(_string);
+#if RTM_PLATFORM_WINDOWS
 	if (_path)
 	{
-		tmpBuff = new char[sLen];
-		pathToConvert = makeLongPath(_string, 0, tmpBuff, sLen);
+		len += S_LONG_PATH_UNC_LEN + 2;
+	}
+#endif
+
+	if (len + 1 > CHARS_ON_STACK)
+	{
+		wchar_t* allocString = new wchar_t[len + 1];
+		m_ptr = allocString;
 	}
 
-	int size_needed = MultiByteToWideChar(CP_UTF8, 0, pathToConvert, -1, NULL, 0);
-	if (size_needed > S_ON_STACK_SIZE)
-		m_ptr = new  wchar_t[size_needed + 1];
-	else
-		m_ptr = &m_string[0];
+	const char* stringToConvert = _string;
 
-	m_size = MultiByteToWideChar(CP_UTF8, 0, pathToConvert, -1, m_ptr, size_needed);
-
+#if RTM_PLATFORM_WINDOWS
 	if (_path)
-		delete[] tmpBuff;
+	{
+		char tempBuffer[CHARS_ON_STACK];
+		char* tmpBuff = tempBuffer;
+		if (len > CHARS_ON_STACK)
+		{
+			tmpBuff = new char[len + 1];
+		}
+		stringToConvert = makeLongPath(_string, 0, tmpBuff, len);
+		m_size = uint32_t(mbstowcs(m_ptr, tmpBuff, CHARS_ON_STACK));
+		if (tmpBuff != tempBuffer)
+		{
+			delete[] tmpBuff;
+		}
+	}
+	else
+#endif // RTM_PLATFORM_WINDOWS
+	{
+		m_size = uint32_t(mbstowcs(m_ptr, stringToConvert, CHARS_ON_STACK));
+	}
+
+	RTM_ASSERT(static_cast<size_t>(-1) != m_size, "");
 }
 
 MultiToWide::~MultiToWide()
@@ -119,13 +140,15 @@ WideToMulti::WideToMulti(const wchar_t* _string)
 	if (!_string)
 		return;
 
-	int size_needed = WideCharToMultiByte(CP_UTF8, 0, _string, -1, NULL, 0, NULL, NULL);
-	if (size_needed > S_ON_STACK_SIZE)
-		m_ptr = new char[size_needed + 1];
-	else
-		m_ptr = &m_string[0];
+	uint32_t len = strLen(_string);
+	if (len + 1 > CHARS_ON_STACK)
+	{
+		char* allocString = new char[len + 1];
+		m_ptr = allocString;
+	}
 
-	m_size = WideCharToMultiByte(CP_UTF8, 0, _string, -1, m_ptr, size_needed, NULL, NULL);
+	m_size = uint32_t(wcstombs(m_ptr, _string, CHARS_ON_STACK));
+	RTM_ASSERT(static_cast<size_t>(-1) != m_size, "");
 }
 
 WideToMulti::~WideToMulti()
@@ -135,5 +158,3 @@ WideToMulti::~WideToMulti()
 }
 
 } // namespace rtm
-
-#endif // RTM_PLATFORM_WINDOWS

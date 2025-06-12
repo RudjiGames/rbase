@@ -27,7 +27,7 @@ UriView::UriView(const StringView& _str)
 
 void UriView::clear()
 {
-	for (int i=0; i<UriPart::Count; ++i)
+	for (int i=0; i<Part::Count; ++i)
 		m_parts[i].clear();
 	m_length = 0;
 }
@@ -40,7 +40,7 @@ void UriView::parse(const StringView& _str)
 	if (!schemeEnd)
 		return clear();
 
-	m_parts[UriPart::Scheme] = StringView(_str.data(), schemeEnd);
+	m_parts[Part::Scheme] = StringView(_str.data(), schemeEnd);
 
 	const char* authority		= strStr(_str, "//");
 	const char* authorityEnd	= 0;
@@ -57,7 +57,7 @@ void UriView::parse(const StringView& _str)
 	if (!authorityEnd)
 		authorityEnd = strEnd;
 
-	m_parts[UriPart::Authority] = StringView(authority, authorityEnd);
+	m_parts[Part::Authority] = StringView(authority, authorityEnd);
 
 	const char* hostStart = authority;
 
@@ -66,24 +66,24 @@ void UriView::parse(const StringView& _str)
 		hostStart = userInfoEnd + 1;
 
 		StringView user = StringView(authority, userInfoEnd);
-		m_parts[UriPart::User] = user;
+		m_parts[Part::User] = user;
 		if (const char* pwd = strChr(user, ':'))
 		{
-			m_parts[UriPart::UserName] = StringView(authority, pwd);
-			m_parts[UriPart::Password] = StringView(pwd + 1, userInfoEnd);
+			m_parts[Part::UserName] = StringView(authority, pwd);
+			m_parts[Part::Password] = StringView(pwd + 1, userInfoEnd);
 		}
 		else
-			m_parts[UriPart::UserName] = m_parts[UriPart::User];
+			m_parts[Part::UserName] = m_parts[Part::User];
 	}
 
 	StringView hostAndPort(hostStart, authorityEnd);
 	if (const char* port = strChr(hostAndPort, ':'))
 	{
-		m_parts[UriPart::Host] = StringView(hostStart, port);
-		m_parts[UriPart::Port] = StringView(port + 1, authorityEnd);
+		m_parts[Part::Host] = StringView(hostStart, port);
+		m_parts[Part::Port] = StringView(port + 1, authorityEnd);
 	}
 	else
-		m_parts[UriPart::Host] = StringView(hostStart, authorityEnd);
+		m_parts[Part::Host] = StringView(hostStart, authorityEnd);
 
 	if (*authorityEnd == '/')
 	{
@@ -95,18 +95,18 @@ void UriView::parse(const StringView& _str)
 		if (!pathEnd)
 			pathEnd = strEnd;
 
-		m_parts[UriPart::Path]	= StringView(path, pathEnd);
+		m_parts[Part::Path]	= StringView(path, pathEnd);
 
 		if (query)
 		{
 			if (fragment)
-				m_parts[UriPart::Query] = StringView(query + 1, fragment);
+				m_parts[Part::Query] = StringView(query + 1, fragment);
 			else
-				m_parts[UriPart::Query] = StringView(query + 1, strEnd);
+				m_parts[Part::Query] = StringView(query + 1, strEnd);
 		}
 
 		if (fragment)
-			m_parts[UriPart::Fragment]	= StringView(fragment + 1, strEnd);
+			m_parts[Part::Fragment]	= StringView(fragment + 1, strEnd);
 	}
 
 	m_length = _str.length();
@@ -118,7 +118,7 @@ void UriView::parse(const char* _str, uint32_t _len)
 	parse(StringView(_str, len));
 }
 
-const StringView& UriView::get(UriPart::Enum _part) const
+const StringView& UriView::get(Part _part) const
 {
 	return m_parts[_part];
 }
@@ -134,48 +134,48 @@ uint32_t UriView::write(char* _buffer, uint32_t _bufferSize, bool _skipFragment)
 
 	uint32_t len = 0;
 
-	len += writePart(UriPart::Scheme,			&_buffer[len], _bufferSize - len);
+	len += writePart(Part::Scheme,			&_buffer[len], _bufferSize - len);
 	len += writeString(StringView(":"),			&_buffer[len], _bufferSize - len);
 
-	if (m_parts[UriPart::Authority].length())
+	if (m_parts[Part::Authority].length())
 	{
 		len += writeString(StringView("//"),	&_buffer[len], _bufferSize - len);
 
-		if (m_parts[UriPart::User].length())
+		if (m_parts[Part::User].length())
 		{
-			len += writePart(UriPart::UserName,	&_buffer[len], _bufferSize - len);
+			len += writePart(Part::UserName,	&_buffer[len], _bufferSize - len);
 			len += writeString(StringView(":"),	&_buffer[len], _bufferSize - len);
-			len += writePart(UriPart::Password,	&_buffer[len], _bufferSize - len);
+			len += writePart(Part::Password,	&_buffer[len], _bufferSize - len);
 			len += writeString(StringView("@"),	&_buffer[len], _bufferSize - len);
 		}
-		len += writePart(UriPart::Host,		&_buffer[len], _bufferSize - len);
+		len += writePart(Part::Host,		&_buffer[len], _bufferSize - len);
 
-		if (m_parts[UriPart::Port].length())
+		if (m_parts[Part::Port].length())
 		{
 			len += writeString(StringView(":"),	&_buffer[len], _bufferSize - len);
-			len += writePart(UriPart::Port,		&_buffer[len], _bufferSize - len);
+			len += writePart(Part::Port,		&_buffer[len], _bufferSize - len);
 		}
 	}
 
-	len += writePart(UriPart::Path,		&_buffer[len], _bufferSize - len);
+	len += writePart(Part::Path,		&_buffer[len], _bufferSize - len);
 
-	if (m_parts[UriPart::Query].length())
+	if (m_parts[Part::Query].length())
 	{
 		len += writeString(StringView("?"),	&_buffer[len], _bufferSize - len);
-		len += writePart(UriPart::Query,	&_buffer[len], _bufferSize - len);
+		len += writePart(Part::Query,	&_buffer[len], _bufferSize - len);
 
 	}
 
-	if (m_parts[UriPart::Fragment].length() && !_skipFragment)
+	if (m_parts[Part::Fragment].length() && !_skipFragment)
 	{
 		len += writeString(StringView("#"),	&_buffer[len], _bufferSize - len);
-		len += writePart(UriPart::Fragment,	&_buffer[len], _bufferSize - len);
+		len += writePart(Part::Fragment,	&_buffer[len], _bufferSize - len);
 	}
 
 	return len;
 }
 
-uint32_t UriView::writePart(UriPart::Enum _part, char* _buffer, uint32_t _bufferSize) const
+uint32_t UriView::writePart(Part _part, char* _buffer, uint32_t _bufferSize) const
 {
 	RTM_ASSERT(_buffer, "");
 	return writeString(m_parts[_part], _buffer, _bufferSize);
@@ -202,7 +202,7 @@ Uri::Uri(const StringView& _str)
 	parse((StringView)m_uri);
 }
 
-void Uri::setPart(UriPart::Enum _part, const StringView& _str)
+void Uri::setPart(Part _part, const StringView& _str)
 {
 	m_parts[_part] = _str;
 
@@ -409,8 +409,8 @@ uint32_t uriNest(const UriView& _uri, const UriView& _nestedUri, char* _buffer, 
 	}
 
 	uint32_t written = _uri.write(_buffer, _bufferSize, true);
-	StringView query	= _uri.get(UriPart::Query);
-	StringView fragment	= _uri.get(UriPart::Fragment);
+	StringView query	= _uri.get(UriView::Part::Query);
+	StringView fragment	= _uri.get(UriView::Part::Fragment);
 
 	if (!query.length())
 		written += strlCpy(&_buffer[written], _bufferSize - written, "?");
@@ -450,8 +450,8 @@ uint32_t uriNestArr(const UriView* _uris, uint32_t _numUris, char* _buffer, uint
 	}
 
 	uint32_t written = _uris[0].write(_buffer, _bufferSize, true);
-	StringView query	= _uris[0].get(UriPart::Query);
-	StringView fragment = _uris[0].get(UriPart::Fragment);
+	StringView query	= _uris[0].get(UriView::Part::Query);
+	StringView fragment = _uris[0].get(UriView::Part::Fragment);
 
 	if (!query.length())
 		written += strlCpy(&_buffer[written], _bufferSize - written, "?");
@@ -513,7 +513,7 @@ uint32_t uriParseQuery(const StringView& _uri, StringView* _strs, uint32_t _numS
 
 uint32_t uriParseQuery(const UriView& _uri, StringView* _strs, uint32_t _numStrs, uint32_t* _numStrsNeeded)
 {
-	StringView query = _uri.get(UriPart::Query);
+	StringView query = _uri.get(UriView::Part::Query);
 	return uriParseQuery(query, _strs, _numStrs, _numStrsNeeded);
 }
 

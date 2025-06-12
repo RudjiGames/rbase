@@ -8,8 +8,6 @@
 
 #include <rbase/inc/platform.h>
 
-namespace rtm {
-
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
@@ -20,6 +18,8 @@ namespace rtm {
 #elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
 	typedef ScePthreadMutex mutex;
 #endif
+
+namespace rtm {
 
 	/// Retrieves file name with extension if it is a file path.
 	///

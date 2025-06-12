@@ -188,7 +188,7 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 		return false;
 
 	WideToMulti wb(wBuffer);
-	return strLen(wb) == strlCpy(_buffer, (int32_t)_bufferSize, wb);
+	return wb.size() == strlCpy(_buffer, (int32_t)_bufferSize, wb);
 
 #elif RTM_PLATFORM_POSIX
 
@@ -213,8 +213,8 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 
 #if RTM_PLATFORM_WINDOWS
 
-	wchar_t executablePath[512];
-	if (!GetModuleFileNameW(GetModuleHandle(0), executablePath, 512))
+	wchar_t executablePath[1024];
+	if (!GetModuleFileNameW(GetModuleHandle(0), executablePath, 1024))
 		return false;
 
 	WideToMulti mb(executablePath);

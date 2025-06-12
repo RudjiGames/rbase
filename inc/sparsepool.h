@@ -11,6 +11,9 @@
 
 namespace rtm {
 
+	//--------------------------------------------------------------------------
+	/// Sparse pool
+	//--------------------------------------------------------------------------
 	class SparsePool
 	{
 	protected:
@@ -34,17 +37,22 @@ namespace rtm {
 		MemoryManager*		m_memoryManager;
 
 	public:
-		SparsePool()
-		{
-			memSet(this, 0, sizeof(SparsePool));
-		}
+		inline SparsePool()
+			: m_chunks(0)
+			, m_numChunks(0)
+			, m_elementSize(0)
+			, m_alignment(0)
+			, m_elementsInChunk(0)
+			, m_elementsTotal(0)
+			, m_memoryManager(0)
+		{}
 
-		~SparsePool()
+		inline ~SparsePool()
 		{
 			releaseChunks();
 		}
 
-		uint32_t size() const
+		inline uint32_t size() const
 		{
 			return m_elementsTotal;
 		}
@@ -151,12 +159,9 @@ namespace rtm {
 #if RTM_COMPILER_MSVC
 				ptr = (uint8_t*)_aligned_realloc(_ptr, _newSize, m_alignment);
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-				ptr = (uint8_t*)memalign(m_alignment, _newSize);
-<<<<<<< HEAD
-				memCopy(ptr, _ptr, _oldSize);
-=======
-				rtm::memCopy(ptr, _oldSize, _ptr, _oldSize);
->>>>>>> 38268a7c323a94807c118957f97a65c9a7a31ce2
+				void* newPtr = (uint8_t*)memalign(m_alignment, _newSize);
+				rtm::memCopy(newPtr, _oldSize, _ptr, _oldSize);
+				_ptr = newPtr;
 #else
 	#error "Unsupported compiler!"
 #endif

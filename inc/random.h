@@ -10,7 +10,10 @@
 
 namespace rtm {
 
+	//--------------------------------------------------------------------------
+	/// Random number generator
 	/// http://www.cse.yorku.ca/~oz/marsaglia-rng.html
+	//--------------------------------------------------------------------------
 	class Random
 	{
 		uint32_t m_z;

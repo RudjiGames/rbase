@@ -10,6 +10,25 @@
 
 namespace rtm {
 
+	//--------------------------------------------------------------------------
+	/// Container forward declarations
+	//--------------------------------------------------------------------------
+
+	/// Fixed size free list
+	template <int32_t BLOCK_SIZE, int32_t BLOCK_COUNT>
+	struct FreeList;
+
+	/// Fixed size array
+	template <typename T, int NUM_ELEMENTS>
+	struct FixedArray;
+
+	/// Fixed size FIFO queue
+	template <typename T, int NUM_ELEMENTS>
+	struct FixedFIFO;
+
+	//--------------------------------------------------------------------------
+	/// Fixed size free list
+	//--------------------------------------------------------------------------
 	template <int32_t BLOCK_SIZE, int32_t BLOCK_COUNT>
 	struct FreeList
 	{
@@ -60,6 +79,9 @@ namespace rtm {
 		}
 	};
 
+	//--------------------------------------------------------------------------
+	/// Fixed size array
+	//--------------------------------------------------------------------------
 	template <typename T, int NUM_ELEMENTS>
 	struct FixedArray
 	{
@@ -116,14 +138,17 @@ namespace rtm {
 		}	
 	};
 
+	//--------------------------------------------------------------------------
+	/// Fixed size FIFO queue
+	//--------------------------------------------------------------------------
 	template <typename T, int NUM_ELEMENTS>
-	struct FixedFifo
+	struct FixedFIFO
 	{
 		T		m_data[NUM_ELEMENTS];
 		int32_t	m_front;
 		int32_t	m_size;
 
-		FixedFifo()
+		FixedFIFO()
 			: m_front(0)
 			, m_size(0)
 		{

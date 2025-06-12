@@ -10,10 +10,13 @@
 
 #include <rbase/inc/platform.h>
 #include <rbase/inc/stringfn.h>
-#include <stdlib.h>	// atoi
+#include <stdlib.h>	// atoi, atof
 
 namespace rtm {
 
+	//--------------------------------------------------------------------------
+	/// Command line parsing
+	//--------------------------------------------------------------------------
 	class CommandLine
 	{
 		int					m_argc;
@@ -21,27 +24,27 @@ namespace rtm {
 
 	public:
 
-		CommandLine(int _argc, const char* const* _argv) :
+		inline CommandLine(int _argc, const char* const* _argv) :
 			m_argc(_argc), m_argv(_argv)
 		{
 		}
 
-		CommandLine(int _argc, const char* _argv[]) :
+		inline CommandLine(int _argc, const char* _argv[]) :
 			m_argc(_argc), m_argv(_argv)
 		{
 		}
 
-		bool hasArg(char _optionLetter) const
+		inline bool hasArg(char _optionLetter) const
 		{
 			return getArgString(_optionLetter) != 0;
 		}
 
-		bool hasArg(const char* _optionName) const
+		inline bool hasArg(const char* _optionName) const
 		{
 			return getArgString(_optionName) != 0;
 		}
 
-		bool hasArg(char _optionLetter, const char* _optionName) const
+		inline bool hasArg(char _optionLetter, const char* _optionName) const
 		{
 			return hasArg(_optionLetter) || hasArg(_optionName);
 		}
