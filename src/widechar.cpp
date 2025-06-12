@@ -77,6 +77,8 @@ static char* makeLongPath(const char* _path, const char* _name, char* _outBuff, 
 
 MultiToWide::MultiToWide(const char* _string, bool _path)
 {
+	RTM_UNUSED(_path);
+
 	m_size	= 0;
 	m_ptr	= &m_string[0];
 	*m_ptr	= 0;

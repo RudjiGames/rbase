@@ -17,7 +17,7 @@
 	#include <semaphore.h>
 	#include <time.h>
 	#include <pthread.h>
-	typedef sem_t semaphore_t;
+	struct semaphore_t;
 #else
 	#error "Unsupported platform/compiler!"
 #endif
@@ -52,12 +52,17 @@ namespace rtm {
 
 } // namespace rtm
 
+/// ---------------------------------------------------------------------- ///
+///  Implementation                                                        ///
+/// ---------------------------------------------------------------------- ///
+
 namespace rtm {
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	typedef HANDLE semaphore_t;
 
-	static inline bool semaphore_init(semaphore_t* _sem) {
+	static inline bool semaphore_init(semaphore_t* _sem)
+	{
 #if RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 		*_sem = CreateSemaphoreExW(NULL, 0, 0x7fffffff, NULL, 0, SEMAPHORE_ALL_ACCESS);
 #else
@@ -66,15 +71,18 @@ namespace rtm {
 		return *_sem != 0;
 	}
 
-	static inline void semaphore_destroy(semaphore_t* _sem) {
+	static inline void semaphore_destroy(semaphore_t* _sem)
+	{
 		CloseHandle(*_sem);
 	}
 
-	static inline void semaphore_post(semaphore_t* _sem, uint32_t _count) {
+	static inline void semaphore_post(semaphore_t* _sem, uint32_t _count)
+	{
 		ReleaseSemaphore(*_sem, _count, NULL);
 	}
 	
-	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms) {
+	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms)
+	{
 		unsigned long ms = (0 > _ms) ? INFINITE : _ms;
 		return WAIT_OBJECT_0 == WaitForSingleObjectEx(*_sem, ms, 0);
 	}
