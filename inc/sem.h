@@ -11,16 +11,16 @@
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
-	typedef HANDLE semaphore_t;
+	typedef HANDLE semaphore;
 #elif RTM_PLATFORM_POSIX
 //	#include <semaphore.h>
 	#include <time.h>
 	#include <pthread.h>
-	typedef struct semaphore_t {
+	typedef struct semaphore {
 		pthread_mutex_t	m_mutex;
 		pthread_cond_t	m_cv;
 		int32_t			m_count;
-	} semaphore_t;
+	} semaphore;
 #else
 	#error "Unsupported platform/compiler!"
 #endif
@@ -32,18 +32,18 @@ namespace rtm {
 	/// @param[in] _sem   : Semaphore pointer
 	///
 	/// @returns true on success.
-	static inline bool semaphore_init(semaphore_t* _sem);
+	static inline bool semaphore_init(semaphore* _sem);
 
 	/// Destroys a semaphore.
 	///
 	/// @param[in] _sem   : Semaphore pointer
-	static inline void semaphore_destroy(semaphore_t* _sem);
+	static inline void semaphore_destroy(semaphore* _sem);
 
 	/// Semaphore post.
 	///
 	/// @param[in] _sem   : Semaphore pointer
 	/// @param[in] _count : Semaphore count
-	static inline void semaphore_post(semaphore_t* _sem, uint32_t _count);
+	static inline void semaphore_post(semaphore* _sem, uint32_t _count);
 
 	/// Waits on a semaphore.
 	///
@@ -51,7 +51,7 @@ namespace rtm {
 	/// @param[in] _ms    : Milliseconds to wait for
 	///
 	/// @returns true on success.
-	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms = -1);
+	static inline bool semaphore_wait(semaphore* _sem, int32_t _ms = -1);
 
 } // namespace rtm
 
@@ -62,7 +62,7 @@ namespace rtm {
 namespace rtm {
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
-	static inline bool semaphore_init(semaphore_t* _sem)
+	static inline bool semaphore_init(semaphore* _sem)
 	{
 #if RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 		*_sem = CreateSemaphoreExW(NULL, 0, 0x7fffffff, NULL, 0, SEMAPHORE_ALL_ACCESS);
@@ -72,17 +72,17 @@ namespace rtm {
 		return *_sem != 0;
 	}
 
-	static inline void semaphore_destroy(semaphore_t* _sem)
+	static inline void semaphore_destroy(semaphore* _sem)
 	{
 		CloseHandle(*_sem);
 	}
 
-	static inline void semaphore_post(semaphore_t* _sem, uint32_t _count)
+	static inline void semaphore_post(semaphore* _sem, uint32_t _count)
 	{
 		ReleaseSemaphore(*_sem, _count, NULL);
 	}
 	
-	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms)
+	static inline bool semaphore_wait(semaphore* _sem, int32_t _ms)
 	{
 		unsigned long ms = (0 > _ms) ? INFINITE : _ms;
 		return WAIT_OBJECT_0 == WaitForSingleObjectEx(*_sem, ms, 0);
@@ -90,7 +90,7 @@ namespace rtm {
 
 #elif RTM_PLATFORM_POSIX
 
-	static inline bool semaphore_init(semaphore_t* _sem)
+	static inline bool semaphore_init(semaphore* _sem)
 	{
 	
 		int result;
@@ -104,13 +104,13 @@ namespace rtm {
 		return true;
 	}
 
-	static inline void semaphore_destroy(semaphore_t* _sem)
+	static inline void semaphore_destroy(semaphore* _sem)
 	{
 		pthread_cond_destroy(&_sem->m_cv);
 		pthread_mutex_destroy(&_sem->m_mutex);
 	}
 
-	static inline void semaphore_post(semaphore_t* _sem, uint32_t _count)
+	static inline void semaphore_post(semaphore* _sem, uint32_t _count)
 	{
 		pthread_mutex_lock(&_sem->m_mutex);
 
@@ -122,7 +122,7 @@ namespace rtm {
 		pthread_mutex_unlock(&_sem->m_mutex);
 	}
 	
-	static inline bool semaphore_wait(semaphore_t* _sem, int32_t _ms)
+	static inline bool semaphore_wait(semaphore* _sem, int32_t _ms)
 	{
 		int result = pthread_mutex_lock(&_sem->m_mutex);
 
@@ -161,7 +161,7 @@ namespace rtm {
 	{
 		RTM_CLASS_NO_COPY(Semaphore)
 
-		semaphore_t m_semaphore;
+		semaphore m_semaphore;
 
 	public:
 		inline Semaphore()
