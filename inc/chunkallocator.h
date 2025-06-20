@@ -7,6 +7,8 @@
 #define RTM_RBASE_CHUNKALLOCATOR_H
 
 #include <rbase/inc/platform.h>
+#include <rbase/inc/stringfn.h>
+#include <rbase/inc/libhandler.h>
 
 namespace rtm {
 
@@ -100,7 +102,7 @@ namespace rtm {
 			return allocIndex;
 		}
 
-		inline void* alloc()
+		inline T* alloc()
 		{
 			const uint32_t itemHandle = allocHandle();
 			return getItem(itemHandle - 1);
