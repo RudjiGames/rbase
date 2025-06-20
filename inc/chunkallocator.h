@@ -7,62 +7,61 @@
 #define RTM_RBASE_CHUNKALLOCATOR_H
 
 #include <rbase/inc/platform.h>
-#include <rbase/inc/libhandler.h>
 
 namespace rtm {
 
-	//--------------------------------------------------------------------------
-	/// Typed stack allocator chunk. Total size of 4MB.
-	//--------------------------------------------------------------------------
-	template <typename T, size_t MaxMemory = 4 << 20>
-	struct Chunk
+	// Count trailing zeroes
+	static constexpr int chunkCTZ(const int _v)
 	{
-		enum
-		{
-			CHUNK_MEMORY = MaxMemory - (sizeof(T) > sizeof(uint32_t) ? sizeof(T) : sizeof(uint32_t)),
-			CHUNK_ITEMS  = CHUNK_MEMORY / sizeof(T)
-		};
-
-		uint32_t	m_numItems;
-		T			m_data[CHUNK_ITEMS];
-
-		inline Chunk() : m_numItems(0) {}
-
-		inline T* alloc()
-		{
-			if (m_numItems < CHUNK_ITEMS)
-			{
-				return &m_data[m_numItems++];
-			}
-			return 0;
-		}
-	};
+		unsigned int v = _v; // 32-bit word input to count zero bits on right
+		unsigned int c = 32; // c will be the number of zero bits on the right
+		v &= -signed(v);
+		if (v) c--;
+		if (v & 0x0000FFFF) c -= 16;
+		if (v & 0x00FF00FF) c -=  8;
+		if (v & 0x0F0F0F0F) c -=  4;
+		if (v & 0x33333333) c -=  2;
+		if (v & 0x55555555) c -=  1;
+		return c;
+	}
 
 	//--------------------------------------------------------------------------
 	/// Fast dynamic stack allocator, the idea is to keep allocated items in
 	/// continuous memory blocks for better cache performance. Items can only
 	/// be allocated, not freed.
 	//--------------------------------------------------------------------------
-	template <typename T>
+	template <typename T, int CHUNK_ITEMS = 1 << 16>
 	class ChunkAllocator
 	{
 	private:
-		enum
+		struct RTM_ALIGN(16) Chunk
 		{
-			CHUNKS_INITIAL = 128,
-			CHUNKS_GROW_BY = 128
+			T		m_data[CHUNK_ITEMS];
 		};
 
-		Chunk<T>**	m_chunks;
-		uint32_t	m_size;
-		uint32_t	m_capacity;
+		enum
+		{
+			CHUNK_SHIFT			= chunkCTZ(CHUNK_ITEMS),
+			CHUNK_MASK			= CHUNK_ITEMS - 1,
+			CHUNK_ARRAY_INITIAL = 128,
+			CHUNK_ARRAY_GROW_BY = 128
+		};
+
+		Chunk**		m_chunks;
+		uint32_t	m_numItems;
+		uint32_t	m_numChunks;
+		uint32_t	m_maxChunks;
 
 	public:
 		inline ChunkAllocator()
+			: m_chunks(nullptr)
+			, m_numItems(0)
+			, m_numChunks(0)
+			, m_maxChunks(CHUNK_ARRAY_INITIAL)
 		{
-			m_chunks	= rtm_new_array<Chunk<T>*>(CHUNKS_INITIAL);
-			m_capacity	= CHUNKS_INITIAL;
-			m_size		= 0;
+			static_assert((CHUNK_ITEMS & CHUNK_MASK) == 0);
+			m_chunks = rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
+			addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
 		}
 
 		inline ~ChunkAllocator()
@@ -70,111 +69,121 @@ namespace rtm {
 			reset();
 		}
 
-		inline T* alloc()
+		inline void allocOptionalAddChunk()
 		{
-			if (m_size)
+			// check if current chunk is full:
+			// current item index is last one in chunk
+			if ((m_numItems & CHUNK_MASK) == CHUNK_MASK)
 			{
-				if (T* retElement = getLastChunk()->alloc())
-				{
-					return retElement;
-				}
+				addNewChunk();
+			}
+		}
+
+		inline uint32_t allocHandle()
+		{
+			allocOptionalAddChunk();
+			return m_numItems++;
+		}
+
+		inline uint32_t allocHandle(T*& _optionalPtr)
+		{
+			allocOptionalAddChunk();
+
+			const uint32_t allocIndex        = m_numItems++;
+			const uint32_t allocIndexInChunk = allocIndex & CHUNK_MASK;
+
+			if (_optionalPtr)
+			{
+				_optionalPtr = &m_chunks[m_numChunks - 1].m_data[allocIndexInChunk];
 			}
 
-			// allocate new chunk
-			Chunk<T>* newChunk = rtm_new<Chunk<T>>();
-			T* ret = newChunk->alloc();
-			addNewChunk(newChunk);
-			return ret;
+			return allocIndex;
+		}
+
+		inline void* alloc()
+		{
+			const uint32_t itemHandle = allocHandle();
+			return getItem(itemHandle - 1);
 		}
 
 		inline void reset()
 		{
-			for (size_t i=0; i<m_size; ++i)
+			const uint32_t numChunks = m_numChunks;
+			for (size_t i=0; i<numChunks; ++i)
 			{
-				rtm_delete<Chunk<T>>(m_chunks[i]);
+				rtm_delete<Chunk>(m_chunks[i]);
 			}
-			rtm_delete_array<Chunk<T>*>(m_size, m_chunks);
+			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+
+			m_chunks	= nullptr;
+			m_numItems	= 0;
+			m_numChunks	= 0;
+			m_maxChunks	= 0;
 		}
 
 		inline uint32_t size() const
 		{
-			return m_size;
+			return m_numItems;
 		}
 
 		inline T* getItem(uint32_t _index)
 		{
-			uint32_t chunkIdx = _index / Chunk<T>::MAX_ITEMS;
-			uint32_t  itemIdx = _index % Chunk<T>::MAX_ITEMS;
+			uint32_t chunkIdx = _index >> CHUNK_SHIFT;
+			uint32_t  itemIdx = _index  & CHUNK_MASK;
 			return &m_chunks[chunkIdx]->m_data[itemIdx];
 		}
 
-		void addNewChunk(Chunk<T>* _newChunk)
+	private:
+		inline void addNewChunk()
 		{
-			Chunk<T>** newArray = rtm_new_array<Chunk<T>*>(m_capacity + CHUNKS_GROW_BY);
-			const uint64_t sizeToCopy = sizeof(Chunk<T>*) * m_capacity;
-			memCopy(newArray, sizeToCopy, m_chunks, sizeToCopy);
-			rtm_delete_array<Chunk<T>*>(m_capacity, m_chunks);
-			m_capacity += CHUNKS_GROW_BY;
-			m_chunks = newArray;
-			m_chunks[m_size++] = _newChunk;
-		}
-
-		inline Chunk<T>* getLastChunk()
-		{
-			RTM_ASSERT(m_size != 0, "");
-			return m_chunks[m_size - 1];
+			Chunk* newChunk = rtm_new<Chunk>();
+			if (m_numChunks == m_maxChunks) // check if chunk array is full
+			{
+				Chunk** newArray = rtm_new_array<Chunk*>(m_maxChunks + CHUNK_ARRAY_GROW_BY);
+				const uint64_t sizeToCopy = sizeof(Chunk*) * m_numChunks;
+				memCopy(newArray, sizeToCopy, m_chunks, sizeToCopy);
+				rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+				m_maxChunks += CHUNK_ARRAY_GROW_BY;
+				m_chunks     = newArray;
+			}
+			m_chunks[m_numChunks++] = newChunk;
 		}
 	};
 
 	//--------------------------------------------------------------------------
 	/// Stack allocator template for variable sized items
 	//--------------------------------------------------------------------------
-	class StackAllocatorChunk
-	{
-		enum { CHUNK_SIZE = 64*1024 - sizeof(uint32_t) }; // 64Kb total
-
-		uint32_t	m_size;
-		uint8_t		m_data[CHUNK_SIZE];
-
-	public:
-		inline StackAllocatorChunk() : m_size(0)
-		{
-			memSet(m_data, 0, CHUNK_SIZE);
-		}
-
-		inline void* alloc( uint32_t _size )
-		{
-			RTM_ASSERT(_size < CHUNK_SIZE, "");
-
-			if (m_size + _size <= CHUNK_SIZE)
-			{
-				void* ret = &m_data[m_size];
-				m_size += _size;
-				return ret;
-			}
-
-			return nullptr;
-		}
-	};
-
 	class StackAllocator
 	{
 		enum
 		{
-			CHUNKS_INITIAL = 128,
-			CHUNKS_GROW_BY = 128
+			// Bigger chunk == higher performance
+			// 1 Mb seems to be a sweet spot and matches large page size
+			CHUNK_SIZE			= 1024 * 1024, // 1 Mb
+			CHUNK_ARRAY_INITIAL	= 128,
+			CHUNK_ARRAY_GROW_BY	= 128
 		};
 
-		StackAllocatorChunk**	m_chunks;
-		uint32_t				m_size;
-		uint32_t				m_capacity;
+		struct Chunk
+		{
+			uint8_t	m_data[CHUNK_SIZE];
+		};
+
+		Chunk**		m_chunks;
+		uint64_t	m_curChunkSize;
+		uint32_t	m_numChunks;
+		uint32_t	m_maxChunks;
 
 	public:
 		inline StackAllocator()
+			: m_chunks(nullptr)
+			, m_curChunkSize(0)
+			, m_numChunks(0)
+			, m_maxChunks(0)
 		{
-			m_chunks	= rtm_new_array<StackAllocatorChunk*>(CHUNKS_INITIAL);
-			m_capacity	= CHUNKS_INITIAL;
-			m_size		= 0;
+			m_chunks	= rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
+			m_maxChunks	= CHUNK_ARRAY_INITIAL;
+			addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
 		}
 
 		inline ~StackAllocator()
@@ -184,55 +193,55 @@ namespace rtm {
 
 		inline void* alloc(uint32_t _size)
 		{
-			const uint32_t numChunks = m_size;
-			if (numChunks)
+			RTM_ASSERT(_size <= CHUNK_SIZE, "");
+			// check if current chunk is full:
+			// current item index is last one in chunk
+			if ((m_curChunkSize + _size) > CHUNK_SIZE)
 			{
-				if (void* ret = getLastChunk()->alloc(_size))
-				{
-					return ret;
-				}
+				addNewChunk();
 			}
-			
-			StackAllocatorChunk* newChunk = rtm_new<StackAllocatorChunk>();
-			void* ret = newChunk->alloc(_size);
-			addNewChunk(newChunk);
-			return ret;
+
+			Chunk* lastChunk = m_chunks[m_numChunks - 1];
+			void* retPtr     = &lastChunk->m_data[m_curChunkSize];
+			m_curChunkSize  += _size;
+			return retPtr;
 		}
 
 		inline uint32_t totalMemorySize() const
 		{
-			return m_size * sizeof(StackAllocatorChunk) + m_capacity * sizeof(StackAllocatorChunk*);
+			return m_numChunks * sizeof(Chunk) + sizeof(StackAllocator);
 		}
 
 		void reset()
 		{
-			const uint32_t numChunks = m_size;
-			for (uint32_t i=0; i<numChunks; ++i)
+			const uint32_t numChunks = m_numChunks;
+			for (size_t i = 0; i < numChunks; ++i)
 			{
-				rtm_delete<StackAllocatorChunk>(m_chunks[i]);
+				rtm_delete<Chunk>(m_chunks[i]);
 			}
 
-			rtm_delete_array<StackAllocatorChunk*>(m_capacity, m_chunks);
-			m_chunks = nullptr;
+			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+			m_chunks		= nullptr;
+			m_curChunkSize	= 0;
+			m_numChunks		= 0;
+			m_maxChunks		= 0;
 		}
 
 	private:
-
-		void addNewChunk(StackAllocatorChunk* _newChunk)
+		void addNewChunk()
 		{
-			StackAllocatorChunk** newArray = rtm_new_array<StackAllocatorChunk*>(m_capacity + CHUNKS_GROW_BY);
-			const uint64_t sizeToCopy = sizeof(StackAllocatorChunk*) * m_capacity;
-			memCopy(newArray, sizeToCopy, m_chunks, sizeToCopy);
-			rtm_delete_array<StackAllocatorChunk*>(m_capacity, m_chunks);
-			m_capacity += CHUNKS_GROW_BY;
-			m_chunks = newArray;
-			m_chunks[m_size++] = _newChunk;
-		}
-
-		inline StackAllocatorChunk* getLastChunk()
-		{
-			RTM_ASSERT(m_size != 0, "");
-			return m_chunks[m_size - 1];
+			Chunk* newChunk = rtm_new<Chunk>();
+			if (m_numChunks == m_maxChunks) // check if chunk array is full
+			{
+				Chunk** newArray = rtm_new_array<Chunk*>(m_maxChunks + CHUNK_ARRAY_GROW_BY);
+				const uint64_t sizeToCopy = sizeof(Chunk*) * m_numChunks;
+				memCopy(newArray, sizeToCopy, m_chunks, sizeToCopy);
+				rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+				m_maxChunks += CHUNK_ARRAY_GROW_BY;
+				m_chunks = newArray;
+			}
+			m_chunks[m_numChunks++]	= newChunk;
+			m_curChunkSize			= 0;
 		}
 	};
 
