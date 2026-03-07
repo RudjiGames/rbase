@@ -278,7 +278,7 @@ namespace rtm {
 
 	static inline void memMove(void* _dst, const void* _src, int64_t _size)
 	{
-		memCopy(_dst, (uint32_t)_size, _src, _size);
+		memCopy(_dst, (uint64_t)_size, _src, _size);
 	}
 
 	static inline int32_t memCompare(const void* _tgt, const void* _src, int64_t _numBytes)
