@@ -276,9 +276,26 @@ namespace rtm {
 		}
 	}
 
-	static inline void memMove(void* _dst, const void* _src, int64_t _size)
+	static inline void memMove(void* _dst, const void* _src, uint64_t _size)
 	{
-		memCopy(_dst, (uint64_t)_size, _src, _size);
+		uint8_t* dst = (uint8_t*)_dst;
+		const uint8_t* src = (const uint8_t*)_src;
+
+		if ((_size == 0) || (dst == src))
+		{
+			return;
+		}
+
+		if (dst < src)
+		{
+			memCopy(_dst, _size, _src, _size);
+			return;
+		}
+
+		for (int64_t i = (int64_t)_size-1; i >= 0; --i)
+		{
+			dst[i] = src[i];
+		}
 	}
 
 	static inline int32_t memCompare(const void* _tgt, const void* _src, int64_t _numBytes)
