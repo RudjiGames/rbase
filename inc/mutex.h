@@ -90,7 +90,7 @@ namespace rtm {
 #elif RTM_PLATFORM_POSIX
 	typedef pthread_mutex_t mutex;
 
-	static inline void mutexInit(mutex* _mutex
+	static inline void mutexInit(mutex* _mutex)
 	{
 		pthread_mutex_init(_mutex, 0);
 	}
