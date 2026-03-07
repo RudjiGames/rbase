@@ -11,10 +11,12 @@
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
+	typedef CRITICAL_SECTION mutex;
 #elif RTM_PLATFORM_POSIX
 	#include <pthread.h>
+	typedef pthread_mutex_t mutex;
 #elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-	#include <kernel.h>
+	typedef ScePthreadMutex mutex;
 #endif
 
 namespace rtm {
@@ -55,9 +57,9 @@ namespace rtm {
 namespace rtm {
 
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
-	typedef CRITICAL_SECTION mutex;
 
-	static inline void mutexInit(mutex* _mutex) {
+	static inline void mutexInit(mutex* _mutex)
+	{
 #if RTM_PLATFORM_WINRT
 		InitializeCriticalSectionEx(_mutex, 4000, 0);
 #else 
@@ -65,49 +67,59 @@ namespace rtm {
 #endif
 	}
 
-	static inline void mutexDestroy(mutex* _mutex) {
+	static inline void mutexDestroy(mutex* _mutex)
+	{
 		DeleteCriticalSection(_mutex);
 	}
 
-	static inline void mutexLock(mutex* _mutex) {
+	static inline void mutexLock(mutex* _mutex)
+	{
 		EnterCriticalSection(_mutex);
 	}
 
-	static inline int mutexTryLock(mutex* _mutex)	{
+	static inline int mutexTryLock(mutex* _mutex)
+	{
 		return TryEnterCriticalSection(_mutex) ? 0 : 1;
 	}
 
-	static inline void mutexUnlock(mutex* _mutex)	{
+	static inline void mutexUnlock(mutex* _mutex)
+	{
 		LeaveCriticalSection(_mutex);
 	}
 
 #elif RTM_PLATFORM_POSIX
 	typedef pthread_mutex_t mutex;
 
-	static inline void mutexInit(mutex* _mutex) {
+	static inline void mutexInit(mutex* _mutex
+	{
 		pthread_mutex_init(_mutex, 0);
 	}
 
-	static inline void mutexDestroy(mutex* _mutex) {
+	static inline void mutexDestroy(mutex* _mutex)
+	{
 		pthread_mutex_destroy(_mutex);
 	}
 
-	static inline void mutexLock(mutex* _mutex) {
+	static inline void mutexLock(mutex* _mutex)
+	{
 		pthread_mutex_lock(_mutex);
 	}
 
-	static inline int mutexTryLock(mutex* _mutex) {
+	static inline int mutexTryLock(mutex* _mutex)
+	{
 		return pthread_mutex_trylock(_mutex);
 	}
 
-	static inline void mutexUnlock(mutex* _mutex) {
+	static inline void mutexUnlock(mutex* _mutex)
+	{
 		pthread_mutex_unlock(_mutex);
 	}
 
 #elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
 	typedef ScePthreadMutex mutex;
 
-	static inline void mutexInit(mutex* _mutex) {
+	static inline void mutexInit(mutex* _mutex)
+	{
 		ScePthreadMutexattr mutexAttr;
 		scePthreadMutexattrInit(&mutexAttr);
 		scePthreadMutexattrSettype(&mutexAttr, SCE_PTHREAD_MUTEX_RECURSIVE);
@@ -115,19 +127,23 @@ namespace rtm {
 		scePthreadMutexattrDestroy(&mutexAttr);
 	}
 
-	static inline void mutexDestroy(mutex* _mutex) {
+	static inline void mutexDestroy(mutex* _mutex)
+	{
 		scePthreadMutexDestroy(_mutex);
 	}
 
-	static inline void mutexLock(mutex* _mutex) {
+	static inline void mutexLock(mutex* _mutex)
+	{
 		scePthreadMutexLock(_mutex);
 	}
 
-	static inline int mutexTryLock(mutex* _mutex) {
+	static inline int mutexTryLock(mutex* _mutex)
+	{
 		return (scePthreadMutexTrylock(_mutex) == 0) ? 0 : 1;
 	}
 
-	static inline void mutexUnlock(mutex* _mutex) {
+	static inline void mutexUnlock(mutex* _mutex)
+	{
 		scePthreadMutexUnlock(_mutex);
 	}
 	
