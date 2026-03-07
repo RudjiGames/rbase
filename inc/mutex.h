@@ -12,11 +12,11 @@
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	typedef CRITICAL_SECTION mutex;
+#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
+	typedef ScePthreadMutex mutex;
 #elif RTM_PLATFORM_POSIX
 	#include <pthread.h>
 	typedef pthread_mutex_t mutex;
-#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-	typedef ScePthreadMutex mutex;
 #endif
 
 namespace rtm {
@@ -88,7 +88,6 @@ namespace rtm {
 	}
 
 #elif RTM_PLATFORM_POSIX
-	typedef pthread_mutex_t mutex;
 
 	static inline void mutexInit(mutex* _mutex)
 	{
@@ -116,7 +115,6 @@ namespace rtm {
 	}
 
 #elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-	typedef ScePthreadMutex mutex;
 
 	static inline void mutexInit(mutex* _mutex)
 	{

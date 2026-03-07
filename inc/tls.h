@@ -42,9 +42,9 @@ namespace rtm {
 
 namespace rtm {
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 
-	#define WINDOWS_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 
 	static inline uint32_t tlsAllocate()

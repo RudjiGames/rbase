@@ -121,7 +121,7 @@ namespace rtm {
 		const uint32_t retTraces = numTraces - _skip;
 		for (uint32_t i=0; (i<retTraces) && (i<_numFrames); ++i)
 			_traces[i] = trace[i+_skip];
-		return retTraces;
+		return retTraces < _numFrames ? retTraces : _numFrames;
 	}
 
 #else

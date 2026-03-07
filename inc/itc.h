@@ -37,6 +37,7 @@ namespace rtm {
 
 		void setCapacity(uint32_t _capacity)
 		{
+			delete[] m_buffer;
 			m_buffer	= (uint8_t*)new uint8_t[_capacity];
 			m_capacity	= _capacity;
 		}
@@ -80,7 +81,7 @@ namespace rtm {
 		void read(void* _data, uint32_t _size)
 		{
 			RTM_ASSERT(m_pos + _size <= m_size, "Trying to read beyond command buffer end!");
-			memCopy(_data, m_capacity,  &m_buffer[m_pos], _size);
+			memCopy(_data, _size,  &m_buffer[m_pos], _size);
 			m_pos += _size;
 		}
 
