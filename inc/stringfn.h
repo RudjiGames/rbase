@@ -30,7 +30,7 @@ namespace rtm {
 	/// @param[in] _dst        : Destination address
 	/// @param[in] _src        : Source address
 	/// @param[in] _size       : Size, in bytes, to move
-	static inline void memMove(void* _dst, const void* _src, int64_t _size);
+	static inline void memMove(void* _dst, const void* _src, uint64_t _size);
 
 	/// Compares two memory buffers
 	///
@@ -39,7 +39,7 @@ namespace rtm {
 	/// @param[in] _numBytes   : Number of bytes to compare
 	///
 	/// @returns 0 if buffers are equal, non-zero otherwise
-	static inline int32_t memCompare(const void* _dst, const void* _src, int64_t _numBytes);
+	static inline int32_t memCompare(const void* _dst, const void* _src, uint64_t _numBytes);
 
 	/// Checks if character is in a given range, including endpoints
 	///
@@ -298,7 +298,7 @@ namespace rtm {
 		}
 	}
 
-	static inline int32_t memCompare(const void* _tgt, const void* _src, int64_t _numBytes)
+	static inline int32_t memCompare(const void* _tgt, const void* _src, uint64_t _numBytes)
 	{
 		uint8_t* tgt = (uint8_t*)_tgt;
 		uint8_t* src = (uint8_t*)_src;
