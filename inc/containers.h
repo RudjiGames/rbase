@@ -159,7 +159,7 @@ namespace rtm {
 		void push_back(T _e)
 		{
 			RTM_ASSERT(m_size < NUM_ELEMENTS, "Queue is full!");
-			const int16_t idx = (m_front + m_size) & (NUM_ELEMENTS - 1);
+			const int32_t idx = (m_front + m_size) & (NUM_ELEMENTS - 1);
 			m_data[idx] = _e;
 			++m_size;
 		}
