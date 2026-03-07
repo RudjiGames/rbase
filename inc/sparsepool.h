@@ -200,7 +200,7 @@ namespace rtm {
 
 		void freeChunk(Chunk& _c)
 		{
-			RTM_ASSERT(_c.m_data != 0, "Chunk must be null to be freed!");
+			RTM_ASSERT(_c.m_data != 0, "Chunk must not be null to be freed!");
 			if (m_memoryManager)
 				m_memoryManager->free(_c.m_data, m_alignment);
 			else

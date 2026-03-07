@@ -95,10 +95,17 @@ namespace rtm {
 	
 		int result;
 		result = pthread_mutex_init(&_sem->m_mutex, NULL);
-		if (result != 0) return false;
+		if (result != 0)
+		{
+			return false;
+		}
 
 		result = pthread_cond_init(&_sem->m_cv, NULL);
-		if (result != 0) return false;
+		if (result != 0)
+		{
+			pthread_mutex_destroy(&_sem->m_mutex);
+			return false;
+		}
 		_sem->m_count = 0;
 
 		return true;
@@ -115,7 +122,9 @@ namespace rtm {
 		pthread_mutex_lock(&_sem->m_mutex);
 
 		for (uint32_t i=0; i<_count; ++i)
+		{
 			pthread_cond_signal(&_sem->m_cv);
+		}
 
 		_sem->m_count += _count;
 
