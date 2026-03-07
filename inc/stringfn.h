@@ -520,6 +520,8 @@ namespace rtm {
 	static inline uint32_t strlCat(char* _dst, uint32_t _dstSize, const char* _src, uint32_t _num)
 	{
 		uint32_t len = strLen(_dst);
+		if (len >= _dstSize) 
+			return 0;
 		_dstSize -= len;
 		_dst += len;
 		return strlCpy(_dst, _dstSize, _src, _num);
