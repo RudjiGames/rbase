@@ -179,7 +179,7 @@ namespace rtm {
 			semaphore_post(&m_semaphore, _count);
 		}
 
-		inline bool wait(uint32_t _ms = -1)
+		inline bool wait(int32_t _ms = -1)
 		{
 			return semaphore_wait(&m_semaphore, _ms);
 		}
