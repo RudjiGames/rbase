@@ -121,7 +121,6 @@ namespace rtm {
 			if (!m_started)
 				return;
 
-			RTM_ASSERT(m_started, "Thread was not started!");
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 			WaitForSingleObjectEx(m_handle, INFINITE, 0);
 			GetExitCodeThread(m_handle, (DWORD*)&m_exitCode);

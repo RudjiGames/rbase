@@ -11,12 +11,10 @@
 #if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
-	typedef CRITICAL_SECTION mutex;
 #elif RTM_PLATFORM_POSIX
 	#include <pthread.h>
-	typedef pthread_mutex_t mutex;
 #elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-	typedef ScePthreadMutex mutex;
+	#include <kernel.h>
 #endif
 
 namespace rtm {
