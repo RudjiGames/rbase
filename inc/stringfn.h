@@ -340,7 +340,8 @@ namespace rtm {
 
 	static inline char charFromHexNum(char _ch)
 	{
-		return _ch >= 'A' ? 10 + _ch - 'A' : _ch - '0';
+		const char upperCase = charToUpper(_ch);
+		return upperCase >= 'A' ? 10 + upperCase - 'A' : upperCase - '0';
 	}
 	
 	static inline char charNoop(char _ch)
