@@ -87,13 +87,15 @@ namespace rtm {
 			{
 				const uint32_t oldChunksSize = m_numChunks * m_elementsInChunk * m_elementSize;
 				const uint32_t newChunksSize = (chunkIdx+1) * m_elementsInChunk * m_elementSize;
-				m_chunks = (Chunk*)reallocateHeap(m_chunks, oldChunksSize, newChunksSize);
-				m_numChunks = chunkIdx;
+				reallocateChunks(oldChunksSize, newChunksSize);
+				m_numChunks = chunkIdx + 1;
 			}
 
 			Chunk& chunk = m_chunks[chunkIdx];
 			if (chunk.m_data == 0)
+			{
 				allocateChunk(chunk);
+			}
 
 			RTM_ASSERT(chunk.m_size < m_elementsInChunk, "Too many elements in a chunk, something's wrong!");
 			++chunk.m_size;
@@ -145,31 +147,32 @@ namespace rtm {
 				if (c.m_data)
 					freeChunk(c);
 			}
-			reallocateHeap(m_chunks, 0, 0);
+			reallocateChunks(0, 0);
 		}
 
 	private:
-		void* reallocateHeap(void* _ptr, uint32_t _oldSize, uint32_t _newSize)
+		void reallocateChunks(uint32_t _oldSize, uint32_t _newSize)
 		{
-			uint8_t* ptr = 0;
 			if (m_memoryManager)
-				ptr = (uint8_t*)m_memoryManager->realloc(_ptr, _newSize, m_alignment);
+				m_chunks = (uint8_t*)m_memoryManager->realloc(m_chunks, _newSize, m_alignment);
 			else
 			{
 #if RTM_COMPILER_MSVC
-				ptr = (uint8_t*)_aligned_realloc(_ptr, _newSize, m_alignment);
+				m_chunks = (uint8_t*)_aligned_realloc(m_chunks, _newSize, m_alignment);
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
 				void* newPtr = (uint8_t*)memalign(m_alignment, _newSize);
-				rtm::memCopy(newPtr, _oldSize, _ptr, _oldSize);
-				_ptr = newPtr;
+				rtm::memCopy(newPtr, _oldSize, m_chunks, _oldSize);
+				free(m_chunks);
+				m_chunks = (uint8_t*)newPtr;
 #else
 	#error "Unsupported compiler!"
 #endif
 			}
 
 			if (_newSize > _oldSize)
-				memSet(ptr + _oldSize, 0, _newSize - _oldSize);
-			return ptr;
+			{
+				memSet((uint8_t*)(m_chunks) + _oldSize, 0, _newSize - _oldSize);
+			}
 		}
 
 		void allocateChunk(Chunk& _c)
