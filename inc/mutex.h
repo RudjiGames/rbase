@@ -21,39 +21,31 @@
 
 namespace rtm {
 
-	/// Retrieves file name with extension if it is a file path.
+	/// Initializes mutex.
 	///
-	/// @param[in] _path: File system path
-	///
-	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	/// @param[in] _mutex: Pointer to the mutex to initialize
 	static inline void mutexInit(mutex* _mutex);
 
-	/// Retrieves file name with extension if it is a file path.
+	/// Destroys mutex.
 	///
-	/// @param[in] _path: File system path
-	///
-	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	/// @param[in] _mutex: Pointer to the mutex to destroy
 	static inline void mutexDestroy(mutex* _mutex);
 
-	/// Retrieves file name with extension if it is a file path.
+	/// Locks mutex.
 	///
-	/// @param[in] _path: File system path
-	///
-	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	/// @param[in] _mutex: Pointer to the mutex to lock
 	static inline void mutexLock(mutex* _mutex);
 
-	/// Retrieves file name with extension if it is a file path.
+	/// Tries to lock mutex.
 	///
-	/// @param[in] _path: File system path
+	/// @param[in] _mutex: Pointer to the mutex to try to lock
 	///
-	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	/// @returns 0 if the mutex was successfully locked, non-zero otherwise
 	static inline int mutexTryLock(mutex* _mutex);
 
-	/// Retrieves file name with extension if it is a file path.
+	/// Unlocks mutex.
 	///
-	/// @param[in] _path: File system path
-	///
-	/// @returns the pointer to file name portion of the path, nullptr if dir.
+	/// @param[in] _mutex: Pointer to the mutex to unlock
 	static inline void mutexUnlock(mutex* _mutex);
 
 } // namespace rtm
