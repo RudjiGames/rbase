@@ -32,13 +32,13 @@ namespace rtm {
 	/// @param[in] _size       : Size, in bytes, to move
 	static inline void memMove(void* _dst, const void* _src, int64_t _size);
 
-	/// Checks if character is in a given range, including endpoints
+	/// Compares two memory buffers
 	///
-	/// @param[in] _ch        : Character to check
-	/// @param[in] _from      : Range start
-	/// @param[in] _to        : Range end
+	/// @param[in] _dst        : Destination buffer
+	/// @param[in] _src        : Source buffer
+	/// @param[in] _numBytes   : Number of bytes to compare
 	///
-	/// @returns true if character is in range
+	/// @returns 0 if buffers are equal, non-zero otherwise
 	static inline int32_t memCompare(const void* _dst, const void* _src, int64_t _numBytes);
 
 	/// Checks if character is in a given range, including endpoints
@@ -285,13 +285,17 @@ namespace rtm {
 	{
 		uint8_t* tgt = (uint8_t*)_tgt;
 		uint8_t* src = (uint8_t*)_src;
-		while (*tgt == *src)
+		while (_numBytes > 0)
 		{
+			if (*tgt != *src)
+			{
+				return *tgt - *src;
+			}
 			++tgt;
 			++src;
 			--_numBytes;
 		}
-		return _numBytes == 0 ? 0 : *tgt - *src;
+		return 0;
 	}
 
 	static inline bool charIsInRange(char _ch, int _from, int _to)
