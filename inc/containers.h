@@ -102,7 +102,7 @@ namespace rtm {
 		inline T pop_back()
 		{
 			RTM_ASSERT(m_size > 0, "Array is empty!");
-			return m_data[m_size--];
+			return m_data[--m_size];
 		}
 
 		inline const T& operator[] (uint32_t _idx) const
