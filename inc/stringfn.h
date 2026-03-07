@@ -15,7 +15,7 @@ namespace rtm {
 	/// @param[in] _dst        : Destination buffer
 	/// @param[in] _val        : Value to set
 	/// @param[in] _numBytes   : Numer of bytes to set
-	static inline void memSet(void* _dst, uint8_t _val, int64_t _numBytes);
+	static inline void memSet(void* _dst, uint8_t _val, uint64_t _numBytes);
 
 	/// Copies a memory buffer
 	///
@@ -254,7 +254,7 @@ namespace rtm {
 
 namespace rtm {
 
-	static inline void memSet(void* _dst, uint8_t _val, int64_t _numBytes)
+	static inline void memSet(void* _dst, uint8_t _val, uint64_t _numBytes)
 	{
 		uint8_t* dst = (uint8_t*)_dst;
 		while (_numBytes--)
