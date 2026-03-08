@@ -14,7 +14,7 @@ namespace rtm {
 
 void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size)
 {
-	uint16_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
+	uint32_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 	uint16_t shift = 0;
 	for (uint32_t pass=0; pass<3; ++pass)
 	{
@@ -26,10 +26,10 @@ void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size)
 			++histogram[index];
 		}
 
-		uint16_t offset = 0;
+		uint32_t offset = 0;
 		for (uint32_t i=0; i<RTM_RADIXSORT_HISTOGRAM_SIZE; ++i)
 		{
-			uint16_t count = histogram[i];
+			uint32_t count = histogram[i];
 			histogram[i] = offset;
 			offset += count;
 		}
@@ -52,7 +52,7 @@ void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size)
 
 void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, uint32_t _size)
 {
-	uint16_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
+	uint32_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 	uint16_t shift = 0;
 	for (uint32_t pass=0; pass<6; ++pass)
 	{
@@ -64,10 +64,10 @@ void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, uint32_t _size)
 			++histogram[index];
 		}
 
-		uint16_t offset = 0;
+		uint32_t offset = 0;
 		for (uint32_t i=0; i<RTM_RADIXSORT_HISTOGRAM_SIZE; ++i)
 		{
-			uint16_t count = histogram[i];
+			uint32_t count = histogram[i];
 			histogram[i] = offset;
 			offset += count;
 		}
