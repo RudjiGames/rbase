@@ -127,9 +127,9 @@ namespace rtm {
 			CloseHandle(m_handle);
 			m_handle = INVALID_HANDLE_VALUE;
 #elif RTM_PLATFORM_POSIX
-			union { void* ptr; int32_t i; } cast;
-			pthread_join(m_handle, &cast.ptr);
-			m_exitCode = cast.i;
+			void* ptr = 0;
+			pthread_join(m_handle, &ptr);
+			m_exitCode = (int32_t)(intptr_t)ptr;
 			m_handle = 0;
 #else
 #error "Unsupported platform!"
@@ -171,9 +171,8 @@ namespace rtm {
 		static void* threadEntry(void* _this)
 		{
 			Thread* thread = (Thread*)_this;
-			union { void* ptr; int32_t i; } cast;
-			cast.i = thread->entry();
-			return cast.ptr;
+			int32_t i = thread->entry();
+			return (void*)(intptr_t)i;
 		}
 #else
 #error "Unsupported platform!"

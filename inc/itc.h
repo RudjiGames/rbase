@@ -142,9 +142,9 @@ namespace rtm {
 			return m_cmdBufferConsume->dataAvailable();
 		}
 
-		bool spacevailable() const
+		bool spaceAvailable() const
 		{
-			return m_cmdBufferProduce->dataAvailable();
+			return m_cmdBufferProduce->spaceAvailable();
 		}
 
 	private:
