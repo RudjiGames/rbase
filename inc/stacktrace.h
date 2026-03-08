@@ -76,7 +76,7 @@ namespace rtm {
 		int		m_tracesToSkip;
 		int		m_numTraces;
 		int		m_framesSize;
-		void*	m_frames[];
+		void**	m_frames;
 	};
 	static _Unwind_Reason_Code unwindTraceFunc(struct _Unwind_Context* _context, void* _arg) 
 	{
