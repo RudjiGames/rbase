@@ -324,6 +324,7 @@ namespace rtm {
 	/// Count number of leading zeros.
 	inline uint32_t uint32_cntlz(uint32_t _val)
 	{
+		if (_val == 0) return 32;
 #if RTM_COMPILER_GCC
 		return __builtin_clz(_val);
 #elif RTM_COMPILER_MSVC && RTM_PLATFORM_WINDOWS
@@ -347,6 +348,7 @@ namespace rtm {
 
 	inline uint32_t uint32_cnttz(uint32_t _val)
 	{
+		if (_val == 0) return 32;
 #if RTM_COMPILER_MSVC && RTM_PLATFORM_WINDOWS
 		unsigned long index;
 		_BitScanForward(&index, _val);
