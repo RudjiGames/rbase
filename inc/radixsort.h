@@ -40,7 +40,7 @@ namespace rtm {
 	template <typename Ty>
 	static inline void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
 	{
-		uint16_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
+		uint32_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 		uint16_t shift = 0;
 		for (uint32_t pass=0; pass<3; ++pass)
 		{
@@ -52,10 +52,10 @@ namespace rtm {
 				++histogram[index];
 			}
 
-			uint16_t offset = 0;
+			uint32_t offset = 0;
 			for (uint32_t i=0; i<RTM_RADIXSORT_HISTOGRAM_SIZE; ++i)
 			{
-				uint16_t count = histogram[i];
+				uint32_t count = histogram[i];
 				histogram[i] = offset;
 				offset += count;
 			}
@@ -63,8 +63,8 @@ namespace rtm {
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint32_t key = _keys[i];
-				uint16_t index = (key>>shift)&RTM_RADIXSORT_BIT_MASK;
-				uint16_t dest = histogram[index]++;
+				uint32_t index = (key>>shift)&RTM_RADIXSORT_BIT_MASK;
+				uint32_t dest = histogram[index]++;
 				_tempKeys[dest] = key;
 				_tempValues[dest] = _values[i];
 			}
@@ -91,7 +91,7 @@ namespace rtm {
 	template <typename Ty>
 	static inline void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
 	{
-		uint16_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
+		uint32_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 		uint16_t shift = 0;
 		for (uint32_t pass=0; pass<6; ++pass)
 		{
@@ -103,10 +103,10 @@ namespace rtm {
 				++histogram[index];
 			}
 
-			uint16_t offset = 0;
+			uint32_t offset = 0;
 			for (uint32_t i=0; i<RTM_RADIXSORT_HISTOGRAM_SIZE; ++i)
 			{
-				uint16_t count = histogram[i];
+				uint32_t count = histogram[i];
 				histogram[i] = offset;
 				offset += count;
 			}
@@ -114,8 +114,8 @@ namespace rtm {
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint64_t key = _keys[i];
-				uint16_t index = (key >> shift) & RTM_RADIXSORT_BIT_MASK;
-				uint16_t dest = histogram[index]++;
+				uint32_t index = (key >> shift) & RTM_RADIXSORT_BIT_MASK;
+				uint32_t dest = histogram[index]++;
 				_tempKeys[dest] = key;
 				_tempValues[dest] = _values[i];
 			}
