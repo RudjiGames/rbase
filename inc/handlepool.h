@@ -56,6 +56,14 @@ namespace rtm {
 		enum { Val = MAX_ELEMENTS > 1024 ? 1024 : MAX_ELEMENTS / 2 };
 	};
 
+	constexpr int RoundUpNextPow2(uint32_t _v)
+	{
+		_v--;
+		_v |= _v >> 1;		_v |= _v >> 2;		_v |= _v >> 4;
+		_v |= _v >> 8;		_v |= _v >> 16;
+		return _v + 1;
+	}
+
 	template <
 		uint32_t MAX_ELEMENTS,
 		uint32_t INVALID_HANDLE = 0xffffffff,
@@ -67,9 +75,9 @@ namespace rtm {
 	{
 		typedef Handle<IDX_BITS, GEN_BITS>	HandleType;
 
-		FixedArray<uint8_t, MAX_ELEMENTS>	m_generation;
-		FixedFIFO<uint32_t, MAX_ELEMENTS>	m_freeIndices;
-		uint32_t							m_size;
+		FixedArray<uint8_t, MAX_ELEMENTS>					m_generation;
+		FixedFIFO<uint32_t, RoundUpNextPow2(MAX_ELEMENTS)>	m_freeIndices;
+		uint32_t											m_size;
 
 	public:
 		HandlePool()
