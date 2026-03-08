@@ -11,7 +11,7 @@
 #define	RTM_PLUGIN_VERSION_HIGH				1
 #define	RTM_PLUGIN_VERSION_LOW				0
 #define RTM_PLUGIN_VERSION					((RTM_PLUGIN_VERSION_HIGH << 16) | RTM_PLUGIN_VERSION_LOW)
-#define RTM_PLUGIN_MAKE_VERSION(_h, _l)		(((_h) << 16) | _l)
+#define RTM_PLUGIN_MAKE_VERSION(_h, _l)		(((_h) << 16) | (_l))
 #define RTM_PLUGIN_GET_VERSION_LOW(_v)		((_v) & 0x0000ffff)
 #define RTM_PLUGIN_GET_VERSION_HIGH(_v)		(((_v) >> 16) & 0x0000ffff)
 
