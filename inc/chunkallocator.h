@@ -96,7 +96,7 @@ namespace rtm {
 
 			if (_optionalPtr)
 			{
-				_optionalPtr = &m_chunks[m_numChunks - 1].m_data[allocIndexInChunk];
+				_optionalPtr = &m_chunks[m_numChunks - 1]->m_data[allocIndexInChunk];
 			}
 
 			return allocIndex;
@@ -105,7 +105,7 @@ namespace rtm {
 		inline T* alloc()
 		{
 			const uint32_t itemHandle = allocHandle();
-			return getItem(itemHandle - 1);
+			return getItem(itemHandle);
 		}
 
 		inline void reset()

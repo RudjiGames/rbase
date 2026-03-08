@@ -6,6 +6,7 @@
 #ifndef RTM_RBASE_CONTAINERS_H
 #define RTM_RBASE_CONTAINERS_H
 
+#include <cstdint>
 #include <rbase/inc/platform.h>
 
 namespace rtm {
@@ -58,7 +59,8 @@ namespace rtm {
 	
 		inline bool	isInPool(void* _ptr) const
 		{
-			return (int32_t)(reinterpret_cast<Block*>(_ptr) - m_blocks) < BLOCK_COUNT;
+			intptr_t diff = (intptr_t)_ptr - (intptr_t)m_blocks;
+			return diff >= 0 && diff < BLOCK_SIZE * BLOCK_COUNT;
 		}
 
 		inline void* alloc()
