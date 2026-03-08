@@ -19,8 +19,8 @@
 
 #define	RTM_RESULT_OK						0x00000000
 #define	RTM_RESULT_ERROR					0x80000000
-#define	RTM_RESULT_MAKE_ERROR(x)			(RTM_RESULT_ERROR | x)
-#define	RTM_RESULT_GET_ERROR(x)				(x & (~RTM_RESULT_ERROR))
+#define	RTM_RESULT_MAKE_ERROR(x)			(RTM_RESULT_ERROR | (x))
+#define	RTM_RESULT_GET_ERROR(x)				((x) & (~RTM_RESULT_ERROR))
 
 /* Constants */
 
