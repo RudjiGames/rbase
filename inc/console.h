@@ -74,7 +74,7 @@ namespace rtm {
 	#include <Windows.h>
 #endif
 
-#define RTM_CONSOLE_TEMP_BUFFER_SIZE	8192+128
+#define RTM_CONSOLE_TEMP_BUFFER_SIZE	(8192+128)
 #define RTM_CONSOLE_ENABLE_ANSI			1
 
 #if RTM_PLATFORM_WINDOWS

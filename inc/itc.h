@@ -63,7 +63,7 @@ namespace rtm {
 		{
 			RTM_ASSERT(m_size == m_capacity, "Write called outside of start/finish!");
 			RTM_ASSERT(m_pos + _size <= m_size, "Command buffer is full!");
-			memCopy(&m_buffer[m_pos], m_capacity, _data, _size);
+			memCopy(&m_buffer[m_pos], m_capacity - m_pos, _data, _size);
 			m_pos += _size;
 		}
 

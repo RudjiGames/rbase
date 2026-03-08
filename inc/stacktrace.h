@@ -73,10 +73,10 @@ namespace rtm {
 #elif RTM_PLATFORM_ANDROID
 	struct unwindArg
 	{
-		int			m_tracesToSkip;
-		int			m_numTraces;
-		int			m_framesSize;
-		uintptr_t*	m_frames;
+		int		m_tracesToSkip;
+		int		m_numTraces;
+		int		m_framesSize;
+		void*	m_frames[];
 	};
 	static _Unwind_Reason_Code unwindTraceFunc(struct _Unwind_Context* _context, void* _arg) 
 	{
@@ -93,7 +93,7 @@ namespace rtm {
 			}
 			if (arg.m_numTraces < arg.m_framesSize)
 			{
-				arg.m_frames[arg.m_numTraces++] = (uintptr_t)ip;
+				arg.m_frames[arg.m_numTraces++] = ip;
 				return _URC_NO_REASON;
 			}
 			return _URC_END_OF_STACK;

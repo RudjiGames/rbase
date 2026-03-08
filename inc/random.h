@@ -28,6 +28,7 @@ namespace rtm {
 
 		void seed(uint32_t _z = 12345, uint32_t _w = 65435)
 		{
+			RTM_ASSERT(_z != 0 && _w != 0, "Seeds must not be zero!");
 			m_z = _z;
 			m_w = _w;
 		}
