@@ -37,8 +37,8 @@ void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size)
 		for (uint32_t i=0; i<_size; ++i)
 		{
 			uint32_t key = _keys[i];
-			uint16_t index = (key >> shift) & RTM_RADIXSORT_BIT_MASK;
-			uint16_t dest = histogram[index]++;
+			uint32_t index = (key >> shift) & RTM_RADIXSORT_BIT_MASK;
+			uint32_t dest = histogram[index]++;
 			_tempKeys[dest] = key;
 		}
 
@@ -75,8 +75,8 @@ void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, uint32_t _size)
 		for (uint32_t i=0; i<_size; ++i)
 		{
 			uint64_t key = _keys[i];
-			uint16_t index = (key >> shift) & RTM_RADIXSORT_BIT_MASK;
-			uint16_t dest = histogram[index]++;
+			uint32_t index = (key >> shift) & RTM_RADIXSORT_BIT_MASK;
+			uint32_t dest = histogram[index]++;
 			_tempKeys[dest] = key;
 		}
 
