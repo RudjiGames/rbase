@@ -107,7 +107,8 @@ namespace rtm {
 			{
 				rtm_delete<Chunk>(m_chunks[i]);
 			}
-			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+			if (m_chunks)
+				rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
 
 			m_chunks	= nullptr;
 			m_numItems	= 0;
@@ -218,7 +219,8 @@ namespace rtm {
 			{
 				rtm_delete<Chunk>(m_chunks[i]);
 			}
-			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+			if (m_chunks)
+				rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
 
 			m_chunks		= nullptr;
 			m_curChunkSize	= 0;
