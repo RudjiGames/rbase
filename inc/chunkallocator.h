@@ -62,12 +62,12 @@ namespace rtm {
 			, m_maxChunks(0)
 		{
 			static_assert((CHUNK_ITEMS & CHUNK_MASK) == 0);
-			reset(); // create initial chunk array and add 1 chunk
+			reset(true); // create initial chunk array and add 1 chunk
 		}
 
 		inline ~ChunkAllocator()
 		{
-			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+			reset();
 		}
 
 		inline uint32_t allocHandle()
@@ -77,7 +77,7 @@ namespace rtm {
 			{
 				addNewChunk();
 			}
-			return m_numItems++;
+			return handle;
 		}
 
 		inline uint32_t allocHandle(T** _optionalPtr)
@@ -102,7 +102,7 @@ namespace rtm {
 			return item;
 		}
 
-		inline void reset()
+		inline void reset(bool _allocOneChunk = false)
 		{
 			const uint32_t numChunks = m_numChunks;
 			for (size_t i=0; i<numChunks; ++i)
@@ -113,9 +113,14 @@ namespace rtm {
 
 			m_numItems	= 0;
 			m_numChunks	= 0;
-			m_maxChunks	= CHUNK_ARRAY_INITIAL;
-			m_chunks	= rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
-			addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
+			m_maxChunks	= 0;
+
+			if (_allocOneChunk)
+			{
+				m_maxChunks = CHUNK_ARRAY_INITIAL;
+				m_chunks = rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
+				addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
+			}
 		}
 
 		inline uint32_t size() const
@@ -178,12 +183,12 @@ namespace rtm {
 			, m_numChunks(0)
 			, m_maxChunks(0)
 		{
-			reset();
+			reset(true);
 		}
 
 		inline ~StackAllocator()
 		{
-			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+			reset();
 		}
 
 		inline void* alloc(uint32_t _size)
@@ -207,7 +212,7 @@ namespace rtm {
 			return m_numChunks * sizeof(Chunk) + sizeof(StackAllocator);
 		}
 
-		void reset()
+		void reset(bool _allocOneChunk = false)
 		{
 			const uint32_t numChunks = m_numChunks;
 			for (size_t i = 0; i < numChunks; ++i)
@@ -220,9 +225,12 @@ namespace rtm {
 			m_numChunks		= 0;
 			m_maxChunks		= 0;
 
-			m_chunks		= rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
-			m_maxChunks		= CHUNK_ARRAY_INITIAL;
-			addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
+			if (_allocOneChunk)
+			{
+				m_chunks = rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
+				m_maxChunks = CHUNK_ARRAY_INITIAL;
+				addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
+			}
 		}
 
 	private:
