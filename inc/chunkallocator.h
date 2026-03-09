@@ -213,18 +213,18 @@ namespace rtm {
 		{
 			RTM_ASSERT(_size <= CHUNK_SIZE, "");
 
-			const uint32_t alignExtra = m_curChunkSize % _alignment;
+			const uint32_t paddingExtra = (_alignment - (m_curChunkSize % _alignment)) % _alignment;
 
 			// check if current chunk is full:
 			// current item index is last one in chunk
-			if ((m_curChunkSize + _size + alignExtra) > CHUNK_SIZE)
+			if ((m_curChunkSize + _size + paddingExtra) > CHUNK_SIZE)
 			{
 				addNewChunk();
 			}
 
 			Chunk* lastChunk = m_chunks[m_numChunks - 1];
-			void* retPtr     = &lastChunk->m_data[m_curChunkSize + alignExtra];
-			m_curChunkSize  += _size + alignExtra;
+			void* retPtr     = &lastChunk->m_data[m_curChunkSize + paddingExtra];
+			m_curChunkSize  += _size + paddingExtra;
 			return retPtr;
 		}
 
