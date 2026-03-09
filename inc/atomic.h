@@ -180,7 +180,7 @@ namespace rtm {
 #elif RTM_PLATFORM_CHEERP
 		__sync_synchronize();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		__atomic_thread_fence(__ATOMIC_RELEASE);
+		__atomic_thread_fence(__ATOMIC_ACQUIRE);
 #else
 		#error "Unsupported compiler!"
 #endif
@@ -193,7 +193,7 @@ namespace rtm {
 #elif RTM_PLATFORM_CHEERP
 		__sync_synchronize();
 #elif RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		__atomic_thread_fence(__ATOMIC_ACQUIRE);
+		__atomic_thread_fence(__ATOMIC_RELEASE);
 #else
 		#error "Unsupported compiler!"
 #endif
@@ -228,7 +228,7 @@ namespace rtm {
 	static inline int32_t atomicInc(int32_t volatile* _value)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		return __sync_fetch_and_add(_value, 1);
+		return __sync_fetch_and_add(_value, 1) + 1;
 #elif RTM_COMPILER_MSVC
 		return _InterlockedIncrement((long volatile*)_value);
 #else
@@ -239,7 +239,7 @@ namespace rtm {
 	static inline int64_t atomicInc(int64_t volatile* _value)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		return __sync_fetch_and_add(_value, 1);
+		return __sync_fetch_and_add(_value, 1) + 1;
 #elif RTM_COMPILER_MSVC
 		return _InterlockedIncrement64((long long volatile*)_value);
 #else
@@ -250,7 +250,7 @@ namespace rtm {
 	static inline int32_t atomicDec(int32_t volatile* _value)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		return __sync_fetch_and_add(_value, -1);
+		return __sync_fetch_and_add(_value, -1) - 1;
 #elif RTM_COMPILER_MSVC
 		return _InterlockedDecrement((volatile long*)_value);
 #else
@@ -261,7 +261,7 @@ namespace rtm {
 	static inline int64_t atomicDec(int64_t volatile* _value)
 	{
 #if RTM_COMPILER_GCC || RTM_COMPILER_CLANG
-		return __sync_fetch_and_add(_value, -1);
+		return __sync_fetch_and_add(_value, -1) - 1;
 #elif RTM_COMPILER_MSVC
 		return _InterlockedDecrement64((volatile long long*)_value);
 #else
