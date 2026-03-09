@@ -75,7 +75,7 @@ namespace rtm {
 
 		inline uint64_t totalMemorySize() const
 		{
-			return m_numChunks * sizeof(Chunk) + sizeof(ChunkAllocator);
+			return uint64_t(m_numChunks) * uint64_t(sizeof(Chunk)) + uint64_t(sizeof(ChunkAllocator));
 		}
 
 		inline uint32_t allocHandle()
@@ -206,20 +206,27 @@ namespace rtm {
 
 		inline uint64_t totalMemorySize() const
 		{
-			return m_numChunks * sizeof(Chunk) + sizeof(StackAllocator);
+			return uint64_t(m_numChunks) * uint64_t(sizeof(Chunk)) + uint64_t(sizeof(StackAllocator));
 		}
 
 		inline void* alloc(uint32_t _size, uint32_t _alignment = DEFAULT_ALIGNMENT)
 		{
 			RTM_ASSERT(_size <= CHUNK_SIZE, "");
+			RTM_ASSERT(_alignment > 0, "");
 
-			const uint32_t paddingExtra = (_alignment - (m_curChunkSize % _alignment)) % _alignment;
+			uintptr_t paddingBase = (uintptr_t)m_chunks[m_numChunks-1]->m_data;
+			paddingBase += m_curChunkSize;
+
+			uint32_t paddingExtra = (_alignment - (paddingBase % _alignment)) % _alignment;
 
 			// check if current chunk is full:
 			// current item index is last one in chunk
 			if ((m_curChunkSize + _size + paddingExtra) > CHUNK_SIZE)
 			{
 				addNewChunk();
+
+				uintptr_t paddingBase = (uintptr_t)m_chunks[m_numChunks-1]->m_data;
+				paddingExtra = (_alignment - (paddingBase % _alignment)) % _alignment;
 			}
 
 			Chunk* lastChunk = m_chunks[m_numChunks - 1];
