@@ -151,7 +151,7 @@ WideToMulti::WideToMulti(const wchar_t* _string)
 		m_ptr = allocString;
 	}
 
-	m_size = uint32_t(wcstombs(m_ptr, _string, len));
+	m_size = uint32_t(wcstombs(m_ptr, _string, len + 1));
 	RTM_ASSERT(static_cast<size_t>(-1) != m_size, "");
 }
 
