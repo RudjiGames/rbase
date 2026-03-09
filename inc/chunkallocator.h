@@ -12,7 +12,11 @@
 
 namespace rtm {
 
-	// Count trailing zeroes
+	/// Count trailing zeroes in an integer value.
+	///
+	/// @param[in] _v  : Value to count trailing zeroes in
+	///
+	/// @returns the number of trailing zero bits.
 	static constexpr int chunkCTZ(const int _v)
 	{
 		unsigned int v = _v; // 32-bit word input to count zero bits on right
@@ -73,11 +77,17 @@ namespace rtm {
 			reset();
 		}
 
+		/// Returns the total memory size used by the allocator.
+		///
+		/// @returns total memory size in bytes.
 		inline uint64_t totalMemorySize() const
 		{
 			return uint64_t(m_numChunks) * uint64_t(sizeof(Chunk)) + uint64_t(sizeof(ChunkAllocator));
 		}
 
+		/// Allocates a handle for a new item.
+		///
+		/// @returns handle to the newly allocated item.
 		inline uint32_t allocHandle()
 		{
 			const uint32_t handle = m_numItems++;
@@ -88,6 +98,11 @@ namespace rtm {
 			return handle;
 		}
 
+		/// Allocates a handle for a new item and optionally returns a pointer to it.
+		///
+		/// @param[out] _optionalPtr  : Optional pointer to receive the item pointer
+		///
+		/// @returns handle to the newly allocated item.
 		inline uint32_t allocHandle(T** _optionalPtr)
 		{
 			const uint32_t itemHandle = allocHandle();
@@ -101,6 +116,9 @@ namespace rtm {
 			return itemHandle;
 		}
 
+		/// Allocates a new item.
+		///
+		/// @returns pointer to the newly allocated item.
 		inline T* alloc()
 		{
 			const uint32_t itemHandle = allocHandle();
@@ -108,15 +126,20 @@ namespace rtm {
 			return item;
 		}
 
+		/// Resets the allocator, freeing all allocated memory.
+		///
+		/// @param[in] _allocOneChunk  : If true, allocates one initial chunk after reset
 		inline void reset(bool _allocOneChunk = false)
 		{
 			const uint32_t numChunks = m_numChunks;
-			for (size_t i=0; i<numChunks; ++i)
-			{
-				rtm_delete<Chunk>(m_chunks[i]);
-			}
 			if (m_chunks)
+			{
+				for (size_t i=0; i<numChunks; ++i)
+				{
+					rtm_delete<Chunk>(m_chunks[i]);
+				}
 				rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+			}
 
 			m_chunks	= nullptr;
 			m_numItems	= 0;
@@ -131,11 +154,19 @@ namespace rtm {
 			}
 		}
 
+		/// Returns the number of allocated items.
+		///
+		/// @returns number of items.
 		inline uint32_t size() const
 		{
 			return m_numItems;
 		}
 
+		/// Gets a pointer to an item by its handle/index.
+		///
+		/// @param[in] _index  : Handle/index of the item
+		///
+		/// @returns pointer to the item.
 		inline T* getItem(uint32_t _index)
 		{
 			uint32_t chunkIdx = _index >> CHUNK_SHIFT;
@@ -151,7 +182,7 @@ namespace rtm {
 			{
 				Chunk** newArray = rtm_new_array<Chunk*>(m_maxChunks + CHUNK_ARRAY_GROW_BY);
 				const uint64_t sizeToCopy = sizeof(Chunk*) * m_numChunks;
-				memCopy(newArray, sizeToCopy, m_chunks, sizeToCopy);
+				memCopy(newArray, sizeof(Chunk*) * (m_maxChunks + CHUNK_ARRAY_GROW_BY), m_chunks, sizeToCopy);
 				rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
 				m_maxChunks += CHUNK_ARRAY_GROW_BY;
 				m_chunks     = newArray;
@@ -204,17 +235,31 @@ namespace rtm {
 			reset();
 		}
 
+		/// Returns the total memory size used by the allocator.
+		///
+		/// @returns total memory size in bytes.
 		inline uint64_t totalMemorySize() const
 		{
 			return uint64_t(m_numChunks) * uint64_t(sizeof(Chunk)) + uint64_t(sizeof(StackAllocator));
 		}
 
+		/// Calculates padding required for given alignment.
+		///
+		/// @param[in] _alignment  : Required alignment (must be power of 2)
+		///
+		/// @returns padding size in bytes.
 		inline uint32_t getPadding(uint32_t _alignment)
 		{
 			uintptr_t paddingBase = m_curChunkSize + (uintptr_t)m_chunks[m_numChunks - 1]->m_data;
 			return (_alignment - (paddingBase & (_alignment - 1))) & (_alignment - 1); // assumes power of 2 alignment
 		}
 
+		/// Allocates memory with specified size and alignment.
+		///
+		/// @param[in] _size       : Size in bytes to allocate
+		/// @param[in] _alignment  : Required alignment (must be power of 2)
+		///
+		/// @returns pointer to allocated memory.
 		inline void* alloc(uint32_t _size, uint32_t _alignment = DEFAULT_ALIGNMENT)
 		{
 			RTM_ASSERT(_size <= CHUNK_SIZE, "Size cannot exceed chunk size");
@@ -227,7 +272,7 @@ namespace rtm {
 			while ((m_curChunkSize + _size + paddingExtra) > CHUNK_SIZE)
 			{
 				addNewChunk();
-				uint32_t paddingExtra = getPadding(_alignment);
+				paddingExtra = getPadding(_alignment);
 			}
 
 			Chunk* lastChunk = m_chunks[m_numChunks - 1];
@@ -236,15 +281,20 @@ namespace rtm {
 			return retPtr;
 		}
 
+		/// Resets the allocator, freeing all allocated memory.
+		///
+		/// @param[in] _allocOneChunk  : If true, allocates one initial chunk after reset
 		void reset(bool _allocOneChunk = false)
 		{
 			const uint32_t numChunks = m_numChunks;
-			for (size_t i = 0; i < numChunks; ++i)
-			{
-				rtm_delete<Chunk>(m_chunks[i]);
-			}
 			if (m_chunks)
+			{
+				for (size_t i = 0; i < numChunks; ++i)
+				{
+					rtm_delete<Chunk>(m_chunks[i]);
+				}
 				rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
+			}
 
 			m_chunks		= nullptr;
 			m_curChunkSize	= 0;
@@ -267,7 +317,7 @@ namespace rtm {
 			{
 				Chunk** newArray = rtm_new_array<Chunk*>(m_maxChunks + CHUNK_ARRAY_GROW_BY);
 				const uint64_t sizeToCopy = sizeof(Chunk*) * m_numChunks;
-				memCopy(newArray, sizeToCopy, m_chunks, sizeToCopy);
+				memCopy(newArray, sizeof(Chunk*) * (m_maxChunks + CHUNK_ARRAY_GROW_BY), m_chunks, sizeToCopy);
 				rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
 				m_maxChunks += CHUNK_ARRAY_GROW_BY;
 				m_chunks = newArray;
