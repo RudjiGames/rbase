@@ -97,8 +97,6 @@ namespace rtm {
 		{
 			const uint32_t itemHandle = allocHandle();
 			T* item = getItem(itemHandle);
-			if (!item)
-				__debugbreak();
 			return item;
 		}
 
