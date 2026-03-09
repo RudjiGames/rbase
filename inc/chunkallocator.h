@@ -74,7 +74,7 @@ namespace rtm {
 
 		inline ~ChunkAllocator()
 		{
-			reset();
+			reset(false);
 		}
 
 		/// Returns the total memory size used by the allocator.
@@ -129,7 +129,7 @@ namespace rtm {
 		/// Resets the allocator, freeing all allocated memory.
 		///
 		/// @param[in] _allocOneChunk  : If true, allocates one initial chunk after reset
-		inline void reset(bool _allocOneChunk = false)
+		inline void reset(bool _allocOneChunk = true)
 		{
 			const uint32_t numChunks = m_numChunks;
 			if (m_chunks)
@@ -232,7 +232,7 @@ namespace rtm {
 
 		inline ~StackAllocator()
 		{
-			reset();
+			reset(false);
 		}
 
 		/// Returns the total memory size used by the allocator.
@@ -250,7 +250,7 @@ namespace rtm {
 		/// @returns padding size in bytes.
 		inline uint32_t getPadding(uint32_t _alignment)
 		{
-			uintptr_t paddingBase = m_curChunkSize + (uintptr_t)m_chunks[m_numChunks - 1]->m_data;
+			uintptr_t paddingBase = (uintptr_t)m_curChunkSize + (uintptr_t)m_chunks[m_numChunks - 1]->m_data;
 			return (_alignment - (paddingBase & (_alignment - 1))) & (_alignment - 1); // assumes power of 2 alignment
 		}
 
@@ -284,7 +284,7 @@ namespace rtm {
 		/// Resets the allocator, freeing all allocated memory.
 		///
 		/// @param[in] _allocOneChunk  : If true, allocates one initial chunk after reset
-		void reset(bool _allocOneChunk = false)
+		void reset(bool _allocOneChunk = true)
 		{
 			const uint32_t numChunks = m_numChunks;
 			if (m_chunks)
