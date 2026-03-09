@@ -38,7 +38,7 @@ namespace rtm {
 	private:
 		struct RTM_ALIGN(16) Chunk
 		{
-			T		m_data[CHUNK_ITEMS];
+			T	m_data[CHUNK_ITEMS];
 		};
 
 		enum
@@ -59,53 +59,47 @@ namespace rtm {
 			: m_chunks(nullptr)
 			, m_numItems(0)
 			, m_numChunks(0)
-			, m_maxChunks(CHUNK_ARRAY_INITIAL)
+			, m_maxChunks(0)
 		{
 			static_assert((CHUNK_ITEMS & CHUNK_MASK) == 0);
-			m_chunks = rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
-			addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
+			reset(); // create initial chunk array and add 1 chunk
 		}
 
 		inline ~ChunkAllocator()
 		{
-			reset();
-		}
-
-		inline void allocOptionalAddChunk()
-		{
-			// check if current chunk is full:
-			// current item index is last one in chunk
-			if ((m_numItems & CHUNK_MASK) == CHUNK_MASK)
-			{
-				addNewChunk();
-			}
+			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
 		}
 
 		inline uint32_t allocHandle()
 		{
-			allocOptionalAddChunk();
+			const uint32_t handle = m_numItems++;
+			while ((handle >> CHUNK_SHIFT) >= m_numChunks)
+			{
+				addNewChunk();
+			}
 			return m_numItems++;
 		}
 
-		inline uint32_t allocHandle(T*& _optionalPtr)
+		inline uint32_t allocHandle(T** _optionalPtr)
 		{
-			allocOptionalAddChunk();
-
-			const uint32_t allocIndex        = m_numItems++;
-			const uint32_t allocIndexInChunk = allocIndex & CHUNK_MASK;
-
+			const uint32_t itemHandle = allocHandle();
+			T* itemPointer = getItem(itemHandle);
+			
 			if (_optionalPtr)
 			{
-				_optionalPtr = &m_chunks[m_numChunks - 1]->m_data[allocIndexInChunk];
+				*_optionalPtr = itemPointer;
 			}
 
-			return allocIndex;
+			return itemHandle;
 		}
 
 		inline T* alloc()
 		{
 			const uint32_t itemHandle = allocHandle();
-			return getItem(itemHandle);
+			T* item = getItem(itemHandle);
+			if (!item)
+				__debugbreak();
+			return item;
 		}
 
 		inline void reset()
@@ -117,10 +111,11 @@ namespace rtm {
 			}
 			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
 
-			m_chunks	= nullptr;
 			m_numItems	= 0;
 			m_numChunks	= 0;
-			m_maxChunks	= 0;
+			m_maxChunks	= CHUNK_ARRAY_INITIAL;
+			m_chunks	= rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
+			addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
 		}
 
 		inline uint32_t size() const
@@ -183,14 +178,12 @@ namespace rtm {
 			, m_numChunks(0)
 			, m_maxChunks(0)
 		{
-			m_chunks	= rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
-			m_maxChunks	= CHUNK_ARRAY_INITIAL;
-			addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
+			reset();
 		}
 
 		inline ~StackAllocator()
 		{
-			reset();
+			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
 		}
 
 		inline void* alloc(uint32_t _size)
@@ -221,12 +214,15 @@ namespace rtm {
 			{
 				rtm_delete<Chunk>(m_chunks[i]);
 			}
-
 			rtm_delete_array<Chunk*>(m_maxChunks, m_chunks);
 			m_chunks		= nullptr;
 			m_curChunkSize	= 0;
 			m_numChunks		= 0;
 			m_maxChunks		= 0;
+
+			m_chunks		= rtm_new_array<Chunk*>(CHUNK_ARRAY_INITIAL);
+			m_maxChunks		= CHUNK_ARRAY_INITIAL;
+			addNewChunk(); // add initial chunk so there is always a valid last chunk (for alloc call)
 		}
 
 	private:
