@@ -65,6 +65,9 @@ namespace rtm {
 			reset(true); // create initial chunk array and add 1 chunk
 		}
 
+		ChunkAllocator(const ChunkAllocator&) = delete;
+		ChunkAllocator& operator=(const ChunkAllocator&) = delete;
+
 		inline ~ChunkAllocator()
 		{
 			reset();
@@ -185,6 +188,9 @@ namespace rtm {
 		{
 			reset(true);
 		}
+
+		StackAllocator(const StackAllocator&) = delete;
+		StackAllocator& operator=(const StackAllocator&) = delete;
 
 		inline ~StackAllocator()
 		{
