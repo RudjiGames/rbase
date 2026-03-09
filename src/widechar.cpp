@@ -112,7 +112,7 @@ MultiToWide::MultiToWide(const char* _string, bool _path)
 			tmpBuff = new char[len + 1];
 		}
 		stringToConvert = makeLongPath(_string, 0, tmpBuff, len);
-		m_size = uint32_t(mbstowcs(m_ptr, tmpBuff, CHARS_ON_STACK));
+		m_size = uint32_t(mbstowcs(m_ptr, stringToConvert, len + 1));
 		if (tmpBuff != tempBuffer)
 		{
 			delete[] tmpBuff;
@@ -121,7 +121,7 @@ MultiToWide::MultiToWide(const char* _string, bool _path)
 	else
 #endif // RTM_PLATFORM_WINDOWS
 	{
-		m_size = uint32_t(mbstowcs(m_ptr, stringToConvert, CHARS_ON_STACK));
+		m_size = uint32_t(mbstowcs(m_ptr, stringToConvert, len + 1));
 	}
 
 	RTM_ASSERT(static_cast<size_t>(-1) != m_size, "");
@@ -142,14 +142,16 @@ WideToMulti::WideToMulti(const wchar_t* _string)
 	if (!_string)
 		return;
 
-	uint32_t len = strLen(_string);
+	// get multibyte string length
+	uint32_t len = (uint32_t)wcstombs(0, _string, 0);
+
 	if (len + 1 > CHARS_ON_STACK)
 	{
 		char* allocString = new char[len + 1];
 		m_ptr = allocString;
 	}
 
-	m_size = uint32_t(wcstombs(m_ptr, _string, CHARS_ON_STACK));
+	m_size = uint32_t(wcstombs(m_ptr, _string, len));
 	RTM_ASSERT(static_cast<size_t>(-1) != m_size, "");
 }
 

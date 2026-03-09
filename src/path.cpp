@@ -244,7 +244,7 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 	char dataPath[512];
 	strlCpy(dataPath, 512, mb);
 	const char* exeName = pathGetFileName(dataPath);
-	strlCpy((char*)exeName, strLen(exeName), "data/");
+	strlCpy((char*)exeName, uint32_t(dataPath + 512 - exeName), "data/");
 	return strlCpy(_buffer, _bufferSize, dataPath) == strLen(dataPath);
 #endif
 
@@ -309,9 +309,6 @@ bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, uint3
 	if (pathIsAbsolute(_appendPath))
 		return false;
 
-	if (!pathIsDirectory(_path))
-		return false;
-
 	size_t lenAppend = strLen(_appendPath);
 
 	if (!_path)
@@ -322,6 +319,9 @@ bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, uint3
 		strlCpy(_buffer, _bufferSize, _appendPath);
 		return true;
 	}
+
+	if (!pathIsDirectory(_path))
+		return false;
 
 	if (strLen(_path) > _bufferSize)
 		return false;
@@ -402,7 +402,7 @@ void pathCanonicalize(char* _path)
 		while ((*prevSlash != '\\') && (*prevSlash != '/')) prevSlash--;
 		const char* nextDir = pos + 3;
 		size_t len = strLen(nextDir) + 1;
-		rtm::memMove((void*)(prevSlash+1), nextDir, len*2);
+		rtm::memMove((void*)(prevSlash+1), nextDir, len);
 	}
 
 	toUnixSlashes(_path);
@@ -567,7 +567,7 @@ bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _dirLis
 
 	for (uint32_t i=0; i<numDirs; ++i)
 	{
-		uint32_t de = (dirOffsets[i] >> 16) & 0xffffffff;
+		uint32_t de = (dirOffsets[i] >> 16) & 0xffff;
 		uint32_t ds =  dirOffsets[i] & 0xffff;
         _dirList[i].set(&_path[ds], (uint32_t)(de-ds));
 	}
