@@ -209,24 +209,25 @@ namespace rtm {
 			return uint64_t(m_numChunks) * uint64_t(sizeof(Chunk)) + uint64_t(sizeof(StackAllocator));
 		}
 
+		inline uint32_t getPadding(uint32_t _alignment)
+		{
+			uintptr_t paddingBase = m_curChunkSize + (uintptr_t)m_chunks[m_numChunks - 1]->m_data;
+			return (_alignment - (paddingBase & (_alignment - 1))) & (_alignment - 1); // assumes power of 2 alignment
+		}
+
 		inline void* alloc(uint32_t _size, uint32_t _alignment = DEFAULT_ALIGNMENT)
 		{
-			RTM_ASSERT(_size <= CHUNK_SIZE, "");
-			RTM_ASSERT(_alignment > 0, "");
+			RTM_ASSERT(_size <= CHUNK_SIZE, "Size cannot exceed chunk size");
+			RTM_ASSERT(_alignment > 0 && (_alignment & (_alignment - 1)) == 0, "Alignment must be a power of 2");
 
-			uintptr_t paddingBase = (uintptr_t)m_chunks[m_numChunks-1]->m_data;
-			paddingBase += m_curChunkSize;
-
-			uint32_t paddingExtra = (_alignment - (paddingBase % _alignment)) % _alignment;
+			uint32_t paddingExtra = getPadding(_alignment);
 
 			// check if current chunk is full:
 			// current item index is last one in chunk
 			if ((m_curChunkSize + _size + paddingExtra) > CHUNK_SIZE)
 			{
 				addNewChunk();
-
-				uintptr_t paddingBase = (uintptr_t)m_chunks[m_numChunks-1]->m_data;
-				paddingExtra = (_alignment - (paddingBase % _alignment)) % _alignment;
+				uint32_t paddingExtra = getPadding(_alignment);
 			}
 
 			Chunk* lastChunk = m_chunks[m_numChunks - 1];
