@@ -3,9 +3,6 @@
 /// License: http://www.opensource.org/licenses/BSD-2-Clause               ///
 //--------------------------------------------------------------------------//
 
-//#ifndef RTM_RBASE_LIBASSERT_H
-//#define RTM_RBASE_LIBASSERT_H
-
 #ifndef RBASE_NAMESPACE
 #error "Must define RBASE_NAMESPACE!"
 #endif
@@ -61,5 +58,3 @@ namespace RBASE_NAMESPACE {
 
 
 #endif // !RTM_RETAIL
-
-//#endif // RTM_RBASE_LIBASSERT_H

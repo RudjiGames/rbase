@@ -10,6 +10,26 @@
 
 namespace rtm {
 
+	class Thread;
+
+	typedef int32_t(*ThreadEntry)(void* _userData);
+
+	/// Creates and starts a thread.
+	///
+	/// @param[in] _entry     : Thread entry point function.
+	/// @param[in] _userData  : User data pointer passed to thread entry point.
+	/// @param[in] _stackSize : Stack size for the thread, 0 for default stack size.
+	/// 
+	/// @returns pointer to thread class instance
+	static inline Thread* threadCreate(ThreadEntry _entry, void* _userData, uint32_t _stackSize);
+
+	/// Destroy a thread and wait for it to finish.
+	///
+	/// @param[in] _thread : Thread class instance to destroy.
+	/// 
+	/// @returns pointer to thread class instance
+	static inline int32_t threadDestroy(Thread* _thread);
+
 	/// Gets current thread ID
 	///
 	/// @returns the current thread ID.
@@ -49,8 +69,6 @@ namespace rtm {
 
 namespace rtm {
 
-	typedef int32_t (*ThreadEntry)(void* _userData);
-	
 	class Thread
 	{
 		RTM_CLASS_NO_COPY(Thread)
@@ -178,6 +196,21 @@ namespace rtm {
 #error "Unsupported platform!"
 #endif
 	};
+
+	static inline Thread* threadCreate(ThreadEntry _entry, void* _userData, uint32_t _stackSize)
+	{
+		Thread* thread = new Thread();
+		thread->start(_entry, _userData, _stackSize);
+		return thread;
+	}
+
+	static inline int32_t threadDestroy(Thread* _thread)
+	{
+		_thread->stop();
+		int32_t exitCode = _thread->getExitCode();
+		delete _thread;
+		return exitCode;
+	}
 
 	static inline uint64_t threadGetID()
 	{
