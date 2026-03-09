@@ -17,7 +17,7 @@ namespace rtm {
 	{
 		unsigned int v = _v; // 32-bit word input to count zero bits on right
 		unsigned int c = 32; // c will be the number of zero bits on the right
-		v &= -signed(v);
+		v &= (~v + 1u);
 		if (v) c--;
 		if (v & 0x0000FFFF) c -= 16;
 		if (v & 0x00FF00FF) c -=  8;
@@ -71,6 +71,11 @@ namespace rtm {
 		inline ~ChunkAllocator()
 		{
 			reset();
+		}
+
+		inline uint64_t totalMemorySize() const
+		{
+			return m_numChunks * sizeof(Chunk) + sizeof(ChunkAllocator);
 		}
 
 		inline uint32_t allocHandle()
@@ -180,6 +185,8 @@ namespace rtm {
 		uint32_t	m_maxChunks;
 
 	public:
+		static const int DEFAULT_ALIGNMENT = 8;
+
 		inline StackAllocator()
 			: m_chunks(nullptr)
 			, m_curChunkSize(0)
@@ -197,25 +204,28 @@ namespace rtm {
 			reset();
 		}
 
-		inline void* alloc(uint32_t _size)
+		inline uint64_t totalMemorySize() const
+		{
+			return m_numChunks * sizeof(Chunk) + sizeof(StackAllocator);
+		}
+
+		inline void* alloc(uint32_t _size, uint32_t _alignment = DEFAULT_ALIGNMENT)
 		{
 			RTM_ASSERT(_size <= CHUNK_SIZE, "");
+
+			const uint32_t alignExtra = m_curChunkSize % _alignment;
+
 			// check if current chunk is full:
 			// current item index is last one in chunk
-			if ((m_curChunkSize + _size) > CHUNK_SIZE)
+			if ((m_curChunkSize + _size + alignExtra) > CHUNK_SIZE)
 			{
 				addNewChunk();
 			}
 
 			Chunk* lastChunk = m_chunks[m_numChunks - 1];
-			void* retPtr     = &lastChunk->m_data[m_curChunkSize];
-			m_curChunkSize  += _size;
+			void* retPtr     = &lastChunk->m_data[m_curChunkSize + alignExtra];
+			m_curChunkSize  += _size + alignExtra;
 			return retPtr;
-		}
-
-		inline uint32_t totalMemorySize() const
-		{
-			return m_numChunks * sizeof(Chunk) + sizeof(StackAllocator);
 		}
 
 		void reset(bool _allocOneChunk = false)
