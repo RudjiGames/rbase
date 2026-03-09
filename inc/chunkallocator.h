@@ -224,7 +224,7 @@ namespace rtm {
 
 			// check if current chunk is full:
 			// current item index is last one in chunk
-			if ((m_curChunkSize + _size + paddingExtra) > CHUNK_SIZE)
+			while ((m_curChunkSize + _size + paddingExtra) > CHUNK_SIZE)
 			{
 				addNewChunk();
 				uint32_t paddingExtra = getPadding(_alignment);
