@@ -81,7 +81,7 @@ for:
       - ./GENie/bin/linux/genie --file=rbase/scripts/genie.lua --gcc=linux-gcc gmake
   
     build_script:
-      - cd ./.zidar/linux/linux-gcc/rbase/projects/gmake-linux-gcc
+      - cd ./.zidar/linux/linux-gcc/rbase/projects
       - make config=${buildcfg}
 
 # ======================================
@@ -104,5 +104,5 @@ for:
       - ./GENie/bin/darwin/genie --file=rbase/scripts/genie.lua --gcc=osx-x64 gmake
     
     build_script:
-      - cd ./.zidar/osx/clang/rbase/projects/gmake-osx-arm64
+      - cd ./.zidar/osx/clang/rbase/projects/
       - make config=${buildcfg}
