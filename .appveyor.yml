@@ -56,7 +56,7 @@ for:
       - git clone https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
      
     install:
-      - build\tools\bin\windows\genie.exe --file=rbase\genie\genie.lua vs2022
+      - zidar\tools\bin\windows\genie.exe --file=rbase\genie\genie.lua vs2022
       
     build: 
       project: .zidar\windows\vs2022\rbase\projects\.sln
@@ -95,7 +95,7 @@ for:
     init:
       - git clone https://github.com/RudjiGames/zidar zidar
       - git clone https://github.com/RudjiGames/rbase rbase
-      - git clone https://github.com/bkaradzic/GENie GENie  # build GENie from source: we don't know the target CPU, can't use ARM binary from 'build'
+      - git clone https://github.com/bkaradzic/GENie GENie  # build GENie from source: we don't know the target CPU, can't use ARM binary from 'zidar'
       - git clone https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
       - cd GENie && make && cd ..
     
