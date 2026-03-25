@@ -60,7 +60,7 @@ for:
       - zidar\tools\bin\windows\genie.exe --file=rbase\genie\genie.lua vs2022
       
     build: 
-      project: .zidar\windows\vs2022\rbase\projects\vs2022\zidar.sln
+      project: .zidar\windows\vs2022\rbase\projects\vs2022\rbase.sln
 
 # ======================================
 # Linux
