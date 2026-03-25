@@ -13,7 +13,7 @@ if not _OPTIONS["zidar-path"] then
 		_OPTIONS["zidar-path"] = "../zidar"
 	end
 end
-print(_OPTIONS["zidar-path"] .. "/zidar.lua")
+
 dofile(_OPTIONS["zidar-path"] .. "/zidar.lua")
 
 dofile "rbase.lua"

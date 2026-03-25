@@ -51,7 +51,6 @@ for:
       - job_name: Windows
   
     init:
-      - choco install make -y
       - git clone https://github.com/RudjiGames/zidar zidar
       - git clone https://github.com/RudjiGames/rbase rbase
       - git clone https://github.com/unittest-cpp/unittest-cpp.git unittest-cpp
