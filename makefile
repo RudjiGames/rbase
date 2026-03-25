@@ -53,11 +53,10 @@ clean:   ## Clean all intermediate files.
 
 projgen: ## Generate project files for all configurations.
 	@echo Generating project files...
-	echo $(CURDIR)
-	$(GENIE) --with-samples --with-unittests --with-tools vs2022 --file $(CURDIR)/zidar/zidar.lua
-	$(GENIE) --with-samples --with-unittests --with-tools --gcc=linux-clang   gmake --file zidar/zidar.lua
-	$(GENIE) --with-samples --with-unittests --with-tools --gcc=linux-gcc     gmake --file zidar/zidar.lua
-	$(GENIE) --with-samples --with-unittests --with-tools --gcc=osx-arm64     gmake --file zidar/zidar.lua
-	$(GENIE) --with-samples --with-unittests --with-tools --xcode=osx         xcode9 --file zidar/zidar.lua
-	$(GENIE) --with-samples --with-unittests --with-tools --xcode=ios         xcode9 --file zidar/zidar.lua
-	$(GENIE) --with-samples --with-unittests --with-tools --gcc=android-arm64 gmake --file zidar/zidar.lua
+	$(GENIE) --with-samples --with-unittests --with-tools vs2022
+	$(GENIE) --with-samples --with-unittests --with-tools --gcc=linux-clang   gmake
+	$(GENIE) --with-samples --with-unittests --with-tools --gcc=linux-gcc     gmake
+	$(GENIE) --with-samples --with-unittests --with-tools --gcc=osx-arm64     gmake
+	$(GENIE) --with-samples --with-unittests --with-tools --xcode=osx         xcode9
+	$(GENIE) --with-samples --with-unittests --with-tools --xcode=ios         xcode9
+	$(GENIE) --with-samples --with-unittests --with-tools --gcc=android-arm64 gmake
