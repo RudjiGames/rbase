@@ -140,7 +140,7 @@ namespace rtm {
 		{
 			timespec ts;
 			rtm::memSet(&ts, 0, sizeof(timespec));
-			ts.tv_nsec = _ms * 1000;
+			ts.tv_nsec = _ms * 1000000;
 			while (result == 0 && 0 >= _sem->m_count)
 				result = pthread_cond_timedwait(&_sem->m_cv, &_sem->m_mutex, &ts);
 		}

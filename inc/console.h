@@ -183,6 +183,16 @@ namespace rtm {
 
 	public:
 
+		static void	vprint(const char* _format, va_list& _args)
+		{
+			rgbInternal(192, 192, 192, "", _format, _args);
+		}
+
+		static void	vrgb(uint8_t _r, uint8_t _g, uint8_t _b, const char* _format, va_list& _args)
+		{
+			rgbInternal(_r, _g, _b, "", _format, _args);
+		}
+
 		static void	rgb(uint8_t _r, uint8_t _g, uint8_t _b, const char* _format, ...)
 		{
 			va_list args;
@@ -237,7 +247,7 @@ namespace rtm {
 	{
 		va_list args;
 		va_start(args, _format);
-		rtm::Console::print(_format, args);
+		rtm::Console::vprint(_format, args);
 		va_end(args);
 	}
 
@@ -246,10 +256,10 @@ namespace rtm {
 	{
 		va_list args;
 		va_start(args, _format);
-		rtm::Console::rgb(	consoleColorGetR(_color),
-							consoleColorGetG(_color),
-							consoleColorGetB(_color),
-							_format, args);
+		rtm::Console::vrgb(	consoleColorGetR(_color),
+								consoleColorGetG(_color),
+								consoleColorGetB(_color),
+								_format, args);
 		va_end(args);
 	}
 
@@ -258,7 +268,7 @@ namespace rtm {
 	{
 		va_list args;
 		va_start(args, _format);
-		rtm::Console::rgb(_r, _g, _b, _format, args);
+		rtm::Console::vrgb(_r, _g, _b, _format, args);
 		va_end(args);
 	}
 

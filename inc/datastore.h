@@ -211,7 +211,8 @@ namespace rtm {
 			uint32_t index = Base::m_allocator.allocate();
 			if (Base::isValid(index))
 			{
-				_storedData = &m_data[index];
+				const uint32_t dataIdx = Base::m_allocator.getDataIndex(index);
+				_storedData = &m_data[dataIdx];
 			}
 			return index;
 		}

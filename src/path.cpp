@@ -253,8 +253,10 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 #elif RTM_PLATFORM_POSIX
 
 #if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
-    if (-1 == readlink("/proc/self/exe", _buffer, _bufferSize))
+    ssize_t rlLen = readlink("/proc/self/exe", _buffer, _bufferSize - 1);
+    if (-1 == rlLen)
 		return false;
+    _buffer[rlLen] = '\0';
 #endif
 
 	#if RTM_DEBUG || RTM_RELEASE
@@ -520,6 +522,7 @@ bool pathIsDirectory(const char* _path)
 		return false;
 
 	uint32_t len = strLen(_path);
+	if (len == 0) return false;
 	return isSlash(_path[len - 1]);
 }
 

@@ -505,7 +505,7 @@ uint32_t uriParseQuery(const StringView& _uri, StringView* _strs, uint32_t _numS
 	if (kvPairs * 2 == storeIndex)
 		return storeIndex;
 
-	if (*_numStrsNeeded)
+	if (_numStrsNeeded)
 		*_numStrsNeeded = kvPairs * 2;
 
 	return 0;

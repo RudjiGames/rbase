@@ -588,8 +588,9 @@ namespace rtm {
 
 	template <uint32_t S>
 	inline StringTemp<S>::StringTemp()
-		: m_len(0), m_capacity(S), m_str(0)
+		: m_len(0), m_capacity(S), m_str(m_strData)
 	{
+		m_strData[0] = '\0';
 	}
 
 	template <uint32_t S>

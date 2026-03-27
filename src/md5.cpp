@@ -106,7 +106,7 @@ void MD5::finalize()
 	
 	process(bits, 8);
 	encode(m_digest, m_state, 16);
-	memSet(m_buffer, 0, sizeof(*m_buffer));
+	memSet(m_buffer, 0, sizeof(m_buffer));
 }
 
 void MD5::getHash(uint8_t _digest[16])
