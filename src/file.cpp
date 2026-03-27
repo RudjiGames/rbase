@@ -535,7 +535,7 @@ static FileStatus httpWriteOpen(FileWriter* _file, const char* _path)
 	return FileStatus::FAIL;
 }
 
-static FileStatus httpWriteIsGetStatus(FileWriter*)
+static FileStatus httpWriteGetStatus(FileWriter*)
 {
 	return FileStatus::CLOSED;
 }
@@ -578,7 +578,7 @@ static void fileWriterSetHTTP(FileWriter* _writer)
 	_writer->construct	= httpWriteConstruct;
 	_writer->destruct	= httpWriteDestruct;
 	_writer->open		= httpWriteOpen;
-	_writer->getstatus	= httpWriteIsGetStatus;
+	_writer->getstatus	= httpWriteGetStatus;
 	_writer->close		= httpWriteClose;
 	_writer->seek		= httpWriteSeek;
 	_writer->write		= httpWriteWrite;

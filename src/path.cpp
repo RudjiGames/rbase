@@ -248,6 +248,8 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 	return strlCpy(_buffer, _bufferSize, dataPath) == strLen(dataPath);
 #endif
 
+	return false;
+
 #elif RTM_PLATFORM_POSIX
 
 #if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
@@ -297,7 +299,10 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 		return 0 != strlCpy((char*)fn, _bufferSize - uint32_t(fn - _buffer), "data/");
 	#endif
 
+		return false;
+
 #endif
+	return false;
 }
 
 bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, uint32_t _bufferSize)

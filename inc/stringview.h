@@ -543,8 +543,8 @@ namespace rtm {
 	inline void String::append(const char* _str, uint32_t _len)
 	{
 		uint32_t aLen = _len == UINT32_MAX ? strLen(_str) : _len;
-		m_str = (const char*)RTM_STRING_REALLOC((void*)m_str, sizeof(char) * (m_len + aLen));
-		strlCpy((char*)&m_str[m_len], aLen, _str, aLen);
+		m_str = (const char*)RTM_STRING_REALLOC((void*)m_str, sizeof(char) * (m_len + aLen + 1));
+		strlCpy((char*)&m_str[m_len], aLen + 1, _str, aLen);
 		m_len += aLen;
 	}
 
@@ -781,8 +781,8 @@ namespace rtm {
 			m_capacity = newLen + 1;
 			char* newStr = (char*)RTM_STRING_ALLOC(m_capacity);
 			if (m_len)
-				strlCpy(newStr, m_len, m_str);
-			strlCpy(&newStr[m_len], m_capacity, _str, _len);
+				strlCpy(newStr, m_len + 1, m_str, m_len);
+			strlCpy(&newStr[m_len], m_capacity - m_len, _str, _len);
 			m_str		= newStr;
 		}
 		else
