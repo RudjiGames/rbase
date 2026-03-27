@@ -282,7 +282,7 @@ public:
 
     virtual HRESULT __stdcall OnProgress(ULONG ulProgress, ULONG ulProgressMax, ULONG /*ulStatusCode*/, LPCWSTR /*szStatusText*/)
     {
-		if (m_reader->m_callBacks.m_progCb)
+		if (m_reader->m_callBacks.m_progCb && ulProgressMax > 0)
 			m_reader->m_callBacks.m_progCb((float)ulProgress/(float)ulProgressMax);
         return S_OK;
     }
@@ -850,11 +850,11 @@ int64_t fileWriteIfDifferent(FileStorage _type, const char* _path, const void* _
 		fileReaderDestroy(frh);
 	}
 
-	if (writeFile)
-		return fileWrite(_type, _path, _data, _dataSize);
-
 	if (_written)
 		*_written = writeFile;
+
+	if (writeFile)
+		return fileWrite(_type, _path, _data, _dataSize);
 
 	return (int64_t)_dataSize;
 }
