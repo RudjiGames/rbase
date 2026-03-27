@@ -145,7 +145,7 @@ namespace rtm {
 	/// @param[in] _handle      : File handle
 	///
 	/// @returns status of the underlying file.
-	FileStatus fileWriterGetStatus(FileReaderHandle _handle);
+	FileStatus fileWriterGetStatus(FileWriterHandle _handle);
 
 	/// Sets the position for the file writer stream.
 	///

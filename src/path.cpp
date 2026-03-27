@@ -362,8 +362,8 @@ bool pathUp(const char* _path, char* _buffer, uint32_t _bufferSize)
 	{
 		if (len < _bufferSize)
 		{
-			strlCpy(_buffer, _bufferSize, _path, len+1);
-			_buffer[len+1] = 0;
+			strlCpy(_buffer, _bufferSize, _path, len);
+			_buffer[len] = 0;
 			return true;
 		}
 	}
@@ -398,8 +398,10 @@ void pathCanonicalize(char* _path)
 	const char* pos = 0;
 	while ((pos = rtm::strStr(_path, "..")) != 0)
 	{
+		if (pos < _path + 2)
+			break;
 		const char* prevSlash = pos - 2;
-		while ((*prevSlash != '\\') && (*prevSlash != '/')) prevSlash--;
+		while (prevSlash > _path && (*prevSlash != '\\') && (*prevSlash != '/')) prevSlash--;
 		const char* nextDir = pos + 3;
 		size_t len = strLen(nextDir) + 1;
 		rtm::memMove((void*)(prevSlash+1), nextDir, len);

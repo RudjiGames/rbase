@@ -298,7 +298,7 @@ struct DownloadThread
 		char	hash[33];
 		rtm::hashMD5(HTTP(file).m_url, rtm::strLen(HTTP(file).m_url), digest);
 		rtm::hashMD5toString(digest, hash);
-		RTM_LOG("Downloading %s to %s\n", _path, hash);
+		RTM_LOG("Downloading %s to %s\n", HTTP(file).m_url, hash);
 
 		DownloadProgress progress;
 		progress.m_reader = file;
@@ -499,7 +499,7 @@ static int64_t httpReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin
 			_file->m_callBacks.m_failCb("Cannot seek. File is not open!");
 		return 0;
 	}
-	fseek(HTTP(_file).m_file, (long)_offset, _origin);
+	fseek(HTTP(_file).m_file, (long)_offset, (int)_origin);
 	return ftell(HTTP(_file).m_file);
 }
 
@@ -511,7 +511,7 @@ static int64_t httpReadRead(FileReader* _file, void* _dest, int64_t _size)
 			_file->m_callBacks.m_failCb("Cannot read. File is not open!");
 		return 0;
 	}
-	return fread(_dest, 1, _size, HTTP(_file).m_file);
+	return (int64_t)fread(_dest, 1, (size_t)_size, HTTP(_file).m_file);
 }
 
 #else // RTM_PLATFORM_EMSCRIPTEN
@@ -735,7 +735,7 @@ void fileWriterClose(FileWriterHandle _handle)
 	return writer->close(writer);
 }
 
-FileStatus fileWriterGetStatus(FileReaderHandle _handle)
+FileStatus fileWriterGetStatus(FileWriterHandle _handle)
 {
 	if (!s_writers.isValid(_handle.idx))
 		return FileStatus::FAIL;
