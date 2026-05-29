@@ -58,27 +58,29 @@ bool pathGetFileName(const char* _path, char* _buffer, uint32_t _bufferSize)
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	uint32_t len = strLen(_path);
-	uint32_t saveLen = len;
-
-	while (--len)
-		if (isSlash(_path[len]))
-			break;
+	uint32_t saveLen = strLen(_path);
+	uint32_t len = saveLen;
 
 	_buffer[0] = 0;
 
-	if (len++)
+	while (len > 0)
 	{
-		const char* fn = &_path[len];
-		len = saveLen - len;
-
-		if (len + 1 > _bufferSize)
-			return false;
-
-		rtm::strlCpy(_buffer, _bufferSize, fn, len);
-		_buffer[len] = 0;
+		--len;
+		if (isSlash(_path[len]))
+		{
+			const char* fn = &_path[len + 1];
+			uint32_t fnLen = saveLen - (len + 1);
+			if (fnLen + 1 > _bufferSize)
+				return false;
+			rtm::strlCpy(_buffer, _bufferSize, fn, fnLen);
+			return true;
+		}
 	}
 
+	// no slash — whole path is the filename
+	if (saveLen + 1 > _bufferSize)
+		return false;
+	rtm::strlCpy(_buffer, _bufferSize, _path, saveLen);
 	return true;
 }
 
@@ -88,33 +90,37 @@ bool pathGetFilenameNoExt(const char* _path, char* _buffer, uint32_t _bufferSize
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	uint32_t len = rtm::strLen(_path);
-	uint32_t saveLen = len;
+	uint32_t saveLen = rtm::strLen(_path);
+	uint32_t len = saveLen;
 
-	while (--len)
+	while (len > 0)
+	{
+		--len;
 		if (isSlash(_path[len]))
+		{
+			++len;
 			break;
+		}
+	}
 
 	_buffer[0] = 0;
 
-	const char* fn = 0;
-	if (len++)
-		fn = &_path[len];
-	else
-		fn = _path;
+	const char* fn = &_path[len];
 
-	const char* dot = rtm::strStr(fn, ".");
+	const char* dot = 0;
+	for (const char* p = fn; *p; ++p)
+		if (*p == '.') dot = p;
 
+	uint32_t outLen;
 	if (dot)
-		len = (uint32_t)(dot - fn);
+		outLen = (uint32_t)(dot - fn);
 	else
-		len = saveLen - len;
+		outLen = saveLen - len;
 
-	if (len + 1 > _bufferSize)
+	if (outLen + 1 > _bufferSize)
 		return false;
 
-	rtm::strlCpy(_buffer, _bufferSize, fn, len);
-	_buffer[len] = 0;
+	rtm::strlCpy(_buffer, _bufferSize, fn, outLen);
 
 	return true;
 }
@@ -182,10 +188,11 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 
 	wchar_t wBuffer[4096];
 	DWORD len = GetCurrentDirectoryW(size, wBuffer);
-	wcscat(wBuffer, L"\\");
-	toUnixSlashes(wBuffer);
 	if (len == 0)
 		return false;
+
+	wcscat(wBuffer, L"\\");
+	toUnixSlashes(wBuffer);
 
 	WideToMulti wb(wBuffer);
 	return wb.size() == strlCpy(_buffer, (int32_t)_bufferSize, wb);
@@ -211,32 +218,39 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 	RTM_ASSERT(_buffer, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
+	_buffer[0] = 0;
+
 #if RTM_PLATFORM_WINDOWS
 
+#if RTM_DEBUG || RTM_RELEASE || RTM_RETAIL
 	wchar_t executablePath[1024];
 	if (!GetModuleFileNameW(GetModuleHandle(0), executablePath, 1024))
 		return false;
 
 	WideToMulti mb(executablePath);
 	pathCanonicalize(mb);
+#endif
 
 #if RTM_DEBUG || RTM_RELEASE
 
 	// remove 8 slashes at end    \rtm\.build\windows\vs2017\x64\project\x64\bin\project.exe
 
 	uint32_t len = strLen(mb);
-	char* ptr = mb + len;
+	char* const mbStart = (char*)mb;
+	char* ptr = mbStart + len;
 
 	int numSlashes = 0;
 	while (numSlashes < 8)
 	{
-		while (*(--ptr) != L'/');
+		while ((ptr > mbStart) && (*(--ptr) != '/'));
+		if (ptr <= mbStart)
+			return false;
 		--ptr;
 		++numSlashes;
 	}
 	*(++ptr) = 0;
-	
-	strlCpy(ptr, uint32_t(mb + len - ptr), "/.data/windows/");
+
+	strlCpy(ptr, uint32_t(mbStart + len - ptr), "/.data/windows/");
 	return strlCpy(_buffer, _bufferSize, mb) == strLen(mb);
 #endif
 
@@ -251,8 +265,10 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 #elif RTM_PLATFORM_POSIX
 
 #if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
-    if (-1 == readlink("/proc/self/exe", _buffer, _bufferSize))
+	ssize_t rl = readlink("/proc/self/exe", _buffer, _bufferSize - 1);
+	if (rl == -1)
 		return false;
+	_buffer[rl] = '\0';
 #endif
 
 	#if RTM_DEBUG || RTM_RELEASE
@@ -264,7 +280,9 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 		int numSlashes = 0;
 		while (numSlashes < 8)
 		{
-			while (*(--ptr) != L'/');
+			while ((ptr > _buffer) && (*(--ptr) != '/'));
+			if (ptr <= _buffer)
+				return false;
 			--ptr;
 			++numSlashes;
 		}
@@ -298,6 +316,7 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 	#endif
 
 #endif
+	return false;
 }
 
 bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, uint32_t _bufferSize)
@@ -352,18 +371,23 @@ bool pathUp(const char* _path, char* _buffer, uint32_t _bufferSize)
 	RTM_ASSERT(_bufferSize > 0, "");
 
 	uint32_t len = strLen(_path);
+	if (len == 0)
+		return false;
 
 	uint32_t slashes = pathIsDirectory(_path) ? 2 : 1;
 
-	while (--len && slashes)
-		if (isSlash(_path[len])) --slashes;
-	
-	if (len++)
+	while ((len > 0) && slashes)
 	{
+		--len;
+		if (isSlash(_path[len])) --slashes;
+	}
+
+	if (slashes == 0)
+	{
+		++len; // include the slash so the result is a directory path
 		if (len < _bufferSize)
 		{
-			strlCpy(_buffer, _bufferSize, _path, len+1);
-			_buffer[len+1] = 0;
+			strlCpy(_buffer, _bufferSize, _path, len);
 			return true;
 		}
 	}
@@ -398,11 +422,24 @@ void pathCanonicalize(char* _path)
 	const char* pos = 0;
 	while ((pos = rtm::strStr(_path, "..")) != 0)
 	{
+		// require "/.." (or "\..") — otherwise ".." is part of a name like "..x"
+		if ((pos == _path) || !isSlash(*(pos - 1)))
+			break;
+
 		const char* prevSlash = pos - 2;
-		while ((*prevSlash != '\\') && (*prevSlash != '/')) prevSlash--;
-		const char* nextDir = pos + 3;
+		while ((prevSlash >= _path) && !isSlash(*prevSlash))
+			--prevSlash;
+		if (prevSlash < _path)
+			break;
+
+		const char* nextDir = pos + 2;
+		if (isSlash(*nextDir))
+			++nextDir;
+		else if (*nextDir != '\0')
+			break;
+
 		size_t len = strLen(nextDir) + 1;
-		rtm::memMove((void*)(prevSlash+1), nextDir, len);
+		rtm::memMove((void*)(prevSlash + 1), nextDir, len);
 	}
 
 	toUnixSlashes(_path);
@@ -536,9 +573,9 @@ bool pathSplit(const char* _path, uint32_t* _numDirectories, StringView* _dirLis
 		return false;
 
 	const char* ps = findSlash(_path);
-	const char* pe = 0;
-	
-	if (ps)
+	const char* pe = ps;
+
+	if (*ps != '\0')
 		pe = findSlash(ps + 1);
 
 	uint32_t dirOffsets[512];
