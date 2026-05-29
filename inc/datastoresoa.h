@@ -32,7 +32,7 @@ namespace rtm {
 		void free(uint32_t _handle)
 		{
 			uint32_t dataIdx, lastDataIdx;
-			Base::Base::m_allocator.free(_handle, dataIdx, lastDataIdx);
+			Base::m_allocator.free(_handle, dataIdx, lastDataIdx);
 
 			if (dataIdx != lastDataIdx)
 			{
@@ -69,7 +69,7 @@ namespace rtm {
 		{
 			uint32_t dataIdx;
 			uint32_t lastDataIdx;
-			Base::Base::m_allocator.free(_handle, dataIdx, lastDataIdx);
+			Base::m_allocator.free(_handle, dataIdx, lastDataIdx);
 
 			if (dataIdx != lastDataIdx)
 			{

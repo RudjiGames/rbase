@@ -206,20 +206,26 @@ void Uri::setPart(Part _part, const StringView& _str)
 {
 	m_parts[_part] = _str;
 
+	// new part may make the URI longer than its previous length, so size the
+	// buffer for the old URI plus the new part plus separator slack
+	uint32_t needed = length() + _str.length() + 16;
+
 	char  buffer[4096];
 	char* store = buffer;
-
-	uint32_t len = length();
-	if (len >= 4096)
-		store = new char[len+1];
+	uint32_t storeSize = 4096;
+	if (needed > storeSize)
+	{
+		storeSize = needed;
+		store = new char[storeSize];
+	}
 	store[0] = 0;
 
-	write(store, len);
+	uint32_t written = write(store, storeSize);
 	m_uri = store;
 
-	parse(m_uri, len);
+	parse(m_uri, written);
 
-	if (len >= 4096)
+	if (store != buffer)
 		delete[] store;
 }
 
@@ -275,30 +281,30 @@ uint32_t uriEncode(const char* _uri, char* _buffer, uint32_t _bufferSize, uint32
 	uint32_t dSize = 0;
 	while (_uri < uriEnd)
 	{
-		if (dSize >= _bufferSize)
-		{
-			_buffer[0] = '\0';
-			return UINT32_MAX;
-		}
-
 		char ch = *_uri++;
 
 		if (shouldEncode(ch))
 		{
-			if (dSize < _bufferSize - 3)
-			{
-				_buffer[dSize++] = '%';
-				_buffer[dSize++] = charToHexNum(ch >> 4);
-				_buffer[dSize++] = charToHexNum(ch);
-			}
-			else
+			// need 3 bytes plus room for the trailing null
+			if (dSize + 3 >= _bufferSize)
 			{
 				_buffer[0] = '\0';
 				return UINT32_MAX;
 			}
+			_buffer[dSize++] = '%';
+			_buffer[dSize++] = charToHexNum(ch >> 4);
+			_buffer[dSize++] = charToHexNum(ch);
 		}
 		else
+		{
+			// need 1 byte plus room for the trailing null
+			if (dSize + 1 >= _bufferSize)
+			{
+				_buffer[0] = '\0';
+				return UINT32_MAX;
+			}
 			_buffer[dSize++] = ch;
+		}
 	}
 
 	_buffer[dSize] = '\0';
@@ -492,8 +498,18 @@ uint32_t uriParseQuery(const StringView& _uri, StringView* _strs, uint32_t _numS
 		if (!kvEnd) kvEnd = ptrEnd;
 
 		const char* eq = strChr(ptr, '=', (uint32_t)(kvEnd - ptr));
-		StringView key(ptr, eq);
-		StringView value(eq+1, kvEnd);
+
+		// empty ranges stay as default (empty) views; the pointer-pair
+		// StringView ctor requires _end > _start
+		StringView key;
+		StringView value;
+		if (eq)
+		{
+			if (eq > ptr)			key   = StringView(ptr, eq);
+			if (kvEnd > eq + 1)		value = StringView(eq + 1, kvEnd);
+		}
+		else if (kvEnd > ptr)
+			key = StringView(ptr, kvEnd);	// key-only segment, value stays empty
 
 		if (storeIndex < _numStrs)	_strs[storeIndex++] = key;
 		if (storeIndex < _numStrs)	_strs[storeIndex++] = value;
@@ -505,7 +521,7 @@ uint32_t uriParseQuery(const StringView& _uri, StringView* _strs, uint32_t _numS
 	if (kvPairs * 2 == storeIndex)
 		return storeIndex;
 
-	if (*_numStrsNeeded)
+	if (_numStrsNeeded)
 		*_numStrsNeeded = kvPairs * 2;
 
 	return 0;

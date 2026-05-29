@@ -40,11 +40,13 @@ namespace rtm {
 	template <typename Ty>
 	static inline void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, Ty* _values, Ty* _tempValues, uint32_t _size)
 	{
+		uint32_t* originalKeys = _keys;
+		Ty* originalValues = _values;
 		uint32_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 		uint16_t shift = 0;
 		for (uint32_t pass=0; pass<3; ++pass)
 		{
-			memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+			memSet(histogram, 0, sizeof(uint32_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint32_t key = _keys[i];
@@ -79,6 +81,12 @@ namespace rtm {
 
 			shift += RTM_RADIXSORT_BITS;
 		}
+
+		if (_keys != originalKeys)
+		{
+			memCopy(originalKeys, _size * sizeof(uint32_t), _keys, _size * sizeof(uint32_t));
+			memCopy(originalValues, _size * sizeof(Ty), _values, _size * sizeof(Ty));
+		}
 	}
 
 	/// Sorts a value array using radix sort
@@ -95,7 +103,7 @@ namespace rtm {
 		uint16_t shift = 0;
 		for (uint32_t pass=0; pass<6; ++pass)
 		{
-			memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+			memSet(histogram, 0, sizeof(uint32_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 			for (uint32_t i=0; i<_size; ++i)
 			{
 				uint64_t key = _keys[i];

@@ -282,7 +282,7 @@ public:
 
     virtual HRESULT __stdcall OnProgress(ULONG ulProgress, ULONG ulProgressMax, ULONG /*ulStatusCode*/, LPCWSTR /*szStatusText*/)
     {
-		if (m_reader->m_callBacks.m_progCb)
+		if (m_reader->m_callBacks.m_progCb && ulProgressMax > 0)
 			m_reader->m_callBacks.m_progCb((float)ulProgress/(float)ulProgressMax);
         return S_OK;
     }
@@ -298,7 +298,7 @@ struct DownloadThread
 		char	hash[33];
 		rtm::hashMD5(HTTP(file).m_url, rtm::strLen(HTTP(file).m_url), digest);
 		rtm::hashMD5toString(digest, hash);
-		RTM_LOG("Downloading %s to %s\n", _path, hash);
+		RTM_LOG("Downloading %s to %s\n", HTTP(file).m_url, hash);
 
 		DownloadProgress progress;
 		progress.m_reader = file;
@@ -499,7 +499,7 @@ static int64_t httpReadSeek(FileReader* _file, int64_t _offset, uint64_t _origin
 			_file->m_callBacks.m_failCb("Cannot seek. File is not open!");
 		return 0;
 	}
-	fseek(HTTP(_file).m_file, (long)_offset, _origin);
+	fseek(HTTP(_file).m_file, (long)_offset, (int)_origin);
 	return ftell(HTTP(_file).m_file);
 }
 
@@ -511,7 +511,7 @@ static int64_t httpReadRead(FileReader* _file, void* _dest, int64_t _size)
 			_file->m_callBacks.m_failCb("Cannot read. File is not open!");
 		return 0;
 	}
-	return fread(_dest, 1, _size, HTTP(_file).m_file);
+	return (int64_t)fread(_dest, 1, (size_t)_size, HTTP(_file).m_file);
 }
 
 #else // RTM_PLATFORM_EMSCRIPTEN
@@ -535,7 +535,7 @@ static FileStatus httpWriteOpen(FileWriter* _file, const char* _path)
 	return FileStatus::FAIL;
 }
 
-static FileStatus httpWriteIsGetStatus(FileWriter*)
+static FileStatus httpWriteGetStatus(FileWriter*)
 {
 	return FileStatus::CLOSED;
 }
@@ -578,7 +578,7 @@ static void fileWriterSetHTTP(FileWriter* _writer)
 	_writer->construct	= httpWriteConstruct;
 	_writer->destruct	= httpWriteDestruct;
 	_writer->open		= httpWriteOpen;
-	_writer->getstatus	= httpWriteIsGetStatus;
+	_writer->getstatus	= httpWriteGetStatus;
 	_writer->close		= httpWriteClose;
 	_writer->seek		= httpWriteSeek;
 	_writer->write		= httpWriteWrite;
@@ -735,7 +735,7 @@ void fileWriterClose(FileWriterHandle _handle)
 	return writer->close(writer);
 }
 
-FileStatus fileWriterGetStatus(FileReaderHandle _handle)
+FileStatus fileWriterGetStatus(FileWriterHandle _handle)
 {
 	if (!s_writers.isValid(_handle.idx))
 		return FileStatus::FAIL;
@@ -840,8 +840,8 @@ int64_t fileWriteIfDifferent(FileStorage _type, const char* _path, const void* _
 			if (size == (int64_t)_dataSize)
 			{
 				uint8_t* tempBuffer = new uint8_t[(uintptr_t)size];
-				fileReaderRead(frh, tempBuffer, size);
-				if (rtm::memCompare(_data, tempBuffer, size) == 0)
+				int64_t bytesRead = fileReaderRead(frh, tempBuffer, size);
+				if ((bytesRead == size) && (rtm::memCompare(_data, tempBuffer, size) == 0))
 					writeFile = false;
 				delete[] tempBuffer;
 			}
@@ -850,11 +850,11 @@ int64_t fileWriteIfDifferent(FileStorage _type, const char* _path, const void* _
 		fileReaderDestroy(frh);
 	}
 
-	if (writeFile)
-		return fileWrite(_type, _path, _data, _dataSize);
-
 	if (_written)
 		*_written = writeFile;
+
+	if (writeFile)
+		return fileWrite(_type, _path, _data, _dataSize);
 
 	return (int64_t)_dataSize;
 }

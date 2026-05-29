@@ -23,7 +23,7 @@ namespace rtm {
 
 		inline void	lock()
 		{
-			while (atomicCAS(&m_Lock, 1, 0) != 0)
+			while (atomicCAS(&m_Lock, 0, 1) != 0)
 			{
 				threadYield();
 			}

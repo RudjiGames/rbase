@@ -113,9 +113,9 @@ namespace rtm {
 		RWBuffer*		m_cmdBufferConsume;
 		Semaphore		m_semConsume;
 		Semaphore		m_semProduce;
-		Thread			m_appThread;
-		bool			m_runThread;
-		ThreadEntry		m_consumerFunc;
+		Thread				m_appThread;
+		volatile int32_t	m_runThread;
+		ThreadEntry			m_consumerFunc;
 
 	public:
 		CommandBuffer(uint32_t _bufferSize = 32*1024);

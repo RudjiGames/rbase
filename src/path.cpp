@@ -130,8 +130,10 @@ const char* pathGetExt(const char* _path)
 	RTM_ASSERT(_path != 0, "");
 
 	const size_t length = strLen(_path);
-	size_t len = length;
+	if (length == 0)
+		return &_path[0];
 
+	size_t len = length;
 	while (--len)
 		if (_path[len] == '.')
 			break;
@@ -140,7 +142,7 @@ const char* pathGetExt(const char* _path)
 		return &_path[len];
 
 	return &_path[length];
-} 
+}
 
 bool pathGetExt(const char* _path, char* _buffer, uint32_t _bufferSize)
 {
@@ -148,13 +150,15 @@ bool pathGetExt(const char* _path, char* _buffer, uint32_t _bufferSize)
 	RTM_ASSERT(_path, "");
 	RTM_ASSERT(_bufferSize > 0, "");
 
-	size_t len = strLen(_path);
+	const size_t length = strLen(_path);
+	_buffer[0] = 0;
+	if (length == 0)
+		return true;
 
+	size_t len = length;
 	while (--len)
 		if ((isSlash(_path[len])) ||
 			(_path[len] == '.')) break;
-
-	_buffer[0] = 0;
 
 	if (isSlash(_path[len]))
 	{
@@ -165,10 +169,11 @@ bool pathGetExt(const char* _path, char* _buffer, uint32_t _bufferSize)
 	if (!(_path[len++] == '.'))
 		return false;
 
-	if (len + 1 > _bufferSize)
+	const size_t extLen = length - len;
+	if (extLen + 1 > _bufferSize)
 		return false;
 
-	strlCpy(_buffer, _bufferSize, &_path[len] );
+	strlCpy(_buffer, _bufferSize, &_path[len]);
 
 	return true;
 }
@@ -191,7 +196,11 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 	if (len == 0)
 		return false;
 
-	wcscat(wBuffer, L"\\");
+	// append a trailing slash without the CRT wcscat; GetCurrentDirectoryW
+	// returns the character count (excluding null) and size <= 4095, so
+	// len+1 is always within wBuffer
+	wBuffer[len]	 = L'\\';
+	wBuffer[len + 1] = L'\0';
 	toUnixSlashes(wBuffer);
 
 	WideToMulti wb(wBuffer);
@@ -262,6 +271,8 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 	return strlCpy(_buffer, _bufferSize, dataPath) == strLen(dataPath);
 #endif
 
+	return false;
+
 #elif RTM_PLATFORM_POSIX
 
 #if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
@@ -314,6 +325,8 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 		const char* fn = pathGetFileName(_buffer);
 		return 0 != strlCpy((char*)fn, _bufferSize - uint32_t(fn - _buffer), "data/");
 	#endif
+
+		return false;
 
 #endif
 	return false;
@@ -481,7 +494,7 @@ bool pathMakeRelative(const char* _pathFrom, const char* _pathTo, char* _buffer,
 
 	int cr=0;
 	int lastSlash = 0;
-	while (isEqualPathChar(_pathFrom[cr], _pathTo[cr]))
+	while (_pathFrom[cr] && _pathTo[cr] && isEqualPathChar(_pathFrom[cr], _pathTo[cr]))
 	{
 		if (isSlash(_pathFrom[cr]))
 			lastSlash = cr;
@@ -550,6 +563,7 @@ bool pathIsDirectory(const char* _path)
 		return false;
 
 	uint32_t len = strLen(_path);
+	if (len == 0) return false;
 	return isSlash(_path[len - 1]);
 }
 

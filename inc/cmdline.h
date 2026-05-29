@@ -159,7 +159,7 @@ namespace rtm {
 					if (len != optionLen)
 						continue;
 
-					while ((argv[len] == ' ') || (argv[len] == '\t')) --len;
+					while ((len > 0) && ((argv[len] == ' ') || (argv[len] == '\t'))) --len;
 					bool match = strCmp(&argv[1], _optionName, (int32_t)len) == 0;
 					if (!match)
 						continue;

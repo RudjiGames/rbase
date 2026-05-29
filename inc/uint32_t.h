@@ -103,12 +103,14 @@ namespace rtm {
 
 	inline uint32_t uint32_rol(uint32_t _a, int _sa)
 	{
-		return ( _a << _sa) | (_a >> (32-_sa) );
+		_sa &= 31;
+		return _sa ? ((_a << _sa) | (_a >> (32 - _sa))) : _a;
 	}
 
 	inline uint32_t uint32_ror(uint32_t _a, int _sa)
 	{
-		return ( _a >> _sa) | (_a << (32-_sa) );
+		_sa &= 31;
+		return _sa ? ((_a >> _sa) | (_a << (32 - _sa))) : _a;
 	}
 
 	inline uint32_t uint32_add(uint32_t _a, uint32_t _b)

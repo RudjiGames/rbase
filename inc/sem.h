@@ -135,31 +135,39 @@ namespace rtm {
 	{
 		int result = pthread_mutex_lock(&_sem->m_mutex);
 
-	#if RTM_PLATFORM_ANDROID
-		if (_ms != -1)
+		if (_ms < 0)
 		{
-			timespec ts;
-			rtm::memSet(&ts, 0, sizeof(timespec));
-			ts.tv_nsec = _ms * 1000;
-			while (result == 0 && 0 >= _sem->m_count)
-				result = pthread_cond_timedwait(&_sem->m_cv, &_sem->m_mutex, &ts);
-		}
-		else
-	#endif
-		{
-			RTM_ASSERT(-1 == _ms, "NaCl, iOS and OSX don't support pthread_cond_timedwait at this moment.");
+			// infinite wait
 			while (result == 0 && 0 >= _sem->m_count)
 				result = pthread_cond_wait(&_sem->m_cv, &_sem->m_mutex);
 		}
+		else
+		{
+			// timed wait: pthread_cond_timedwait expects an absolute deadline, so
+			// base it on the current time and add the requested timeout, carrying
+			// the nanosecond overflow into the seconds field
+			timespec ts;
+			clock_gettime(CLOCK_REALTIME, &ts);
+			ts.tv_sec  += _ms / 1000;
+			ts.tv_nsec += (long)(_ms % 1000) * 1000000;
+			if (ts.tv_nsec >= 1000000000)
+			{
+				ts.tv_sec  += ts.tv_nsec / 1000000000;
+				ts.tv_nsec %= 1000000000;
+			}
+			while (result == 0 && 0 >= _sem->m_count)
+				result = pthread_cond_timedwait(&_sem->m_cv, &_sem->m_mutex, &ts);
+		}
 
-
-		bool ok = result == 0;
+		// did we actually acquire the semaphore? (false on timeout, matching the
+		// Windows WaitForSingleObjectEx behaviour)
+		bool ok = (result == 0);
 
 		if (ok)
 			--_sem->m_count;
 
-		result = pthread_mutex_unlock(&_sem->m_mutex);
-		return result == 0;
+		pthread_mutex_unlock(&_sem->m_mutex);
+		return ok;
 	}
 	
 #else

@@ -14,11 +14,12 @@ namespace rtm {
 
 void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size)
 {
+	uint32_t* originalKeys = _keys;
 	uint32_t histogram[RTM_RADIXSORT_HISTOGRAM_SIZE];
 	uint16_t shift = 0;
 	for (uint32_t pass=0; pass<3; ++pass)
 	{
-		rtm::memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+		rtm::memSet(histogram, 0, sizeof(uint32_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 		for (uint32_t i=0; i<_size; ++i)
 		{
 			uint32_t key = _keys[i];
@@ -48,6 +49,9 @@ void sortRadix(uint32_t* _keys, uint32_t* _tempKeys, uint32_t _size)
 
 		shift += RTM_RADIXSORT_BITS;
 	}
+
+	if (_keys != originalKeys)
+		rtm::memCopy(originalKeys, _size * sizeof(uint32_t), _keys, _size * sizeof(uint32_t));
 }
 
 void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, uint32_t _size)
@@ -56,7 +60,7 @@ void sortRadix64(uint64_t* _keys, uint64_t* _tempKeys, uint32_t _size)
 	uint16_t shift = 0;
 	for (uint32_t pass=0; pass<6; ++pass)
 	{
-		rtm::memSet(histogram, 0, sizeof(uint16_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
+		rtm::memSet(histogram, 0, sizeof(uint32_t)*RTM_RADIXSORT_HISTOGRAM_SIZE);
 		for (uint32_t i=0; i<_size; ++i)
 		{
 			uint64_t key = _keys[i];

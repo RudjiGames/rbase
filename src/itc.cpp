@@ -5,10 +5,15 @@
 
 #include <rbase_pch.h>
 #include <rbase/inc/itc.h>
+#include <rbase/inc/atomic.h>
 
 namespace rtm {
 
 CommandBuffer::CommandBuffer(uint32_t _bufferSize)
+	: m_cmdBufferProduce(0)
+	, m_cmdBufferConsume(0)
+	, m_runThread(0)
+	, m_consumerFunc(0)
 {
 	m_commandBuffers[0].setCapacity(_bufferSize);
 	m_commandBuffers[1].setCapacity(_bufferSize);
@@ -30,7 +35,7 @@ void CommandBuffer::init(rtm::ThreadEntry _consumerFunc)
 	m_cmdBufferProduce->start();
 
 	frame();
-	m_runThread = true;
+	atomicSet(&m_runThread, 1);
 	m_appThread.start(consumerThread, this);
 }
 
@@ -52,7 +57,7 @@ void CommandBuffer::frame()
 void CommandBuffer::shutDown()
 {
 	frame();
-	m_runThread = false;
+	atomicSet(&m_runThread, 0);
 	m_appThread.stop();
 }
 
