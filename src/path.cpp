@@ -329,7 +329,10 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 		return false;
 
 #endif
-	return false;
+
+#if !RTM_PLATFORM_WINDOWS && !RTM_PLATFORM_POSIX
+	return false;	// fallback only when no platform-specific branch above is compiled
+#endif
 }
 
 bool pathAppend(const char* _path, const char* _appendPath, char* _buffer, uint32_t _bufferSize)
