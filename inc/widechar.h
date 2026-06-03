@@ -19,6 +19,7 @@ namespace rtm {
 
 		wchar_t		m_string[CHARS_ON_STACK];
 		uint32_t	m_size;
+		bool		m_fromScratch;	///< m_ptr came from the per-thread reusable buffer (release on dtor)
 
 	public:
 		wchar_t*	m_ptr;
@@ -38,6 +39,7 @@ namespace rtm {
 
 		char		m_string[CHARS_ON_STACK];
 		uint32_t	m_size;
+		bool		m_fromScratch;	///< m_ptr came from the per-thread reusable buffer (release on dtor)
 
 	public:
 		char*	m_ptr;
