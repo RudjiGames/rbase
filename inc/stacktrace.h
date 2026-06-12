@@ -35,7 +35,7 @@ namespace rtm {
 
 namespace rtm {
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS
 
 #if RTM_COMPILER_MSVC
 	static inline uint32_t getStackTrace(void* _traces[], uint32_t _numFrames, uint32_t _skip)
@@ -50,25 +50,6 @@ namespace rtm {
 #else
 #error "Unsupported compiler!"
 #endif
-
-#elif RTM_PLATFORM_PS4
-
-	static inline uint32_t getStackTrace(void* _traces[], uint32_t _numFrames, uint32_t _skip)
-	{
-		uint32_t num = 0;
-		void** ptr = (void**)__builtin_frame_address(0);
-		while (_skip)
-		{
-			ptr = (void**)(*ptr);
-			--_skip;
-		}
-		while (ptr && num < _numFrames)
-		{
-			_traces[num++] = (*(ptr + 1));
-			ptr = (void**)(*ptr);
-		}
-		return num;
-	}
 
 #elif RTM_PLATFORM_ANDROID
 	struct unwindArg

@@ -46,7 +46,7 @@ namespace rtm {
 ///  Implementation                                                        ///
 /// ---------------------------------------------------------------------- ///
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 	#ifndef WIN32_LEAN_AND_MEAN
 	#define WIN32_LEAN_AND_MEAN
 	#endif // WIN32_LEAN_AND_MEAN
@@ -58,8 +58,6 @@ namespace rtm {
 	#if RTM_COMPILER_MSVC && !RTM_PLATFORM_WINRT
 		#pragma intrinsic(__rdtsc)
 	#endif // RTM_COMPILER_MSVC && !RTM_PLATFORM_WINRT
-#elif RTM_PLATFORM_PS3
-	#include <sys/sys_time.h>
 #elif RTM_PLATFORM_ANDROID
 	#include <time.h>
 #elif RTM_PLATFORM_EMSCRIPTEN
@@ -72,14 +70,10 @@ namespace rtm {
 
 	static inline uint64_t cpuClock()
 	{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 		LARGE_INTEGER li;
 		QueryPerformanceCounter(&li);
 		int64_t q = li.QuadPart;
-#elif RTM_PLATFORM_PS3
-		int64_t q = (int64_t)sys_time_get_system_time();
-#elif RTM_PLATFORM_PS4
-		int64_t q = sceKernelReadTsc();
 #elif RTM_PLATFORM_ANDROID
 		int64_t q = ::clock();
 #elif RTM_PLATFORM_EMSCRIPTEN
@@ -94,14 +88,12 @@ namespace rtm {
 
 	static inline uint64_t cpuFrequency()
 	{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 		LARGE_INTEGER li;
 		QueryPerformanceFrequency(&li);
 		return li.QuadPart;
 #elif RTM_PLATFORM_ANDROID
 		return CLOCKS_PER_SEC;
-#elif RTM_PLATFORM_PS4
-		return sceKernelGetTscFrequency();
 #else
 		return 1000000;
 #endif

@@ -17,14 +17,9 @@
 #define RTM_PLATFORM_LINUX		0
 #define RTM_PLATFORM_IOS		0
 #define RTM_PLATFORM_OSX		0
-#define RTM_PLATFORM_PS3		0
-#define RTM_PLATFORM_PS4		0
-#define RTM_PLATFORM_PS5		0
 #define RTM_PLATFORM_ANDROID	0
-#define RTM_PLATFORM_XBOXONE	0
 #define RTM_PLATFORM_EMSCRIPTEN	0
 #define RTM_PLATFORM_CHEERP		0
-#define RTM_PLATFORM_SWITCH		0
 
 //--------------------------------------------------------------------------
 /// Compilers
@@ -104,10 +99,7 @@
 //--------------------------------------------------------------------------
 /// Detect platform
 //--------------------------------------------------------------------------
-#if defined(_DURANGO) || defined(_XBOX_ONE)
-#undef  RTM_PLATFORM_XBOXONE
-#define RTM_PLATFORM_XBOXONE		1
-#elif defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
+#if defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__)
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
 #undef  RTM_PLATFORM_WINDOWS
 #define RTM_PLATFORM_WINDOWS		1
@@ -127,21 +119,12 @@
 #elif defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 #undef  RTM_PLATFORM_OSX
 #define RTM_PLATFORM_OSX			1
-#elif defined(__ORBIS__)
-#undef	RTM_PLATFORM_PS4
-#define RTM_PLATFORM_PS4			1
-#elif defined(__PROSPERO__)
-#undef	RTM_PLATFORM_PS5
-#define RTM_PLATFORM_PS5			1
 #elif defined(__CHEERP__)
 #undef  RTM_PLATFORM_CHEERP
 #define RTM_PLATFORM_CHEERP			1
 #elif defined(__EMSCRIPTEN__)
 #undef  RTM_PLATFORM_EMSCRIPTEN
 #define RTM_PLATFORM_EMSCRIPTEN		1
-#elif defined(__NINTENDO__)
-#undef	RTM_PLATFORM_SWITCH
-#define	RTM_PLATFORM_SWITCH			1
 #else
 #error "Platform not supported!"
 #endif
@@ -156,10 +139,7 @@
 							RTM_PLATFORM_OSX		|| \
 							RTM_PLATFORM_ANDROID	|| \
 							RTM_PLATFORM_IOS		|| \
-							RTM_PLATFORM_PS4		|| \
-							RTM_PLATFORM_PS5		|| \
 							RTM_PLATFORM_WASM		|| \
-							RTM_PLATFORM_SWITCH		|| \
 							0)
 
 //--------------------------------------------------------------------------
@@ -173,7 +153,7 @@
 #undef	RTM_CPU_MIPS
 #define	RTM_CPU_MIPS			1
 #define	RTM_CACHE_LINE_SIZE		64
-#elif defined(_M_PPC) || defined(__powerpc__) || defined(__powerpc64__) || defined(__PPU__)
+#elif defined(_M_PPC) || defined(__powerpc__) || defined(__powerpc64__)
 #undef	RTM_CPU_PPC
 #define	RTM_CPU_PPC				1
 #define	RTM_CACHE_LINE_SIZE		128
@@ -256,7 +236,7 @@
 
 #if RTM_COMPILER_MSVC
 #define RTM_BREAK	__debugbreak()
-#elif RTM_CPU_ARM && !RTM_PLATFORM_SWITCH
+#elif RTM_CPU_ARM
 #define RTM_BREAK	__builtin_trap()
 #elif RTM_CPU_X86 && (RTM_COMPILER_GCC || RTM_COMPILER_CLANG)
 #define RTM_BREAK	__asm__ ("int $3")

@@ -208,10 +208,8 @@ bool pathGetCurrentDirectory(char* _buffer, uint32_t _bufferSize)
 
 #elif RTM_PLATFORM_POSIX
 
-#if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
-		if (!(_buffer == getcwd(_buffer, _bufferSize)))
+	if (!(_buffer == getcwd(_buffer, _bufferSize)))
 		return false;
-#endif
 
 	if (!pathIsDirectory(_buffer))
 		strlCat(_buffer, _bufferSize, "/");
@@ -275,12 +273,10 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 
 #elif RTM_PLATFORM_POSIX
 
-#if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
 	ssize_t rl = readlink("/proc/self/exe", _buffer, _bufferSize - 1);
 	if (rl == -1)
 		return false;
 	_buffer[rl] = '\0';
-#endif
 
 	#if RTM_DEBUG || RTM_RELEASE
 
@@ -309,12 +305,6 @@ bool pathGetDataDirectory(char* _buffer, uint32_t _bufferSize)
 			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/android/");
 		#elif RTM_PLATFORM_WASM
 			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/wasm/");
-		#elif RTM_PLATFORM_SWITCH
-			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/switch/");
-		#elif RTM_PLATFORM_PS4
-			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/ps4/");
-		#elif RTM_PLATFORM_PS5
-			return strlCpy(ptr, uint32_t(_buffer + len - ptr), "/.data/ps5/");
 		#else
 			#error
 		#endif

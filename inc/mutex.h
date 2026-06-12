@@ -8,12 +8,10 @@
 
 #include <rbase/inc/platform.h>
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	typedef CRITICAL_SECTION mutex;
-#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-	typedef ScePthreadMutex mutex;
 #elif RTM_PLATFORM_POSIX
 	#include <pthread.h>
 	typedef pthread_mutex_t mutex;
@@ -56,7 +54,7 @@ namespace rtm {
 
 namespace rtm {
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 
 	static inline void mutexInit(mutex* _mutex)
 	{
@@ -114,37 +112,6 @@ namespace rtm {
 		pthread_mutex_unlock(_mutex);
 	}
 
-#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-
-	static inline void mutexInit(mutex* _mutex)
-	{
-		ScePthreadMutexattr mutexAttr;
-		scePthreadMutexattrInit(&mutexAttr);
-		scePthreadMutexattrSettype(&mutexAttr, SCE_PTHREAD_MUTEX_RECURSIVE);
-		scePthreadMutexInit(_mutex, &mutexAttr, 0);
-		scePthreadMutexattrDestroy(&mutexAttr);
-	}
-
-	static inline void mutexDestroy(mutex* _mutex)
-	{
-		scePthreadMutexDestroy(_mutex);
-	}
-
-	static inline void mutexLock(mutex* _mutex)
-	{
-		scePthreadMutexLock(_mutex);
-	}
-
-	static inline int mutexTryLock(mutex* _mutex)
-	{
-		return (scePthreadMutexTrylock(_mutex) == 0) ? 0 : 1;
-	}
-
-	static inline void mutexUnlock(mutex* _mutex)
-	{
-		scePthreadMutexUnlock(_mutex);
-	}
-	
 #endif
 
 	//--------------------------------------------------------------------------

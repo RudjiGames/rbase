@@ -51,7 +51,7 @@ namespace rtm {
 
 #include <rbase/inc/sem.h>
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS
 	#include <immintrin.h>
 #elif RTM_PLATFORM_WINRT
 	#include <processthreadsapi.h>
@@ -59,9 +59,7 @@ namespace rtm {
 	#include <pthread.h>
 	#include <sched.h>	// sched_yield
 	#include <unistd.h>	// syscall
-	#if !RTM_PLATFORM_PS4 && !RTM_PLATFORM_PS5
 	#include <sys/syscall.h>
-	#endif
 	#include <time.h> // nanosleep
 #else // RTM_PLATFORM_POSIX
 	#error "Unsupported platform/compiler!"
@@ -80,7 +78,7 @@ namespace rtm {
 		bool		m_entryDone;
 		int32_t		m_exitCode;
 		Semaphore	m_semaphore;
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 		HANDLE		m_handle;
 #elif RTM_PLATFORM_POSIX
 		pthread_t	m_handle;
@@ -109,7 +107,7 @@ namespace rtm {
 			m_entry		= _entry;
 			m_userData	= _userData;
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 			m_handle = CreateThread(NULL, _stackSize, threadEntry, this, 0, NULL);
 #elif RTM_PLATFORM_POSIX
 			int result;
@@ -139,7 +137,7 @@ namespace rtm {
 			if (!m_started)
 				return;
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 			WaitForSingleObjectEx(m_handle, INFINITE, 0);
 			GetExitCodeThread(m_handle, (DWORD*)&m_exitCode);
 			CloseHandle(m_handle);
@@ -178,7 +176,7 @@ namespace rtm {
 			return ret;
 		}
 
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 		static DWORD WINAPI threadEntry(LPVOID _this)
 		{
 			Thread* thread = (Thread*)_this;
@@ -214,19 +212,13 @@ namespace rtm {
 
 	static inline uint64_t threadGetID()
 	{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 		return (uint64_t)GetCurrentThreadId();
 #elif RTM_PLATFORM_LINUX
 		return (uint64_t)syscall(SYS_gettid);
 #elif RTM_PLATFORM_IOS || RTM_PLATFORM_OSX
 		return (mach_port_t)::pthread_mach_thread_np(pthread_self());
-#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-		return scePthreadGetthreadid();
-#elif RTM_PLATFORM_PS3
-		sys_ppu_thread_t tid;
-		sys_ppu_thread_get_id(&tid);
-		return (uint64_t)tid;
-#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_WASM || RTM_PLATFORM_SWITCH
+#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_WASM
 		return pthread_self();
 #else
 #error "Undefined platform!"
@@ -235,7 +227,7 @@ namespace rtm {
 
 	static inline void threadSleep(uint32_t _ms)
 	{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE || RTM_PLATFORM_WINRT
+#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_WINRT
 		::Sleep(_ms);
 #else
 		timespec req = { (time_t)_ms / 1000, (long)((_ms % 1000) * 1000000) };
@@ -246,14 +238,12 @@ namespace rtm {
 
 	static inline void threadYield()
 	{
-#if RTM_PLATFORM_WINDOWS || RTM_PLATFORM_XBOXONE
+#if RTM_PLATFORM_WINDOWS
 		::SwitchToThread();
 #elif RTM_PLATFORM_WINRT
 		RTM_ERROR("yield not implemented!");
-#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_WASM  || RTM_PLATFORM_SWITCH
+#elif RTM_PLATFORM_ANDROID || RTM_PLATFORM_LINUX || RTM_PLATFORM_OSX || RTM_PLATFORM_WASM
 		::sched_yield();
-#elif RTM_PLATFORM_PS4 || RTM_PLATFORM_PS5
-		scePthreadYield();
 #else
 #error "Unsupported platform/compiler!"
 #endif
